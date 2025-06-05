@@ -177,13 +177,28 @@
             background-color: #4338ca; /* indigo-700 */
         }
 
-        /* Checkmark for completed tasks */
-        .checkmark-circle {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
+        /* Checkmark and Spinner for tasks */
+        .status-indicator-wrapper {
+            position: relative;
             width: 32px;
             height: 32px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .spinner-icon {
+            color: #6b7280; /* gray-500 */
+            font-size: 1.25rem;
+            position: absolute;
+            opacity: 0; /* Hidden by default */
+            transition: opacity 0.3s ease-out;
+        }
+        body.dark-theme .spinner-icon {
+            color: #9ca3af; /* gray-400 */
+        }
+        .checkmark-circle {
+            position: absolute;
             background-color: #10b981; /* green-500 */
             border-radius: 50%;
             display: flex;
@@ -193,10 +208,12 @@
             font-size: 1.25rem;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             transform: scale(0); /* Initially hidden */
-            transition: transform 0.3s ease-out;
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+            opacity: 0; /* Hidden by default */
         }
         .checkmark-circle.show {
             transform: scale(1);
+            opacity: 1;
         }
 
 
@@ -366,10 +383,8 @@
     </div>
 
     <div id="mainContent" class="main-card-container">
-        <h1 id="pageTitle" class="text-4xl font-extrabold mb-4 animate-fade-in-down">Selesaikan Minimal 1 Tugas untuk membuka tautan ekslusif</h1>
-        <p id="pageSubtitle" class="text-lg opacity-80 mb-8 animate-fade-in-down" style="animation-delay: 0.2s;">
-            Tugas ini dibuat untuk memastikan semua audiens yang mengunjungi halaman ini benar-benar tertarik dan mendapatkan akses ke konten terbaik!
-        </p>
+        <h1 id="pageTitle" class="text-4xl font-extrabold mb-8 animate-fade-in-down">Selesaikan Minimal 1 Tugas untuk membuka tautan ekslusif</h1>
+        <!-- Subtitle removed as requested -->
 
         <div id="loadingMessage" class="text-lg opacity-80 animate-pulse" style="display: none;">
             Memuat tugas...
@@ -419,7 +434,7 @@
         const themeIcon = toggleThemeBtn.querySelector('i');
 
         const pageTitle = document.getElementById('pageTitle');
-        const pageSubtitle = document.getElementById('pageSubtitle'); // New subtitle element
+        // const pageSubtitle = document.getElementById('pageSubtitle'); // Removed
         const loadingMessage = document.getElementById('loadingMessage');
         const errorMessage = document.getElementById('errorMessage');
         const tasksListContainer = document.getElementById('tasksListContainer');
@@ -452,7 +467,7 @@
         const content = {
             id: {
                 pageTitle: "Selesaikan Minimal 1 Tugas untuk membuka tautan ekslusif", // Updated
-                pageSubtitle: "Tugas ini dibuat untuk memastikan semua audiens yang mengunjungi halaman ini benar-benar tertarik dan mendapatkan akses ke konten terbaik!", // New
+                // pageSubtitle: "Tugas ini dibuat untuk memastikan semua audiens yang mengunjungi halaman ini benar-benar tertarik dan mendapatkan akses ke konten terbaik!", // Removed
                 loadingMessage: "Memuat tugas...",
                 errorMessage: "Terjadi kesalahan saat memuat tugas. Link mungkin tidak valid atau rusak.",
                 tasksProgress: (completed, total, percentage) => `${percentage}% Selesai (${completed} dari ${total} tugas)`, // Updated progress text
@@ -474,14 +489,14 @@
                 promotionBtnText: "Gabung Sekarang!",
                 taskTypes: { // Specific phrases for task types
                     tiktok: "Ikuti akun Tiktok", // Updated
-                    whatsapp: "Bergabung dengan sakura WhatsApp", // Updated
+                    whatsapp: "Bergabung dengan saluran WhatsApp", // Updated
                     roblox: "Ikuti/gabung akun Roblox", // Updated
                     youtube: "Subscribe channel YouTube" // Updated
                 }
             },
             en: {
                 pageTitle: "Complete At Least 1 Task to Unlock Exclusive Link", // Updated
-                pageSubtitle: "These tasks are designed to ensure all audience visiting this page are genuinely interested and gain access to the best content!", // New
+                // pageSubtitle: "These tasks are designed to ensure all audience visiting this page are genuinely interested and gain access to the best content!", // Removed
                 loadingMessage: "Loading tasks...",
                 errorMessage: "An error occurred while loading tasks. The link might be invalid or corrupted.",
                 tasksProgress: (completed, total, percentage) => `${percentage}% Complete (${completed} of ${total} tasks)`, // Updated progress text
@@ -503,7 +518,7 @@
                 promotionBtnText: "Join Now!",
                 taskTypes: { // This should match content from create page
                     tiktok: "Follow TikTok account", // Updated
-                    whatsapp: "Join sakura WhatsApp", // Updated
+                    whatsapp: "Join WhatsApp channel", // Updated
                     roblox: "Follow/join Roblox account", // Updated
                     youtube: "Subscribe YouTube channel" // Updated
                 }
@@ -515,7 +530,7 @@
             const currentLangContent = content[currentLanguage];
 
             pageTitle.textContent = currentLangContent.pageTitle;
-            pageSubtitle.textContent = currentLangContent.pageSubtitle; // Update subtitle
+            // pageSubtitle.textContent = currentLangContent.pageSubtitle; // Removed
             loadingMessage.textContent = currentLangContent.loadingMessage;
             errorMessage.textContent = currentLangContent.errorMessage;
             openTargetBtnText.textContent = currentLangContent.openTargetBtnText;
@@ -667,11 +682,11 @@
                     }
                 }
 
-                // Removed icon, only show task type text. Added spinner and checkmark elements.
+                // Task item structure
                 taskDiv.innerHTML = `
                     <div class="flex items-center space-x-3 w-full sm:w-auto flex-grow">
-                        <div class="relative w-8 h-8 flex-shrink-0">
-                            <i class="fas fa-spinner spinner-icon text-gray-400 absolute inset-0 flex items-center justify-center ${isCompleted ? 'hidden' : ''}"></i>
+                        <div class="status-indicator-wrapper">
+                            <i class="fas fa-spinner spinner-icon ${isCompleted ? 'hidden' : ''}"></i>
                             <div class="checkmark-circle ${isCompleted ? 'show' : ''}">
                                 <i class="fas fa-check"></i>
                             </div>
@@ -713,11 +728,13 @@
             const checkmarkCircle = taskDiv.querySelector('.checkmark-circle');
 
             // Hide description, show spinner
-            if (taskDescriptionSpan) taskDescriptionSpan.style.display = 'none';
+            // No need to hide task description itself, just show spinner on top
             if (spinnerIcon) {
                 spinnerIcon.classList.remove('hidden');
+                spinnerIcon.style.opacity = '1';
                 spinnerIcon.classList.add('spinner-animation');
             }
+            if (checkmarkCircle) checkmarkCircle.classList.remove('show'); // Hide checkmark if somehow visible
 
             // Open the task URL in a new tab immediately
             window.open(taskUrl, '_blank');
@@ -727,10 +744,11 @@
                 // Hide spinner, show checkmark
                 if (spinnerIcon) {
                     spinnerIcon.classList.add('hidden');
+                    spinnerIcon.style.opacity = '0';
                     spinnerIcon.classList.remove('spinner-animation');
                 }
                 if (checkmarkCircle) checkmarkCircle.classList.add('show');
-                if (taskDescriptionSpan) taskDescriptionSpan.style.display = ''; // Show description again
+                // No need to show taskDescriptionSpan, it's already visible
 
                 // Mark as completed
                 completedTasksMap[taskId] = true;
@@ -752,9 +770,9 @@
                 }
 
                 // Button permanently disabled after completion
-                button.innerHTML = `<i class="fas fa-check mr-2"></i> ${content[currentLanguage].completedText}`;
+                button.disabled = true;
                 button.classList.remove('opacity-70', 'cursor-not-allowed'); // Remove temporary styles
-            }, 3500); // 3.5 seconds verification time
+            }, 5500); // 5.5 seconds verification time
         }
 
         // Function to update progress text and progress bar

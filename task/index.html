@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts - Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
-    <!-- Font Awesome for icons (still needed for theme/language toggles and checkmark) -->
+    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* Custom Keyframes for Animations */
@@ -24,17 +24,32 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
-        /* New animation for task completion */
+        /* Animation for verification spinner */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Animation for task completion highlight */
         @keyframes taskCompleteHighlight {
-            0% { background-color: rgba(255, 255, 0, 0.3); } /* Yellowish flash */
-            100% { background-color: transparent; }
+            0% { box-shadow: 0 0 0 0px rgba(16, 185, 129, 0.5); } /* green-500 pulse */
+            100% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+        }
+        /* Dark theme version for task completion highlight */
+        body.dark-theme .task-card.task-completed .checkmark-circle {
+            background-color: #0d9488; /* teal-600 */
+        }
+        @keyframes taskCompleteHighlightDark {
+            0% { box-shadow: 0 0 0 0px rgba(13, 148, 136, 0.5); } /* teal-600 pulse */
+            100% { box-shadow: 0 0 0 8px rgba(13, 148, 136, 0); }
         }
 
 
         .animate-fade-in-down { animation: fadeInDown 1s ease-out forwards; }
         .animate-fade-in-up { animation: fadeInUp 1s ease-out forwards; }
         .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
-        .animate-task-complete-highlight { animation: taskCompleteHighlight 0.5s ease-out forwards; }
+        .spinner-animation { animation: spin 1.2s linear infinite; }
+        .animate-task-complete-highlight-light { animation: taskCompleteHighlight 0.5s ease-out forwards; }
+        .animate-task-complete-highlight-dark { animation: taskCompleteHighlightDark 0.5s ease-out forwards; }
 
 
         body {
@@ -118,53 +133,70 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             margin-bottom: 1rem;
             text-align: left;
-            transition: background-color 0.3s ease, border-color 0.3s ease; /* Ensure smooth color changes */
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; /* Ensure smooth color changes */
+            border: 1px solid; /* Default border, theme sets color */
+            position: relative; /* For checkmark positioning */
         }
         body.light-theme .task-card {
             background-color: #edf2f7; /* light gray */
-            border: 1px solid #e2e8f0;
+            border-color: #e2e8f0;
         }
         body.dark-theme .task-card {
             background-color: #2c3e50; /* darker blue-gray */
-            border: 1px solid #4a607a;
+            border-color: #4a607a;
         }
+        .task-card.task-completed {
+            border-color: #10b981; /* green-500 for completed border */
+            box-shadow: 0 0 0 3px #10b981; /* Green glow for completed */
+        }
+        body.dark-theme .task-card.task-completed {
+            border-color: #0d9488; /* teal-600 for dark theme completed border */
+            box-shadow: 0 0 0 3px #0d9488;
+        }
+
 
         /* Go to Task Button */
         .go-to-task-btn {
             background-color: #3b82f6; /* blue-500 */
             transition: all 0.2s ease;
         }
-        .go-to-task-btn:hover {
+        .go-to-task-btn:hover:not(:disabled) {
             background-color: #2563eb; /* blue-600 */
             transform: translateY(-1px);
         }
-        body.dark-theme .go-to-task-btn {
-            background-color: #4f46e5; /* indigo-600 */
-        }
-        body.dark-theme .go-to-task-btn:hover {
-            background-color: #4338ca; /* indigo-700 */
-        }
-
-        /* Mark as Complete Button */
-        .complete-task-btn {
-            background-color: #10b981; /* emerald-500 */
-            transition: all 0.2s ease;
-        }
-        .complete-task-btn:hover:not(:disabled) {
-            background-color: #059669; /* emerald-600 */
-            transform: translateY(-1px);
-        }
-        .complete-task-btn:disabled {
+        .go-to-task-btn:disabled {
             background-color: #6b7280; /* gray-500 */
             cursor: not-allowed;
             opacity: 0.8;
             transform: none;
         }
-        body.dark-theme .complete-task-btn {
-            background-color: #0d9488; /* teal-600 */
+        body.dark-theme .go-to-task-btn {
+            background-color: #4f46e5; /* indigo-600 */
         }
-        body.dark-theme .complete-task-btn:hover:not(:disabled) {
-            background-color: #0f766e; /* teal-700 */
+        body.dark-theme .go-to-task-btn:hover:not(:disabled) {
+            background-color: #4338ca; /* indigo-700 */
+        }
+
+        /* Checkmark for completed tasks */
+        .checkmark-circle {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 32px;
+            height: 32px;
+            background-color: #10b981; /* green-500 */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transform: scale(0); /* Initially hidden */
+            transition: transform 0.3s ease-out;
+        }
+        .checkmark-circle.show {
+            transform: scale(1);
         }
 
 
@@ -235,6 +267,39 @@
             color: #333;
         }
 
+        /* Progress Bar */
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e2e8f0; /* light gray */
+            border-radius: 9999px;
+            height: 1rem; /* h-4 */
+            overflow: hidden;
+            margin-bottom: 0.5rem; /* mb-2 */
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        body.dark-theme .progress-bar-container {
+            background-color: #4a5568; /* gray-700 */
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background-color: #2563eb; /* blue-600 */
+            border-radius: 9999px;
+            transition: width 0.5s ease-out, background-color 0.3s ease;
+        }
+        body.dark-theme .progress-bar {
+            background-color: #6366f1; /* indigo-500 */
+        }
+        .progress-text {
+            font-size: 0.875rem; /* text-sm */
+            font-weight: 500; /* font-medium */
+            color: #4a5568; /* gray-700 */
+        }
+        body.dark-theme .progress-text {
+            color: #cbd5e0; /* gray-300 */
+        }
+
+
         /* Responsive adjustments for smaller screens */
         @media (max-width: 640px) {
             body {
@@ -301,7 +366,10 @@
     </div>
 
     <div id="mainContent" class="main-card-container">
-        <h1 id="pageTitle" class="text-4xl font-extrabold mb-8 animate-fade-in-down">Selesaikan Tugas Ini!</h1>
+        <h1 id="pageTitle" class="text-4xl font-extrabold mb-4 animate-fade-in-down">Selesaikan Minimal 1 Tugas untuk membuka tautan ekslusif</h1>
+        <p id="pageSubtitle" class="text-lg opacity-80 mb-8 animate-fade-in-down" style="animation-delay: 0.2s;">
+            Tugas ini dibuat untuk memastikan semua audiens yang mengunjungi halaman ini benar-benar tertarik dan mendapatkan akses ke konten terbaik!
+        </p>
 
         <div id="loadingMessage" class="text-lg opacity-80 animate-pulse" style="display: none;">
             Memuat tugas...
@@ -315,9 +383,12 @@
             <!-- Tasks will be dynamically loaded here -->
         </div>
 
-        <!-- Progress Indicator -->
-        <p id="tasksProgress" class="text-xl font-bold mb-8 animate-fade-in-up">
-            0 dari 0 tugas selesai
+        <!-- Progress Bar and Indicator -->
+        <div class="progress-bar-container mb-2">
+            <div id="progressBar" class="progress-bar" style="width: 0%;"></div>
+        </div>
+        <p id="tasksProgress" class="progress-text mb-8 animate-fade-in-up">
+            0% Selesai (0 dari 0 tugas)
         </p>
 
         <!-- Open Target Button -->
@@ -348,10 +419,12 @@
         const themeIcon = toggleThemeBtn.querySelector('i');
 
         const pageTitle = document.getElementById('pageTitle');
+        const pageSubtitle = document.getElementById('pageSubtitle'); // New subtitle element
         const loadingMessage = document.getElementById('loadingMessage');
         const errorMessage = document.getElementById('errorMessage');
         const tasksListContainer = document.getElementById('tasksListContainer');
         const tasksProgress = document.getElementById('tasksProgress');
+        const progressBar = document.getElementById('progressBar'); // Progress bar element
         const openTargetBtn = document.getElementById('openTargetBtn');
         const openTargetBtnText = document.getElementById('openTargetBtnText');
 
@@ -378,13 +451,14 @@
         // Content for different languages
         const content = {
             id: {
-                pageTitle: "Selesaikan Tugas Ini!",
+                pageTitle: "Selesaikan Minimal 1 Tugas untuk membuka tautan ekslusif", // Updated
+                pageSubtitle: "Tugas ini dibuat untuk memastikan semua audiens yang mengunjungi halaman ini benar-benar tertarik dan mendapatkan akses ke konten terbaik!", // New
                 loadingMessage: "Memuat tugas...",
                 errorMessage: "Terjadi kesalahan saat memuat tugas. Link mungkin tidak valid atau rusak.",
-                tasksProgress: (completed, required) => `${completed} dari ${required} tugas selesai`,
+                tasksProgress: (completed, total, percentage) => `${percentage}% Selesai (${completed} dari ${total} tugas)`, // Updated progress text
                 openTargetBtnText: "Buka Konten Sekarang",
                 goToTaskBtn: "Kunjungi Tugas",
-                markAsCompleteBtn: "Tandai Selesai",
+                verifyingText: "Memverifikasi...", // New
                 completedText: "Selesai",
                 modalWarningTitle: "Peringatan!",
                 modalInvalidLink: "Link tugas tidak valid atau rusak. Silakan periksa kembali URL.",
@@ -398,21 +472,22 @@
                     Gabung sekarang di LinkForge dan buat link unikmu hanya dalam hitungan menit!
                 `,
                 promotionBtnText: "Gabung Sekarang!",
-                taskTypes: { // This should match content from create page
-                    tiktok: "Tiktok",
-                    whatsapp: "WhatsApp",
-                    roblox: "Roblox",
-                    youtube: "YouTube"
+                taskTypes: { // Specific phrases for task types
+                    tiktok: "Ikuti akun Tiktok", // Updated
+                    whatsapp: "Bergabung dengan sakura WhatsApp", // Updated
+                    roblox: "Ikuti/gabung akun Roblox", // Updated
+                    youtube: "Subscribe channel YouTube" // Updated
                 }
             },
             en: {
-                pageTitle: "Complete These Tasks!",
+                pageTitle: "Complete At Least 1 Task to Unlock Exclusive Link", // Updated
+                pageSubtitle: "These tasks are designed to ensure all audience visiting this page are genuinely interested and gain access to the best content!", // New
                 loadingMessage: "Loading tasks...",
                 errorMessage: "An error occurred while loading tasks. The link might be invalid or corrupted.",
-                tasksProgress: (completed, required) => `${completed} of ${required} tasks completed`,
+                tasksProgress: (completed, total, percentage) => `${percentage}% Complete (${completed} of ${total} tasks)`, // Updated progress text
                 openTargetBtnText: "Open Content Now",
-                goToTaskBtn: "Go to Task",
-                markAsCompleteBtn: "Mark as Complete",
+                goToTaskBtn: "Visit Task",
+                verifyingText: "Verifying...", // New
                 completedText: "Completed",
                 modalWarningTitle: "Warning!",
                 modalInvalidLink: "Invalid or corrupted task link. Please check the URL.",
@@ -427,10 +502,10 @@
                 `,
                 promotionBtnText: "Join Now!",
                 taskTypes: { // This should match content from create page
-                    tiktok: "Tiktok",
-                    whatsapp: "WhatsApp",
-                    roblox: "Roblox",
-                    youtube: "YouTube"
+                    tiktok: "Follow TikTok account", // Updated
+                    whatsapp: "Join sakura WhatsApp", // Updated
+                    roblox: "Follow/join Roblox account", // Updated
+                    youtube: "Subscribe YouTube channel" // Updated
                 }
             }
         };
@@ -440,6 +515,7 @@
             const currentLangContent = content[currentLanguage];
 
             pageTitle.textContent = currentLangContent.pageTitle;
+            pageSubtitle.textContent = currentLangContent.pageSubtitle; // Update subtitle
             loadingMessage.textContent = currentLangContent.loadingMessage;
             errorMessage.textContent = currentLangContent.errorMessage;
             openTargetBtnText.textContent = currentLangContent.openTargetBtnText;
@@ -455,7 +531,7 @@
             // Update theme toggle button title
             toggleThemeBtn.title = currentLangContent.toggleThemeTitle;
 
-            // Re-render tasks to update button texts
+            // Re-render tasks to update button texts and descriptions
             if (tasksData && tasksData.tasks) {
                 renderTasks(tasksData.tasks);
                 updateProgress();
@@ -494,6 +570,17 @@
                     card.style.backgroundColor = '#edf2f7';
                     card.style.borderColor = '#e2e8f0';
                 }
+
+                // Ensure completed border color updates with theme
+                if (card.classList.contains('task-completed')) {
+                    if (currentTheme === 'dark') {
+                        card.style.borderColor = '#0d9488'; /* teal-600 */
+                        card.style.boxShadow = '0 0 0 3px #0d9488';
+                    } else {
+                        card.style.borderColor = '#10b981'; /* green-500 */
+                        card.style.boxShadow = '0 0 0 3px #10b981';
+                    }
+                }
             });
 
             // Update promotion section theme
@@ -526,7 +613,7 @@
                 themeIcon.classList.add('fa-moon');
             }
 
-            // Re-render tasks to apply theme to Go to Task/Complete buttons
+            // Re-render tasks to apply theme to Go to Task buttons
             if (tasksData && tasksData.tasks) {
                 renderTasks(tasksData.tasks);
             }
@@ -557,7 +644,7 @@
 
                 const taskDiv = document.createElement('div');
                 taskDiv.id = taskId;
-                taskDiv.className = `task-card flex flex-col sm:flex-row items-center gap-4 transition-all duration-300`;
+                taskDiv.className = `task-card flex flex-col sm:flex-row items-center gap-4 transition-all duration-300 ${isCompleted ? 'task-completed' : ''}`;
                 
                 // Apply theme colors
                 if (currentTheme === 'dark') {
@@ -569,72 +656,115 @@
                     taskDiv.style.backgroundColor = '#edf2f7';
                     taskDiv.style.borderColor = '#e2e8f0';
                 }
+                // Apply completed border color if already completed
+                if (isCompleted) {
+                    if (currentTheme === 'dark') {
+                        taskDiv.style.borderColor = '#0d9488'; /* teal-600 */
+                        taskDiv.style.boxShadow = '0 0 0 3px #0d9488';
+                    } else {
+                        taskDiv.style.borderColor = '#10b981'; /* green-500 */
+                        taskDiv.style.boxShadow = '0 0 0 3px #10b981';
+                    }
+                }
 
-                // Removed icon, only show task type text
+                // Removed icon, only show task type text. Added spinner and checkmark elements.
                 taskDiv.innerHTML = `
                     <div class="flex items-center space-x-3 w-full sm:w-auto flex-grow">
-                        <span class="text-lg font-semibold flex-grow text-left ${isCompleted ? 'line-through text-gray-500' : ''}">
+                        <div class="relative w-8 h-8 flex-shrink-0">
+                            <i class="fas fa-spinner spinner-icon text-gray-400 absolute inset-0 flex items-center justify-center ${isCompleted ? 'hidden' : ''}"></i>
+                            <div class="checkmark-circle ${isCompleted ? 'show' : ''}">
+                                <i class="fas fa-check"></i>
+                            </div>
+                        </div>
+                        <span class="task-description text-lg font-semibold flex-grow text-left ${isCompleted ? 'line-through text-gray-500' : ''}">
                             ${content[currentLanguage].taskTypes[task.type] || task.type}
                         </span>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                        <button class="go-to-task-btn px-4 py-2 rounded-lg text-white font-semibold flex-1">
+                        <button class="go-to-task-btn px-4 py-2 rounded-lg text-white font-semibold flex-1 ${isCompleted ? 'disabled' : ''}" ${isCompleted ? 'disabled' : ''}>
                             <i class="fas fa-external-link-alt mr-2"></i> ${content[currentLanguage].goToTaskBtn}
-                        </button>
-                        <button class="complete-task-btn px-4 py-2 rounded-lg text-white font-semibold flex-1 ${isCompleted ? 'disabled-completed' : ''}" ${isCompleted ? 'disabled' : ''}>
-                            <i class="fas ${isCompleted ? 'fa-check' : 'fa-clipboard-check'} mr-2"></i> 
-                            ${isCompleted ? content[currentLanguage].completedText : content[currentLanguage].markAsCompleteBtn}
                         </button>
                     </div>
                 `;
                 tasksListContainer.appendChild(taskDiv);
 
                 // Add event listeners
-                taskDiv.querySelector('.go-to-task-btn').addEventListener('click', () => {
-                    window.open(task.url, '_blank');
-                });
-
-                const completeBtn = taskDiv.querySelector('.complete-task-btn');
+                const goToTaskBtn = taskDiv.querySelector('.go-to-task-btn');
                 if (!isCompleted) { // Only add listener if not already completed
-                    completeBtn.addEventListener('click', () => {
-                        markTaskAsCompleted(taskId, completeBtn, taskDiv);
+                    goToTaskBtn.addEventListener('click', () => {
+                        handleTaskVisitAndVerification(taskId, goToTaskBtn, taskDiv, task.url);
                     });
                 }
             });
         }
 
-        // Function to mark a task as completed
-        function markTaskAsCompleted(taskId, button, taskDiv) {
+        // Function to handle task visit, verification, and completion
+        function handleTaskVisitAndVerification(taskId, button, taskDiv, taskUrl) {
             if (completedTasksMap[taskId]) {
-                return; // Already completed
+                return; // Already completed or verifying
             }
 
-            completedTasksMap[taskId] = true;
-            completedCount++;
-            updateProgress();
-            updateOpenButtonState();
-
-            // Update UI
+            // Temporarily disable the button
             button.disabled = true;
-            button.classList.add('disabled-completed');
-            button.innerHTML = `<i class="fas fa-check mr-2"></i> ${content[currentLanguage].completedText}`;
-            
-            // Add a visual highlight animation
-            taskDiv.classList.add('animate-task-complete-highlight');
-            taskDiv.addEventListener('animationend', () => {
-                taskDiv.classList.remove('animate-task-complete-highlight');
-                // Also add line-through to the task text when animation ends
-                const taskTextSpan = taskDiv.querySelector('.text-lg.font-semibold');
-                if (taskTextSpan) {
-                    taskTextSpan.classList.add('line-through', 'text-gray-500');
+            button.classList.add('opacity-70', 'cursor-not-allowed');
+
+            const taskDescriptionSpan = taskDiv.querySelector('.task-description');
+            const spinnerIcon = taskDiv.querySelector('.spinner-icon');
+            const checkmarkCircle = taskDiv.querySelector('.checkmark-circle');
+
+            // Hide description, show spinner
+            if (taskDescriptionSpan) taskDescriptionSpan.style.display = 'none';
+            if (spinnerIcon) {
+                spinnerIcon.classList.remove('hidden');
+                spinnerIcon.classList.add('spinner-animation');
+            }
+
+            // Open the task URL in a new tab immediately
+            window.open(taskUrl, '_blank');
+
+            // Simulate verification
+            setTimeout(() => {
+                // Hide spinner, show checkmark
+                if (spinnerIcon) {
+                    spinnerIcon.classList.add('hidden');
+                    spinnerIcon.classList.remove('spinner-animation');
                 }
-            }, { once: true });
+                if (checkmarkCircle) checkmarkCircle.classList.add('show');
+                if (taskDescriptionSpan) taskDescriptionSpan.style.display = ''; // Show description again
+
+                // Mark as completed
+                completedTasksMap[taskId] = true;
+                completedCount++;
+                updateProgress();
+                updateOpenButtonState();
+
+                // Apply visual completion styles
+                taskDiv.classList.add('task-completed');
+                taskDiv.classList.add(`animate-task-complete-highlight-${currentTheme}`);
+                taskDiv.addEventListener('animationend', function handler() {
+                    taskDiv.classList.remove(`animate-task-complete-highlight-${currentTheme}`);
+                    taskDiv.removeEventListener('animationend', handler);
+                }, { once: true });
+
+                // Add line-through to the task text when animation ends
+                if (taskDescriptionSpan) {
+                    taskDescriptionSpan.classList.add('line-through', 'text-gray-500');
+                }
+
+                // Button permanently disabled after completion
+                button.innerHTML = `<i class="fas fa-check mr-2"></i> ${content[currentLanguage].completedText}`;
+                button.classList.remove('opacity-70', 'cursor-not-allowed'); // Remove temporary styles
+            }, 3500); // 3.5 seconds verification time
         }
 
-        // Function to update progress text
+        // Function to update progress text and progress bar
         function updateProgress() {
             if (!tasksData) return;
-            tasksProgress.textContent = content[currentLanguage].tasksProgress(completedCount, tasksData.requiredTasks);
+            const totalTasks = tasksData.tasks.length;
+            const percentage = totalTasks > 0 ? Math.round((completedCount / totalTasks) * 100) : 0;
+            
+            tasksProgress.textContent = content[currentLanguage].tasksProgress(completedCount, totalTasks, percentage);
+            progressBar.style.width = `${percentage}%`;
         }
 
         // Function to enable/disable open target button
@@ -675,7 +805,7 @@
                     throw new Error("Invalid data structure");
                 }
                 
-                // Ensure requiredTasks is within bounds
+                // Ensure requiredTasks is within bounds (at least 1, max total tasks)
                 tasksData.requiredTasks = Math.max(1, Math.min(tasksData.requiredTasks, tasksData.tasks.length));
 
                 loadingMessage.style.display = 'none';
@@ -706,7 +836,8 @@
             if (tasksData && completedCount >= tasksData.requiredTasks) {
                 window.open(tasksData.target, '_blank');
             } else {
-                showModal(content[currentLanguage].modalWarningTitle, content[currentLanguage].tasksProgress(completedCount, tasksData.requiredTasks) + " " + content[currentLanguage].openTargetBtnText + ".");
+                // This scenario should ideally not happen if button is disabled, but good for fallback
+                showModal(content[currentLanguage].modalWarningTitle, content[currentLanguage].tasksProgress(completedCount, tasksData.requiredTasks, Math.round((completedCount / tasksData.tasks.length) * 100)) + ". " + content[currentLanguage].openTargetBtnText + ".");
             }
         });
 

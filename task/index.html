@@ -61,8 +61,9 @@
             min-height: 100vh;
             padding: 2rem 1.5rem; /* Increased top/bottom padding */
             box-sizing: border-box;
-            /* Default theme handled by JS */
+            /* Default theme handled by JS, custom theme applied via JS */
         }
+        /* Default themes (overridden by custom if set) */
         body.dark-theme {
             background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%); /* Darker, deep blue-gray gradient */
             color: #e2e8f0; /* gray-100 */
@@ -84,6 +85,7 @@
             animation: fadeIn 0.8s ease-out; /* Simple fade-in animation */
             position: relative;
             z-index: 2;
+            /* Default colors, overridden by custom or theme */
         }
         body.light-theme .main-card-container {
             background-color: #fdfcf5; /* Very light, warm cream/off-white */
@@ -95,7 +97,7 @@
             border-color: #4a607a;
         }
 
-        /* Button specific styles for theme */
+        /* Button specific styles for theme (can be overridden by custom) */
         .btn-primary-dark {
             background: linear-gradient(to right, #8b5cf6, #6366f1); /* from-purple-600 to-indigo-600 */
             transition: all 0.3s ease;
@@ -126,7 +128,7 @@
             opacity: 0.7;
         }
 
-        /* Task Card styles */
+        /* Task Card styles (can be overridden by custom) */
         .task-card {
             border-radius: 1rem; /* rounded-xl */
             padding: 1.5rem;
@@ -434,7 +436,6 @@
         const themeIcon = toggleThemeBtn.querySelector('i');
 
         const pageTitle = document.getElementById('pageTitle');
-        // const pageSubtitle = document.getElementById('pageSubtitle'); // Removed
         const loadingMessage = document.getElementById('loadingMessage');
         const errorMessage = document.getElementById('errorMessage');
         const tasksListContainer = document.getElementById('tasksListContainer');
@@ -462,12 +463,47 @@
         let tasksData = null; // Will store parsed data from URL
         let completedTasksMap = {}; // Map to track completed tasks by their unique ID
         let completedCount = 0;
+        let customizationOptions = {}; // Stores custom colors from URL
+
+        // --- Color Mappings ---
+        const colorMap = {
+            // Background Colors (for body/page and task cards)
+            'blue': { light: '#e0f2fe', dark: '#1e3a8a' },
+            'green': { light: '#ecfdf5', dark: '#047857' },
+            'purple': { light: '#f3e8ff', dark: '#5b21b6' },
+            'red': { light: '#fee2e2', dark: '#b91c1c' },
+            'teal': { light: '#f0fdfa', dark: '#0f766e' },
+            'indigo': { light: '#eef2ff', dark: '#3730a3' },
+
+            // Text Colors
+            'dark-text': { light: '#1a202c', dark: '#e2e8f0' }, // Standard light/dark text
+            'light-text': { light: '#f8fafc', dark: '#f8fafc' }, // Always light text
+
+            // Specific color texts (for overriding default dark/light text based on theme)
+            'blue-text': { light: '#2563eb', dark: '#60a5fa' }, // Blue
+            'green-text': { light: '#059669', dark: '#34d399' }, // Green
+            'purple-text': { light: '#7c3aed', dark: '#a78bfa' }, // Purple
+            'red-text': { light: '#dc2626', dark: '#f87171' }, // Red
+            'teal-text': { light: '#0d9488', dark: '#2dd4bf' }, // Teal
+            'indigo-text': { light: '#4f46e5', dark: '#818cf8' }, // Indigo
+        };
+
+        // --- Button Color Gradients ---
+        // These are Tailwind-like gradient strings. The `applyCustomStyles` function will handle setting these.
+        const btnGradientMap = {
+            'blue-btn': { light: 'linear-gradient(to right, #3b82f6, #2563eb)', dark: 'linear-gradient(to right, #60a5fa, #3b82f6)' },
+            'green-btn': { light: 'linear-gradient(to right, #10b981, #059669)', dark: 'linear-gradient(to right, #34d399, #10b981)' },
+            'purple-btn': { light: 'linear-gradient(to right, #8b5cf6, #7c3aed)', dark: 'linear-gradient(to right, #a78bfa, #8b5cf6)' },
+            'red-btn': { light: 'linear-gradient(to right, #ef4444, #dc2626)', dark: 'linear-gradient(to right, #f87171, #ef4444)' },
+            'teal-btn': { light: 'linear-gradient(to right, #14b8a6, #0d9488)', dark: 'linear-gradient(to right, #2dd4bf, #14b8a6)' },
+            'indigo-btn': { light: 'linear-gradient(to right, #6366f1, #4f46e5)', dark: 'linear-gradient(to right, #818cf8, #6366f1)' }
+        };
+
 
         // Content for different languages
         const content = {
             id: {
                 pageTitle: "Selesaikan Minimal 1 Tugas untuk membuka tautan ekslusif", // Updated
-                // pageSubtitle: "Tugas ini dibuat untuk memastikan semua audiens yang mengunjungi halaman ini benar-benar tertarik dan mendapatkan akses ke konten terbaik!", // Removed
                 loadingMessage: "Memuat tugas...",
                 errorMessage: "Terjadi kesalahan saat memuat tugas. Link mungkin tidak valid atau rusak.",
                 tasksProgress: (completed, total, percentage) => `${percentage}% Selesai (${completed} dari ${total} tugas)`, // Updated progress text
@@ -496,7 +532,6 @@
             },
             en: {
                 pageTitle: "Complete At Least 1 Task to Unlock Exclusive Link", // Updated
-                // pageSubtitle: "These tasks are designed to ensure all audience visiting this page are genuinely interested and gain access to the best content!", // Removed
                 loadingMessage: "Loading tasks...",
                 errorMessage: "An error occurred while loading tasks. The link might be invalid or corrupted.",
                 tasksProgress: (completed, total, percentage) => `${percentage}% Complete (${completed} of ${total} tasks)`, // Updated progress text
@@ -530,7 +565,6 @@
             const currentLangContent = content[currentLanguage];
 
             pageTitle.textContent = currentLangContent.pageTitle;
-            // pageSubtitle.textContent = currentLangContent.pageSubtitle; // Removed
             loadingMessage.textContent = currentLangContent.loadingMessage;
             errorMessage.textContent = currentLangContent.errorMessage;
             openTargetBtnText.textContent = currentLangContent.openTargetBtnText;
@@ -555,7 +589,7 @@
 
         // Function to update theme classes and icon
         function updateTheme() {
-            // Update body theme class
+            // Update body theme class (default theme handling)
             body.classList.remove('dark-theme', 'light-theme');
             body.classList.add(`${currentTheme}-theme`);
 
@@ -568,57 +602,6 @@
                 mainCardContainer.style.borderColor = '#e0e0e0';
             }
 
-            // Update button classes for primary buttons
-            document.querySelectorAll('.btn-primary-dark, .btn-primary-light').forEach(btn => {
-                btn.classList.remove('btn-primary-dark', 'btn-primary-light');
-                btn.classList.add(`btn-primary-${currentTheme}`);
-            });
-            
-            // Update task card themes
-            document.querySelectorAll('.task-card').forEach(card => {
-                if (currentTheme === 'dark') {
-                    card.classList.add('dark-theme');
-                    card.style.backgroundColor = '#2c3e50';
-                    card.style.borderColor = '#4a607a';
-                } else {
-                    card.classList.remove('dark-theme');
-                    card.style.backgroundColor = '#edf2f7';
-                    card.style.borderColor = '#e2e8f0';
-                }
-
-                // Ensure completed border color updates with theme
-                if (card.classList.contains('task-completed')) {
-                    if (currentTheme === 'dark') {
-                        card.style.borderColor = '#0d9488'; /* teal-600 */
-                        card.style.boxShadow = '0 0 0 3px #0d9488';
-                    } else {
-                        card.style.borderColor = '#10b981'; /* green-500 */
-                        card.style.boxShadow = '0 0 0 3px #10b981';
-                    }
-                }
-            });
-
-            // Update promotion section theme
-            if (currentTheme === 'dark') {
-                promotionSection.classList.add('dark-theme');
-                promotionSection.style.backgroundColor = '#2c3e50'; // Same as task-card
-                promotionSection.style.borderColor = '#4a607a';
-            } else {
-                promotionSection.classList.remove('dark-theme');
-                promotionSection.style.backgroundColor = '#edf2f7'; // Same as task-card
-                promotionSection.style.borderColor = '#e2e8f0';
-            }
-
-
-            // Update modal content background
-            if (currentTheme === 'dark') {
-                modalContent.classList.add('dark-theme');
-                modalContent.style.backgroundColor = '#2c3e50';
-            } else {
-                modalContent.classList.remove('dark-theme');
-                modalContent.style.backgroundColor = '#edf2f7';
-            }
-
             // Update icon for theme toggle
             if (currentTheme === 'dark') {
                 themeIcon.classList.remove('fa-moon');
@@ -627,11 +610,142 @@
                 themeIcon.classList.remove('fa-sun');
                 themeIcon.classList.add('fa-moon');
             }
+            
+            // Re-apply custom styles or default theme styles
+            applyCustomStyles(true); // Always re-apply on theme change, but consider whether to animate (false for theme-only changes)
+        }
 
-            // Re-render tasks to apply theme to Go to Task buttons
-            if (tasksData && tasksData.tasks) {
-                renderTasks(tasksData.tasks);
+        // Function to apply custom styles based on parsed customizationOptions
+        function applyCustomStyles(isThemeChange = false) {
+            const mode = currentTheme; // 'light' or 'dark'
+
+            // --- Apply Page Background Color ---
+            if (customizationOptions.bgColor && customizationOptions.bgColor !== 'default-theme') {
+                const colorValue = colorMap[customizationOptions.bgColor][mode];
+                body.style.background = colorValue ? colorValue : ''; // Use hex or specific gradient
+                body.style.color = ''; // Reset body text color as it might be handled by textColor
+                body.classList.remove('dark-theme', 'light-theme'); // Remove default theme classes
+            } else {
+                // If default, let updateTheme handle background & color
+                body.classList.remove('custom-bg'); // Remove potential custom class
+                body.classList.add(`${currentTheme}-theme`); // Re-apply default theme
             }
+
+            // --- Apply Card Background Color ---
+            document.querySelectorAll('.task-card').forEach(card => {
+                if (customizationOptions.cardBgColor && customizationOptions.cardBgColor !== 'default-theme') {
+                    const colorValue = colorMap[customizationOptions.cardBgColor][mode];
+                    card.style.backgroundColor = colorValue ? colorValue : '';
+                    card.style.borderColor = colorValue ? colorValue : ''; // Simple border color match
+                    card.classList.remove('dark-theme', 'light-theme'); // Remove default theme classes
+                } else {
+                    // If default, let updateTheme handle
+                    if (currentTheme === 'dark') {
+                        card.classList.add('dark-theme');
+                        card.style.backgroundColor = '#2c3e50';
+                        card.style.borderColor = '#4a607a';
+                    } else {
+                        card.classList.remove('dark-theme');
+                        card.style.backgroundColor = '#edf2f7';
+                        card.style.borderColor = '#e2e8f0';
+                    }
+                }
+            });
+
+            // --- Apply Main Text Color ---
+            // This is trickier as body.color applies to everything. Better to target specific elements if possible.
+            // For simplicity, we'll try to apply to the main card container's direct children first,
+            // then fall back to body if specific element targeting is too complex for general text.
+            // For specific titles, we directly set color.
+            const mainContentElements = [pageTitle, tasksProgress, promotionTitle, promotionText];
+            mainContentElements.forEach(el => {
+                if (el) { // Check if element exists
+                    if (customizationOptions.textColor && customizationOptions.textColor !== 'default-theme') {
+                        const className = customizationOptions.textColor;
+                        // Remove all existing Tailwind text color classes (text-gray-*, text-blue-*)
+                        el.classList.forEach(cls => {
+                            if (cls.startsWith('text-')) {
+                                el.classList.remove(cls);
+                            }
+                        });
+                        // Add the new text color class or set inline style if it's a direct hex
+                        const colorSpec = colorMap[className];
+                        if (colorSpec) {
+                            if (typeof colorSpec === 'string') { // It's a Tailwind class string
+                                el.classList.add(colorSpec);
+                            } else { // It's a hex value object
+                                el.style.color = colorSpec[mode];
+                            }
+                        } else {
+                            // Fallback to default theme colors if colorSpec not found
+                            el.style.color = (currentTheme === 'dark' ? '#e2e8f0' : '#1a202c');
+                        }
+                    } else {
+                         // Default theme for text color
+                        el.style.color = ''; // Reset inline style
+                        // Ensure default text classes are re-applied if theme changes
+                        el.classList.forEach(cls => {
+                            if (cls.startsWith('text-')) {
+                                el.classList.remove(cls);
+                            }
+                        });
+                         if (currentTheme === 'dark') {
+                             el.classList.add('text-gray-100');
+                         } else {
+                             el.classList.add('text-gray-900');
+                         }
+                    }
+                }
+            });
+
+
+            // --- Apply Button Colors ---
+            const buttons = [openTargetBtn, promotionLink];
+            document.querySelectorAll('.go-to-task-btn').forEach(btn => buttons.push(btn));
+
+            buttons.forEach(btn => {
+                if (btn) {
+                    // Remove all existing btn-primary-* classes and inline styles
+                    btn.classList.remove('btn-primary-dark', 'btn-primary-light');
+                    btn.style.background = ''; // Reset inline background style
+
+                    if (customizationOptions.btnColor && customizationOptions.btnColor !== 'default-theme') {
+                        const gradient = btnGradientMap[customizationOptions.btnColor];
+                        if (gradient) {
+                            btn.style.background = gradient[mode];
+                        } else {
+                            // Fallback to default theme if custom button color not found
+                            btn.classList.add(`btn-primary-${currentTheme}`);
+                        }
+                    } else {
+                        // Default theme for buttons
+                        btn.classList.add(`btn-primary-${currentTheme}`);
+                    }
+                    // Re-apply disabled state after styling
+                    if (btn.disabled) {
+                        btn.classList.add(currentTheme === 'dark' ? 'btn-primary-dark' : 'btn-primary-light');
+                        btn.style.background = ''; // Reset inline if disabled
+                        if (currentTheme === 'dark') {
+                            btn.style.backgroundColor = '#4a5568';
+                        } else {
+                            btn.style.backgroundColor = '#a0aec0';
+                        }
+                    }
+                }
+            });
+            // Update progress bar color
+            if (progressBar) {
+                if (customizationOptions.btnColor && customizationOptions.btnColor !== 'default-theme') {
+                    // Assuming btnColor is a direct color name like 'blue', 'green'
+                    const baseColorName = customizationOptions.btnColor.replace('-btn', ''); // e.g., 'blue' from 'blue-btn'
+                    const progressBarColor = colorMap[baseColorName] ? colorMap[baseColorName][mode] : (currentTheme === 'dark' ? '#6366f1' : '#2563eb');
+                    progressBar.style.backgroundColor = progressBarColor;
+                } else {
+                    // Default progress bar color
+                    progressBar.style.backgroundColor = (currentTheme === 'dark' ? '#6366f1' : '#2563eb');
+                }
+            }
+
         }
 
         // Function to show custom modal
@@ -640,6 +754,7 @@
             modalMessage.textContent = message;
             customModal.classList.remove('hidden');
             // Ensure modal theme matches current theme
+            // This is separate from applyCustomStyles because modal is fixed UI element
             if (currentTheme === 'dark') {
                 modalContent.classList.add('dark-theme');
                 modalContent.style.backgroundColor = '#2c3e50';
@@ -661,15 +776,22 @@
                 taskDiv.id = taskId;
                 taskDiv.className = `task-card flex flex-col sm:flex-row items-center gap-4 transition-all duration-300 ${isCompleted ? 'task-completed' : ''}`;
                 
-                // Apply theme colors
-                if (currentTheme === 'dark') {
-                    taskDiv.classList.add('dark-theme');
-                    taskDiv.style.backgroundColor = '#2c3e50';
-                    taskDiv.style.borderColor = '#4a607a';
+                // Apply theme colors or custom card colors
+                if (customizationOptions.cardBgColor && customizationOptions.cardBgColor !== 'default-theme') {
+                    const colorValue = colorMap[customizationOptions.cardBgColor][currentTheme];
+                    taskDiv.style.backgroundColor = colorValue ? colorValue : '';
+                    taskDiv.style.borderColor = colorValue ? colorValue : '';
                 } else {
-                    taskDiv.classList.remove('dark-theme');
-                    taskDiv.style.backgroundColor = '#edf2f7';
-                    taskDiv.style.borderColor = '#e2e8f0';
+                    // Default theme for task cards
+                    if (currentTheme === 'dark') {
+                        taskDiv.classList.add('dark-theme');
+                        taskDiv.style.backgroundColor = '#2c3e50';
+                        taskDiv.style.borderColor = '#4a607a';
+                    } else {
+                        taskDiv.classList.remove('dark-theme');
+                        taskDiv.style.backgroundColor = '#edf2f7';
+                        taskDiv.style.borderColor = '#e2e8f0';
+                    }
                 }
                 // Apply completed border color if already completed
                 if (isCompleted) {
@@ -686,7 +808,7 @@
                 taskDiv.innerHTML = `
                     <div class="flex items-center space-x-3 w-full sm:w-auto flex-grow">
                         <div class="status-indicator-wrapper">
-                            <i class="fas fa-spinner spinner-icon ${isCompleted ? 'hidden' : ''}"></i>
+                            <i class="fas fa-spinner spinner-icon ${isCompleted ? 'hidden' : ''}" style="opacity:0;"></i>
                             <div class="checkmark-circle ${isCompleted ? 'show' : ''}">
                                 <i class="fas fa-check"></i>
                             </div>
@@ -703,8 +825,57 @@
                 `;
                 tasksListContainer.appendChild(taskDiv);
 
-                // Add event listeners
+                // Apply custom text color to task-description if set
+                const taskDescriptionSpan = taskDiv.querySelector('.task-description');
+                if (taskDescriptionSpan && customizationOptions.textColor && customizationOptions.textColor !== 'default-theme') {
+                    const className = customizationOptions.textColor;
+                    taskDescriptionSpan.classList.forEach(cls => {
+                        if (cls.startsWith('text-')) {
+                            taskDescriptionSpan.classList.remove(cls);
+                        }
+                    });
+                    const colorSpec = colorMap[className];
+                    if (colorSpec) {
+                        if (typeof colorSpec === 'string') {
+                            taskDescriptionSpan.classList.add(colorSpec);
+                        } else {
+                            taskDescriptionSpan.style.color = colorSpec[currentTheme];
+                        }
+                    }
+                }
+
+
+                // Apply custom button color to go-to-task-btn if set
                 const goToTaskBtn = taskDiv.querySelector('.go-to-task-btn');
+                if (goToTaskBtn) {
+                    goToTaskBtn.classList.remove('btn-primary-dark', 'btn-primary-light'); // Remove default
+                    goToTaskBtn.style.background = ''; // Reset inline background
+
+                    if (customizationOptions.btnColor && customizationOptions.btnColor !== 'default-theme') {
+                        const gradient = btnGradientMap[customizationOptions.btnColor];
+                        if (gradient) {
+                            goToTaskBtn.style.background = gradient[currentTheme];
+                        } else {
+                            // Fallback to default theme if custom button color not found
+                            goToTaskBtn.classList.add(`btn-primary-${currentTheme}`);
+                        }
+                    } else {
+                        // Default theme for buttons
+                        goToTaskBtn.classList.add(`btn-primary-${currentTheme}`);
+                    }
+                    // Re-apply disabled state after styling
+                    if (goToTaskBtn.disabled) {
+                        goToTaskBtn.classList.remove(`btn-primary-${currentTheme}`); // Remove active style
+                        if (currentTheme === 'dark') {
+                            goToTaskBtn.style.backgroundColor = '#4a5568';
+                        } else {
+                            goToTaskBtn.style.backgroundColor = '#a0aec0';
+                        }
+                    }
+                }
+
+
+                // Add event listeners
                 if (!isCompleted) { // Only add listener if not already completed
                     goToTaskBtn.addEventListener('click', () => {
                         handleTaskVisitAndVerification(taskId, goToTaskBtn, taskDiv, task.url);
@@ -727,8 +898,7 @@
             const spinnerIcon = taskDiv.querySelector('.spinner-icon');
             const checkmarkCircle = taskDiv.querySelector('.checkmark-circle');
 
-            // Hide description, show spinner
-            // No need to hide task description itself, just show spinner on top
+            // Show spinner
             if (spinnerIcon) {
                 spinnerIcon.classList.remove('hidden');
                 spinnerIcon.style.opacity = '1';
@@ -748,7 +918,6 @@
                     spinnerIcon.classList.remove('spinner-animation');
                 }
                 if (checkmarkCircle) checkmarkCircle.classList.add('show');
-                // No need to show taskDescriptionSpan, it's already visible
 
                 // Mark as completed
                 completedTasksMap[taskId] = true;
@@ -795,10 +964,20 @@
                 openTargetBtn.disabled = false;
                 openTargetBtn.classList.remove('btn-primary-dark'); // Remove disabled style if any
                 openTargetBtn.classList.add(`btn-primary-${currentTheme}`); // Apply active style
+                // If custom button color is set, apply that instead of default theme primary
+                if (customizationOptions.btnColor && customizationOptions.btnColor !== 'default-theme') {
+                    const gradient = btnGradientMap[customizationOptions.btnColor];
+                    if (gradient) {
+                        openTargetBtn.style.background = gradient[currentTheme];
+                    }
+                }
             } else {
                 openTargetBtn.disabled = true;
+                // Re-apply disabled style explicitly, which might overwrite custom background set earlier
                 openTargetBtn.classList.remove(`btn-primary-${currentTheme}`); // Remove active style
-                openTargetBtn.classList.add('btn-primary-dark'); // Re-apply disabled style
+                openTargetBtn.classList.add('btn-primary-dark'); // Default disabled style
+                openTargetBtn.style.background = ''; // Clear custom gradient if disabled, let CSS handle
+                openTargetBtn.style.backgroundColor = (currentTheme === 'dark' ? '#4a5568' : '#a0aec0'); // Explicit disabled color
             }
         }
 
@@ -818,6 +997,9 @@
                 const decodedJson = atob(encodedData);
                 tasksData = JSON.parse(decodedJson);
 
+                // Extract customization options
+                customizationOptions = tasksData.custom || {}; // Use empty object if custom is not present
+
                 // Basic validation of parsed data structure
                 if (!tasksData.target || !tasksData.buttonText || !Array.isArray(tasksData.tasks) || tasksData.requiredTasks === undefined) {
                     throw new Error("Invalid data structure");
@@ -831,6 +1013,10 @@
                 updateProgress();
                 updateOpenButtonState();
                 openTargetBtnText.textContent = tasksData.buttonText; // Set custom button text
+
+                // Apply custom styles immediately after parsing data
+                applyCustomStyles();
+
             } catch (e) {
                 console.error("Error parsing task data:", e);
                 loadingMessage.style.display = 'none';
@@ -847,7 +1033,7 @@
 
         toggleThemeBtn.addEventListener('click', () => {
             currentTheme = currentTheme === 'light' ? 'dark' : 'light';
-            updateTheme();
+            updateTheme(); // updateTheme now calls applyCustomStyles internally
         });
 
         openTargetBtn.addEventListener('click', () => {
@@ -855,7 +1041,7 @@
                 window.open(tasksData.target, '_blank');
             } else {
                 // This scenario should ideally not happen if button is disabled, but good for fallback
-                showModal(content[currentLanguage].modalWarningTitle, content[currentLanguage].tasksProgress(completedCount, tasksData.requiredTasks, Math.round((completedCount / tasksData.tasks.length) * 100)) + ". " + content[currentLanguage].openTargetBtnText + ".");
+                showModal(content[currentLanguage].modalWarningTitle, content[currentLanguage].tasksProgress(completedCount, tasksData.tasks.length, Math.round((completedCount / tasksData.tasks.length) * 100)) + ". " + content[currentLanguage].openTargetBtnText + ".");
             }
         });
 
@@ -866,8 +1052,8 @@
         // Initial setup
         loadingMessage.style.display = 'block'; // Show loading message initially
         updateContent(); // Set initial content texts
-        updateTheme(); // Set initial theme
-        parseUrlData(); // Parse data from URL and render tasks
+        updateTheme(); // Set initial theme and apply styles (will be re-applied after parseUrlData if custom options exist)
+        parseUrlData(); // Parse data from URL and render tasks (will also call applyCustomStyles)
     </script>
 </body>
 </html>

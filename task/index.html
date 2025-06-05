@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkForge: Selesaikan Tugas</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons (still needed for theme/language toggles and checkmark) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Custom Keyframes for Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        /* New animation for task completion */
+        @keyframes taskCompleteHighlight {
+            0% { background-color: rgba(255, 255, 0, 0.3); } /* Yellowish flash */
+            100% { background-color: transparent; }
+        }
+
+
+        .animate-fade-in-down { animation: fadeInDown 1s ease-out forwards; }
+        .animate-fade-in-up { animation: fadeInUp 1s ease-out forwards; }
+        .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
+        .animate-task-complete-highlight { animation: taskCompleteHighlight 0.5s ease-out forwards; }
+
+
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top for longer content */
+            min-height: 100vh;
+            padding: 2rem 1.5rem; /* Increased top/bottom padding */
+            box-sizing: border-box;
+            /* Default theme handled by JS */
+        }
+        body.dark-theme {
+            background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%); /* Darker, deep blue-gray gradient */
+            color: #e2e8f0; /* gray-100 */
+        }
+        body.light-theme {
+            background: linear-gradient(135deg, #f0fff4 0%, #e0ffe0 100%); /* Light pastel green gradient */
+            color: #1a202c; /* gray-900 */
+        }
+
+        .main-card-container {
+            border-radius: 1.75rem; /* rounded-3xl */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.08); /* Deep, layered shadow */
+            padding: 2.5rem; /* Generous padding */
+            max-width: 900px; /* Wider max width */
+            width: 100%;
+            text-align: center;
+            border: 1px solid #e0e0e0; /* Subtle light border */
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; /* Smooth transition for theme change */
+            animation: fadeIn 0.8s ease-out; /* Simple fade-in animation */
+            position: relative;
+            z-index: 2;
+        }
+        body.light-theme .main-card-container {
+            background-color: #fdfcf5; /* Very light, warm cream/off-white */
+            border-color: #e0e0e0;
+        }
+        body.dark-theme .main-card-container {
+            background-color: #34495e; /* Darker blue-gray */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 5px 15px rgba(0, 0, 0, 0.15); /* Darker shadow */
+            border-color: #4a607a;
+        }
+
+        /* Button specific styles for theme */
+        .btn-primary-dark {
+            background: linear-gradient(to right, #8b5cf6, #6366f1); /* from-purple-600 to-indigo-600 */
+            transition: all 0.3s ease;
+        }
+        .btn-primary-dark:hover {
+            background: linear-gradient(to right, #7c3aed, #4f46e5); /* hover:from-purple-700 hover:to-indigo-700 */
+            transform: scale(1.05);
+        }
+        .btn-primary-dark:disabled {
+            background: #4a5568; /* gray-700 equivalent for disabled */
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.7;
+        }
+
+        .btn-primary-light {
+            background: linear-gradient(to right, #3b82f6, #14b8a6); /* from-blue-500 to-teal-500 */
+            transition: all 0.3s ease;
+        }
+        .btn-primary-light:hover {
+            background: linear-gradient(to right, #2563eb, #0d9488); /* hover:from-blue-600 hover:to-teal-600 */
+            transform: scale(1.05);
+        }
+        .btn-primary-light:disabled {
+            background: #a0aec0; /* gray-400 equivalent for disabled */
+            cursor: not-allowed;
+            transform: none;
+            opacity: 0.7;
+        }
+
+        /* Task Card styles */
+        .task-card {
+            border-radius: 1rem; /* rounded-xl */
+            padding: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+            text-align: left;
+            transition: background-color 0.3s ease, border-color 0.3s ease; /* Ensure smooth color changes */
+        }
+        body.light-theme .task-card {
+            background-color: #edf2f7; /* light gray */
+            border: 1px solid #e2e8f0;
+        }
+        body.dark-theme .task-card {
+            background-color: #2c3e50; /* darker blue-gray */
+            border: 1px solid #4a607a;
+        }
+
+        /* Go to Task Button */
+        .go-to-task-btn {
+            background-color: #3b82f6; /* blue-500 */
+            transition: all 0.2s ease;
+        }
+        .go-to-task-btn:hover {
+            background-color: #2563eb; /* blue-600 */
+            transform: translateY(-1px);
+        }
+        body.dark-theme .go-to-task-btn {
+            background-color: #4f46e5; /* indigo-600 */
+        }
+        body.dark-theme .go-to-task-btn:hover {
+            background-color: #4338ca; /* indigo-700 */
+        }
+
+        /* Mark as Complete Button */
+        .complete-task-btn {
+            background-color: #10b981; /* emerald-500 */
+            transition: all 0.2s ease;
+        }
+        .complete-task-btn:hover:not(:disabled) {
+            background-color: #059669; /* emerald-600 */
+            transform: translateY(-1px);
+        }
+        .complete-task-btn:disabled {
+            background-color: #6b7280; /* gray-500 */
+            cursor: not-allowed;
+            opacity: 0.8;
+            transform: none;
+        }
+        body.dark-theme .complete-task-btn {
+            background-color: #0d9488; /* teal-600 */
+        }
+        body.dark-theme .complete-task-btn:hover:not(:disabled) {
+            background-color: #0f766e; /* teal-700 */
+        }
+
+
+        /* Toggle Button (copied from main page) */
+        #darkModeToggle {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            background-color: #e0e0e0;
+            color: #333;
+            border: none;
+            border-radius: 9999px;
+            padding: 0.75rem;
+            cursor: pointer;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            z-index: 10;
+        }
+        #darkModeToggle:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        body.dark-theme #darkModeToggle {
+            background-color: #5A626F;
+            color: #ecf0f1;
+        }
+        body.light-theme #darkModeToggle {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+        /* Language Toggle Button (copied from main page) */
+        #languageToggle {
+            position: fixed;
+            top: calc(1.5rem + 40px + 1rem);
+            right: 1.5rem;
+            background-color: #e0e0e0;
+            color: #333;
+            border: none;
+            border-radius: 9999px;
+            padding: 0.75rem 0.85rem;
+            min-width: 40px;
+            min-height: 40px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            z-index: 10;
+        }
+        #languageToggle:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        body.dark-theme #languageToggle {
+            background-color: #5A626F;
+            color: #ecf0f1;
+        }
+        body.light-theme #languageToggle {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+            .main-card-container {
+                padding: 1.5rem;
+                border-radius: 1.25rem;
+            }
+            .title {
+                font-size: 1.75rem;
+            }
+            .task-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .task-item .flex-grow {
+                width: 100%;
+                margin-top: 0.5rem;
+                margin-bottom: 0.5rem;
+            }
+            .task-item button {
+                width: 100%;
+                margin-top: 0.5rem;
+            }
+            #darkModeToggle, #languageToggle {
+                top: 1rem;
+                right: 1rem;
+                padding: 0.6rem;
+                font-size: 1rem;
+            }
+            #languageToggle {
+                top: calc(1rem + 32px + 0.5rem);
+                right: 1rem;
+                padding: 0.6rem 0.85rem;
+                min-width: 32px;
+                min-height: 32px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body class="dark-theme"> <!-- Default to dark-theme -->
+
+    <!-- Dark Mode Toggle Button -->
+    <button id="darkModeToggle" aria-label="Toggle dark mode" title="Ubah Tema">
+        <i class="fas fa-sun"></i> <!-- Icon will be dynamically changed by JS -->
+    </button>
+
+    <!-- Language Toggle Button -->
+    <button id="languageToggle" aria-label="Toggle language" title="Ubah Bahasa">
+        EN <!-- Text will be dynamically changed by JS -->
+    </button>
+
+    <!-- Custom Modal (Message Box) for validation errors and success messages) -->
+    <div id="customModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden animate-fade-in">
+        <div id="modalContent" class="p-8 rounded-xl shadow-2xl max-w-sm w-full text-center how-it-works-card-dark transform scale-95 animate-scale-up">
+            <h3 id="modalTitle" class="text-2xl font-bold mb-4">Peringatan!</h3>
+            <p id="modalMessage" class="text-lg mb-6">Pesan peringatan.</p>
+            <button id="modalCloseBtn" class="px-6 py-3 rounded-full text-lg font-medium transition-all duration-300 transform hover:scale-105 btn-primary-dark">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <div id="mainContent" class="main-card-container">
+        <h1 id="pageTitle" class="text-4xl font-extrabold mb-8 animate-fade-in-down">Selesaikan Tugas Ini!</h1>
+
+        <div id="loadingMessage" class="text-lg opacity-80 animate-pulse" style="display: none;">
+            Memuat tugas...
+        </div>
+        <div id="errorMessage" class="text-lg text-red-500 font-bold" style="display: none;">
+            Terjadi kesalahan saat memuat tugas. Link mungkin tidak valid atau rusak.
+        </div>
+
+        <!-- Task List Container -->
+        <div id="tasksListContainer" class="space-y-4 mb-8">
+            <!-- Tasks will be dynamically loaded here -->
+        </div>
+
+        <!-- Progress Indicator -->
+        <p id="tasksProgress" class="text-xl font-bold mb-8 animate-fade-in-up">
+            0 dari 0 tugas selesai
+        </p>
+
+        <!-- Open Target Button -->
+        <button id="openTargetBtn" class="w-full px-8 py-4 text-xl font-bold rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-opacity-75 btn-primary-dark" disabled>
+            <span id="openTargetBtnText">Buka Konten Sekarang</span>
+        </button>
+
+        <!-- LinkForge Promotion Section -->
+        <div id="promotionSection" class="mt-12 p-6 rounded-xl shadow-md task-card animate-fade-in-up">
+            <h2 id="promotionTitle" class="text-2xl font-bold mb-4">Buat Tugasmu Sendiri di LinkForge!</h2>
+            <p id="promotionText" class="text-lg mb-6">
+                Ingin punya halaman tugasmu sendiri untuk meningkatkan engagement atau mendapatkan pengikut?
+                Gabung sekarang di LinkForge dan buat link unikmu hanya dalam hitungan menit!
+            </p>
+            <a id="promotionLink" href="https://SapiBersinar.github.io" target="_blank" class="w-full sm:w-auto inline-block px-8 py-3 rounded-full font-bold text-white shadow-lg transform transition-all duration-300 hover:scale-105 btn-primary-dark">
+                <i class="fas fa-arrow-right mr-2"></i> <span id="promotionBtnText">Gabung Sekarang!</span>
+            </a>
+        </div>
+
+    </div>
+
+    <script>
+        // DOM Elements
+        const body = document.body;
+        const mainCardContainer = document.getElementById('mainContent');
+        const toggleLanguageBtn = document.getElementById('languageToggle');
+        const toggleThemeBtn = document.getElementById('darkModeToggle');
+        const themeIcon = toggleThemeBtn.querySelector('i');
+
+        const pageTitle = document.getElementById('pageTitle');
+        const loadingMessage = document.getElementById('loadingMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const tasksListContainer = document.getElementById('tasksListContainer');
+        const tasksProgress = document.getElementById('tasksProgress');
+        const openTargetBtn = document.getElementById('openTargetBtn');
+        const openTargetBtnText = document.getElementById('openTargetBtnText');
+
+        const promotionTitle = document.getElementById('promotionTitle');
+        const promotionText = document.getElementById('promotionText');
+        const promotionLink = document.getElementById('promotionLink');
+        const promotionBtnText = document.getElementById('promotionBtnText');
+        const promotionSection = document.getElementById('promotionSection');
+
+        const customModal = document.getElementById('customModal');
+        const modalContent = document.getElementById('modalContent');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+        // Initial state
+        let currentLanguage = 'id'; // Default to Indonesian
+        let currentTheme = 'dark'; // Default to dark theme for consistency with create page
+
+        let tasksData = null; // Will store parsed data from URL
+        let completedTasksMap = {}; // Map to track completed tasks by their unique ID
+        let completedCount = 0;
+
+        // Content for different languages
+        const content = {
+            id: {
+                pageTitle: "Selesaikan Tugas Ini!",
+                loadingMessage: "Memuat tugas...",
+                errorMessage: "Terjadi kesalahan saat memuat tugas. Link mungkin tidak valid atau rusak.",
+                tasksProgress: (completed, required) => `${completed} dari ${required} tugas selesai`,
+                openTargetBtnText: "Buka Konten Sekarang",
+                goToTaskBtn: "Kunjungi Tugas",
+                markAsCompleteBtn: "Tandai Selesai",
+                completedText: "Selesai",
+                modalWarningTitle: "Peringatan!",
+                modalInvalidLink: "Link tugas tidak valid atau rusak. Silakan periksa kembali URL.",
+                modalCompletionError: "Terjadi kesalahan saat menandai tugas. Silakan coba lagi.",
+                modalClose: "Tutup",
+                toggleLanguageText: "EN",
+                toggleThemeTitle: "Ubah Tema",
+                promotionTitle: "Buat Tugasmu Sendiri di LinkForge!",
+                promotionText: `
+                    Ingin punya halaman tugasmu sendiri untuk meningkatkan engagement atau mendapatkan pengikut?
+                    Gabung sekarang di LinkForge dan buat link unikmu hanya dalam hitungan menit!
+                `,
+                promotionBtnText: "Gabung Sekarang!",
+                taskTypes: { // This should match content from create page
+                    tiktok: "Tiktok",
+                    whatsapp: "WhatsApp",
+                    roblox: "Roblox",
+                    youtube: "YouTube"
+                }
+            },
+            en: {
+                pageTitle: "Complete These Tasks!",
+                loadingMessage: "Loading tasks...",
+                errorMessage: "An error occurred while loading tasks. The link might be invalid or corrupted.",
+                tasksProgress: (completed, required) => `${completed} of ${required} tasks completed`,
+                openTargetBtnText: "Open Content Now",
+                goToTaskBtn: "Go to Task",
+                markAsCompleteBtn: "Mark as Complete",
+                completedText: "Completed",
+                modalWarningTitle: "Warning!",
+                modalInvalidLink: "Invalid or corrupted task link. Please check the URL.",
+                modalCompletionError: "An error occurred while marking task. Please try again.",
+                modalClose: "Close",
+                toggleLanguageText: "ID",
+                toggleThemeTitle: "Toggle Theme",
+                promotionTitle: "Create Your Own Tasks with LinkForge!",
+                promotionText: `
+                    Want to create your own task page to boost engagement or gain followers?
+                    Join LinkForge now and create your unique links in minutes!
+                `,
+                promotionBtnText: "Join Now!",
+                taskTypes: { // This should match content from create page
+                    tiktok: "Tiktok",
+                    whatsapp: "WhatsApp",
+                    roblox: "Roblox",
+                    youtube: "YouTube"
+                }
+            }
+        };
+
+        // Function to update content based on language
+        function updateContent() {
+            const currentLangContent = content[currentLanguage];
+
+            pageTitle.textContent = currentLangContent.pageTitle;
+            loadingMessage.textContent = currentLangContent.loadingMessage;
+            errorMessage.textContent = currentLangContent.errorMessage;
+            openTargetBtnText.textContent = currentLangContent.openTargetBtnText;
+            
+            promotionTitle.textContent = currentLangContent.promotionTitle;
+            promotionText.innerHTML = currentLangContent.promotionText; // Use innerHTML for multi-line text
+            promotionBtnText.textContent = currentLangContent.promotionBtnText;
+
+            // Update language toggle button text and title
+            toggleLanguageBtn.textContent = currentLangContent.toggleLanguageText;
+            toggleLanguageBtn.title = currentLangContent.toggleLanguageText === 'EN' ? 'Switch to English' : 'Ubah ke Bahasa Indonesia';
+
+            // Update theme toggle button title
+            toggleThemeBtn.title = currentLangContent.toggleThemeTitle;
+
+            // Re-render tasks to update button texts
+            if (tasksData && tasksData.tasks) {
+                renderTasks(tasksData.tasks);
+                updateProgress();
+            }
+        }
+
+        // Function to update theme classes and icon
+        function updateTheme() {
+            // Update body theme class
+            body.classList.remove('dark-theme', 'light-theme');
+            body.classList.add(`${currentTheme}-theme`);
+
+            // Update main card container theme class
+            if (currentTheme === 'dark') {
+                mainCardContainer.style.backgroundColor = '#34495e';
+                mainCardContainer.style.borderColor = '#4a607a';
+            } else {
+                mainCardContainer.style.backgroundColor = '#fdfcf5';
+                mainCardContainer.style.borderColor = '#e0e0e0';
+            }
+
+            // Update button classes for primary buttons
+            document.querySelectorAll('.btn-primary-dark, .btn-primary-light').forEach(btn => {
+                btn.classList.remove('btn-primary-dark', 'btn-primary-light');
+                btn.classList.add(`btn-primary-${currentTheme}`);
+            });
+            
+            // Update task card themes
+            document.querySelectorAll('.task-card').forEach(card => {
+                if (currentTheme === 'dark') {
+                    card.classList.add('dark-theme');
+                    card.style.backgroundColor = '#2c3e50';
+                    card.style.borderColor = '#4a607a';
+                } else {
+                    card.classList.remove('dark-theme');
+                    card.style.backgroundColor = '#edf2f7';
+                    card.style.borderColor = '#e2e8f0';
+                }
+            });
+
+            // Update promotion section theme
+            if (currentTheme === 'dark') {
+                promotionSection.classList.add('dark-theme');
+                promotionSection.style.backgroundColor = '#2c3e50'; // Same as task-card
+                promotionSection.style.borderColor = '#4a607a';
+            } else {
+                promotionSection.classList.remove('dark-theme');
+                promotionSection.style.backgroundColor = '#edf2f7'; // Same as task-card
+                promotionSection.style.borderColor = '#e2e8f0';
+            }
+
+
+            // Update modal content background
+            if (currentTheme === 'dark') {
+                modalContent.classList.add('dark-theme');
+                modalContent.style.backgroundColor = '#2c3e50';
+            } else {
+                modalContent.classList.remove('dark-theme');
+                modalContent.style.backgroundColor = '#edf2f7';
+            }
+
+            // Update icon for theme toggle
+            if (currentTheme === 'dark') {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            }
+
+            // Re-render tasks to apply theme to Go to Task/Complete buttons
+            if (tasksData && tasksData.tasks) {
+                renderTasks(tasksData.tasks);
+            }
+        }
+
+        // Function to show custom modal
+        function showModal(title, message) {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            customModal.classList.remove('hidden');
+            // Ensure modal theme matches current theme
+            if (currentTheme === 'dark') {
+                modalContent.classList.add('dark-theme');
+                modalContent.style.backgroundColor = '#2c3e50';
+            } else {
+                modalContent.classList.remove('dark-theme');
+                modalContent.style.backgroundColor = '#edf2f7';
+            }
+        }
+
+        // Function to render tasks dynamically
+        function renderTasks(tasks) {
+            tasksListContainer.innerHTML = ''; // Clear previous tasks
+
+            tasks.forEach((task, index) => {
+                const taskId = `task-${index}`;
+                const isCompleted = completedTasksMap[taskId]; // Check if this specific task is completed
+
+                const taskDiv = document.createElement('div');
+                taskDiv.id = taskId;
+                taskDiv.className = `task-card flex flex-col sm:flex-row items-center gap-4 transition-all duration-300`;
+                
+                // Apply theme colors
+                if (currentTheme === 'dark') {
+                    taskDiv.classList.add('dark-theme');
+                    taskDiv.style.backgroundColor = '#2c3e50';
+                    taskDiv.style.borderColor = '#4a607a';
+                } else {
+                    taskDiv.classList.remove('dark-theme');
+                    taskDiv.style.backgroundColor = '#edf2f7';
+                    taskDiv.style.borderColor = '#e2e8f0';
+                }
+
+                // Removed icon, only show task type text
+                taskDiv.innerHTML = `
+                    <div class="flex items-center space-x-3 w-full sm:w-auto flex-grow">
+                        <span class="text-lg font-semibold flex-grow text-left ${isCompleted ? 'line-through text-gray-500' : ''}">
+                            ${content[currentLanguage].taskTypes[task.type] || task.type}
+                        </span>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                        <button class="go-to-task-btn px-4 py-2 rounded-lg text-white font-semibold flex-1">
+                            <i class="fas fa-external-link-alt mr-2"></i> ${content[currentLanguage].goToTaskBtn}
+                        </button>
+                        <button class="complete-task-btn px-4 py-2 rounded-lg text-white font-semibold flex-1 ${isCompleted ? 'disabled-completed' : ''}" ${isCompleted ? 'disabled' : ''}>
+                            <i class="fas ${isCompleted ? 'fa-check' : 'fa-clipboard-check'} mr-2"></i> 
+                            ${isCompleted ? content[currentLanguage].completedText : content[currentLanguage].markAsCompleteBtn}
+                        </button>
+                    </div>
+                `;
+                tasksListContainer.appendChild(taskDiv);
+
+                // Add event listeners
+                taskDiv.querySelector('.go-to-task-btn').addEventListener('click', () => {
+                    window.open(task.url, '_blank');
+                });
+
+                const completeBtn = taskDiv.querySelector('.complete-task-btn');
+                if (!isCompleted) { // Only add listener if not already completed
+                    completeBtn.addEventListener('click', () => {
+                        markTaskAsCompleted(taskId, completeBtn, taskDiv);
+                    });
+                }
+            });
+        }
+
+        // Function to mark a task as completed
+        function markTaskAsCompleted(taskId, button, taskDiv) {
+            if (completedTasksMap[taskId]) {
+                return; // Already completed
+            }
+
+            completedTasksMap[taskId] = true;
+            completedCount++;
+            updateProgress();
+            updateOpenButtonState();
+
+            // Update UI
+            button.disabled = true;
+            button.classList.add('disabled-completed');
+            button.innerHTML = `<i class="fas fa-check mr-2"></i> ${content[currentLanguage].completedText}`;
+            
+            // Add a visual highlight animation
+            taskDiv.classList.add('animate-task-complete-highlight');
+            taskDiv.addEventListener('animationend', () => {
+                taskDiv.classList.remove('animate-task-complete-highlight');
+                // Also add line-through to the task text when animation ends
+                const taskTextSpan = taskDiv.querySelector('.text-lg.font-semibold');
+                if (taskTextSpan) {
+                    taskTextSpan.classList.add('line-through', 'text-gray-500');
+                }
+            }, { once: true });
+        }
+
+        // Function to update progress text
+        function updateProgress() {
+            if (!tasksData) return;
+            tasksProgress.textContent = content[currentLanguage].tasksProgress(completedCount, tasksData.requiredTasks);
+        }
+
+        // Function to enable/disable open target button
+        function updateOpenButtonState() {
+            if (!tasksData) {
+                openTargetBtn.disabled = true;
+                return;
+            }
+            if (completedCount >= tasksData.requiredTasks) {
+                openTargetBtn.disabled = false;
+                openTargetBtn.classList.remove('btn-primary-dark'); // Remove disabled style if any
+                openTargetBtn.classList.add(`btn-primary-${currentTheme}`); // Apply active style
+            } else {
+                openTargetBtn.disabled = true;
+                openTargetBtn.classList.remove(`btn-primary-${currentTheme}`); // Remove active style
+                openTargetBtn.classList.add('btn-primary-dark'); // Re-apply disabled style
+            }
+        }
+
+        // Function to parse URL data
+        function parseUrlData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const encodedData = urlParams.get('data');
+
+            if (!encodedData) {
+                loadingMessage.style.display = 'none';
+                errorMessage.style.display = 'block';
+                showModal(content[currentLanguage].modalWarningTitle, content[currentLanguage].modalInvalidLink);
+                return;
+            }
+
+            try {
+                const decodedJson = atob(encodedData);
+                tasksData = JSON.parse(decodedJson);
+
+                // Basic validation of parsed data structure
+                if (!tasksData.target || !tasksData.buttonText || !Array.isArray(tasksData.tasks) || tasksData.requiredTasks === undefined) {
+                    throw new Error("Invalid data structure");
+                }
+                
+                // Ensure requiredTasks is within bounds
+                tasksData.requiredTasks = Math.max(1, Math.min(tasksData.requiredTasks, tasksData.tasks.length));
+
+                loadingMessage.style.display = 'none';
+                renderTasks(tasksData.tasks);
+                updateProgress();
+                updateOpenButtonState();
+                openTargetBtnText.textContent = tasksData.buttonText; // Set custom button text
+            } catch (e) {
+                console.error("Error parsing task data:", e);
+                loadingMessage.style.display = 'none';
+                errorMessage.style.display = 'block';
+                showModal(content[currentLanguage].modalWarningTitle, content[currentLanguage].modalInvalidLink);
+            }
+        }
+
+        // Event Listeners
+        toggleLanguageBtn.addEventListener('click', () => {
+            currentLanguage = currentLanguage === 'id' ? 'en' : 'id';
+            updateContent();
+        });
+
+        toggleThemeBtn.addEventListener('click', () => {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            updateTheme();
+        });
+
+        openTargetBtn.addEventListener('click', () => {
+            if (tasksData && completedCount >= tasksData.requiredTasks) {
+                window.open(tasksData.target, '_blank');
+            } else {
+                showModal(content[currentLanguage].modalWarningTitle, content[currentLanguage].tasksProgress(completedCount, tasksData.requiredTasks) + " " + content[currentLanguage].openTargetBtnText + ".");
+            }
+        });
+
+        modalCloseBtn.addEventListener('click', () => {
+            customModal.classList.add('hidden');
+        });
+
+        // Initial setup
+        loadingMessage.style.display = 'block'; // Show loading message initially
+        updateContent(); // Set initial content texts
+        updateTheme(); // Set initial theme
+        parseUrlData(); // Parse data from URL and render tasks
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkForge: Buka Akses & Dapatkan Pengikut!</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-S57XREST5X"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-S57XREST5X'); // Your GA4 Measurement ID
+    </script>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Dark Mode Toggle Icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Custom Keyframes for Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleUp {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .animate-fade-in-down { animation: fadeInDown 1s ease-out forwards; }
+        .animate-fade-in-up { animation: fadeInUp 1s ease-out forwards; }
+        .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
+        .animate-scale-up { animation: scaleUp 0.3s ease-out forwards; }
+
+        /* General styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+            display: flex; /* Use flexbox for centering content */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1.5rem; /* Consistent padding around the card */
+            box-sizing: border-box;
+        }
+
+        /* Initial dark theme body background */
+        body.dark-theme {
+            background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%); /* Darker, deep blue-gray gradient */
+            color: #e2e8f0; /* gray-100 */
+        }
+
+        /* Initial light theme body background */
+        body.light-theme {
+            background: linear-gradient(135deg, #f0fff4 0%, #e0ffe0 100%); /* Light pastel green gradient */
+            color: #1a202c; /* gray-900 */
+        }
+
+        /* Main Card Container Styles */
+        .main-card-container {
+            border-radius: 1.75rem; /* rounded-3xl */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.08); /* Deep, layered shadow */
+            padding: 2.5rem; /* Generous padding */
+            max-width: 800px; /* Max width for the card */
+            width: 100%;
+            text-align: center;
+            border: 1px solid #e0e0e0; /* Subtle light border */
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; /* Smooth transition for theme change */
+            animation: fadeIn 0.8s ease-out; /* Simple fade-in animation */
+            position: relative; /* For z-index if needed with particles */
+            z-index: 2; /* Ensure card is above any potential background particles */
+        }
+        /* Main card light theme */
+        body.light-theme .main-card-container {
+            background-color: #fdfcf5; /* Very light, warm cream/off-white (from inde111x.txt) */
+            border-color: #e0e0e0; /* Subtle light border */
+        }
+        /* Main card dark theme */
+        body.dark-theme .main-card-container {
+            background-color: #34495e; /* Darker blue-gray (from inde111x.txt) */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 5px 15px rgba(0, 0, 0, 0.15); /* Darker shadow */
+            border-color: #4a607a; /* Darker border */
+        }
+
+
+        /* Button specific styles for theme */
+        .btn-primary-dark {
+            background: linear-gradient(to right, #8b5cf6, #6366f1); /* from-purple-600 to-indigo-600 */
+            transition: all 0.3s ease;
+        }
+        .btn-primary-dark:hover {
+            background: linear-gradient(to right, #7c3aed, #4f46e5); /* hover:from-purple-700 hover:to-indigo-700 */
+            transform: scale(1.05);
+        }
+
+        .btn-primary-light {
+            background: linear-gradient(to right, #3b82f6, #14b8a6); /* from-blue-500 to-teal-500 */
+            transition: all 0.3s ease;
+        }
+        .btn-primary-light:hover {
+            background: linear-gradient(to right, #2563eb, #0d9488); /* hover:from-blue-600 hover:to-teal-600 */
+            transform: scale(1.05);
+        }
+
+        /* Card styles for how-it-works steps (inside the main card) */
+        /* How-it-works card light theme */
+        body.light-theme .how-it-works-card-light {
+            background-color: #edf2f7; /* slightly lighter gray than main card light */
+            color: #1a202c;
+        }
+        /* How-it-works card dark theme */
+        body.dark-theme .how-it-works-card-dark {
+            background-color: #2c3e50; /* slightly darker blue-gray than main card dark */
+            color: #e2e8f0;
+        }
+
+
+        /* Dark Mode Toggle Button */
+        #darkModeToggle {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            background-color: #e0e0e0;
+            color: #333;
+            border: none;
+            border-radius: 9999px;
+            padding: 0.75rem; /* Makes it about 40px tall/wide */
+            cursor: pointer;
+            font-size: 1.25rem; /* Icon size */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            z-index: 10;
+        }
+        #darkModeToggle:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        body.dark-theme #darkModeToggle {
+            background-color: #5A626F;
+            color: #ecf0f1;
+        }
+        body.light-theme #darkModeToggle {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+
+        /* Language Toggle Button */
+        #languageToggle {
+            position: fixed;
+            /* Position below darkModeToggle */
+            top: calc(1.5rem + 40px + 1rem); /* darkModeToggle top + its height (~40px) + 1rem gap */
+            right: 1.5rem; /* Align right with darkModeToggle */
+            background-color: #e0e0e0;
+            color: #333;
+            border: none;
+            border-radius: 9999px;
+            /* Adjusted padding and font-size for consistent visual size with theme toggle */
+            padding: 0.75rem 0.85rem; /* Slightly less horizontal padding for text */
+            min-width: 40px; /* Ensure minimum width similar to icon button */
+            min-height: 40px; /* Ensure minimum height similar to icon button */
+            cursor: pointer;
+            font-size: 1rem; /* Slightly smaller font to fit better, but still clear */
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            z-index: 10;
+        }
+        #languageToggle:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        body.dark-theme #languageToggle {
+            background-color: #5A626F;
+            color: #ecf0f1;
+        }
+        body.light-theme #languageToggle {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+            .main-card-container {
+                padding: 1.5rem;
+                border-radius: 1.25rem;
+            }
+            .title {
+                font-size: 1.75rem;
+            }
+            .description {
+                font-size: 1rem;
+            }
+            .task-button {
+                padding: 0.9rem 1rem;
+                font-size: 1rem;
+            }
+            .main-action-button {
+                padding: 1rem 1.5rem;
+                font-size: 1.1rem;
+            }
+            .donate-title {
+                font-size: 1.5rem;
+            }
+            .donate-button {
+                padding: 0.7rem 1rem;
+                font-size: 0.9rem;
+            }
+            .footer-text {
+                font-size: 0.85rem;
+                margin-top: 2rem;
+                padding-bottom: 0.5rem;
+            }
+            #darkModeToggle {
+                top: 1rem;
+                right: 1rem;
+                padding: 0.6rem;
+                font-size: 1rem;
+            }
+            #languageToggle {
+                /* Adjust position for mobile */
+                top: calc(1rem + 32px + 0.5rem); /* 1rem (darkModeToggle mobile top) + ~32px (mobile height) + 0.5rem (gap) */
+                right: 1rem; /* Align right with darkModeToggle */
+                padding: 0.6rem 0.8rem;
+                min-width: 32px; /* Adjusted min-width for mobile */
+                min-height: 32px; /* Adjusted min-height for mobile */
+                font-size: 0.9rem;
+            }
+            .contact-title {
+                font-size: 1.5rem;
+            }
+            .contact-form input[type="text"],
+            .contact-form input[type="email"],
+            .contact-form textarea,
+            .contact-form button[type="submit"] {
+                font-size: 1rem;
+                padding: 0.6rem;
+            }
+        }
+    </style>
+</head>
+<body class="dark-theme">
+
+    <!-- Dark Mode Toggle Button -->
+    <button id="darkModeToggle" aria-label="Toggle dark mode" title="Ubah Tema">
+        <i class="fas fa-sun"></i> <!-- Icon will be dynamically changed by JS -->
+    </button>
+
+    <!-- Language Toggle Button -->
+    <button id="languageToggle" aria-label="Toggle language" title="Ubah Bahasa">
+        EN <!-- Text will be dynamically changed by JS -->
+    </button>
+
+    <!-- Main Content Container (now the main card) -->
+    <div id="mainContent" class="main-card-container">
+
+        <!-- Header Section -->
+        <header class="text-center mb-12 animate-fade-in-down w-full">
+            <h1 id="mainTitle" class="text-5xl md:text-6xl font-extrabold mb-4 leading-tight">
+                LinkForge: Buka Akses & Dapatkan Pengikut!
+            </h1>
+            <p id="tagline" class="text-xl md:text-2xl opacity-80 max-w-3xl mx-auto">
+                Ubah tautan biasa menjadi kunci eksklusif, membuka konten premium sambil melipatgandakan pengikut dan pelanggan Anda. LinkForge adalah cara cerdas untuk monetisasi dan pertumbuhan audiens.
+            </p>
+        </header>
+
+        <!-- Call to Action Button -->
+        <div class="mb-16 animate-fade-in-up">
+            <button id="createLinkBtn" class="px-10 py-5 text-xl md:text-2xl font-bold rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-opacity-75 btn-primary-dark relative overflow-hidden">
+                <span class="relative z-10" id="createLinkBtnText">Buat Link Anda Sekarang</span>
+                <span class="absolute inset-0 bg-white opacity-20 transform scale-0 rounded-full group-hover:scale-150 transition-transform duration-500"></span>
+            </button>
+        </div>
+
+        <!-- How It Works Section -->
+        <section class="w-full text-center">
+            <h2 id="howItWorksTitle" class="text-4xl font-bold mb-8 animate-fade-in">Bagaimana Cara Kerjanya?</h2>
+            <div id="howItWorksSteps" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Steps will be populated by JavaScript -->
+                <div class="p-6 rounded-xl shadow-xl flex flex-col items-center text-center transform hover:scale-105 transition-transform duration-300 how-it-works-card-dark animate-fade-in" style="animation-delay: 0s;">
+                    <div class="w-16 h-16 mb-4 flex items-center justify-center rounded-full bg-opacity-20 bg-indigo-500 text-indigo-300 text-3xl font-bold">1</div>
+                    <p class="text-lg">Masukkan tautan Anda dan sesuaikan dengan tugas unlock (misalnya, ikuti akun media sosial atau berlangganan channel YouTube Anda).</p>
+                </div>
+                <div class="p-6 rounded-xl shadow-xl flex flex-col items-center text-center transform hover:scale-105 transition-transform duration-300 how-it-works-card-dark animate-fade-in" style="animation-delay: 0.2s;">
+                    <div class="w-16 h-16 mb-4 flex items-center justify-center rounded-full bg-opacity-20 bg-indigo-500 text-indigo-300 text-3xl font-bold">2</div>
+                    <p class="text-lg">Bagikan tautan LinkForge yang sudah dibuat kepada audiens Anda.</p>
+                </div>
+                <div class="p-6 rounded-xl shadow-xl flex flex-col items-center text-center transform hover:scale-105 transition-transform duration-300 how-it-works-card-dark animate-fade-in" style="animation-delay: 0.4s;">
+                    <div class="w-16 h-16 mb-4 flex items-center justify-center rounded-full bg-opacity-20 bg-indigo-500 text-indigo-300 text-3xl font-bold">3</div>
+                    <p class="text-lg">Audiens Anda menyelesaikan tugas yang ditentukan untuk membuka akses ke tautan asli.</p>
+                </div>
+                <div class="p-6 rounded-xl shadow-xl flex flex-col items-center text-center transform hover:scale-105 transition-transform duration-300 how-it-works-card-dark animate-fade-in" style="animation-delay: 0.6s;">
+                    <div class="w-16 h-16 mb-4 flex items-center justify-center rounded-full bg-opacity-20 bg-indigo-500 text-indigo-300 text-3xl font-bold">4</div>
+                    <p class="text-lg">Anda mendapatkan pengikut atau pelanggan baru, dan mereka mendapatkan akses konten yang diinginkan!</p>
+                </div>
+            </div>
+            <!-- New text content below How It Works section -->
+            <p id="additionalInfoText" class="text-lg mt-8 mb-4 opacity-90 mx-auto animate-fade-in" style="animation-delay: 0.8s;">
+                Dengan LinkForge, Anda tidak hanya membagikan konten, tetapi juga membangun komunitas. Strategi ini terbukti efektif untuk meningkatkan interaksi dan loyalitas audiens Anda secara organik dan berkelanjutan. Mulailah ubah cara Anda berinteraksi dengan penggemar dan lihat pertumbuhan Anda!
+            </p>
+        </section>
+
+    </div>
+
+    <!-- Custom Modal (Message Box) -->
+    <div id="customModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden animate-fade-in">
+        <div id="modalContent" class="p-8 rounded-xl shadow-2xl max-w-sm w-full text-center how-it-works-card-dark transform scale-95 animate-scale-up">
+            <h3 id="modalTitle" class="text-2xl font-bold mb-4">Fungsi Pembuatan Link</h3>
+            <p id="modalMessage" class="text-lg mb-6">Fitur pembuatan link Anda akan tersedia di sini! Ini adalah langkah pertama untuk mengembangkan audiens Anda.</p>
+            <button id="modalCloseBtn" class="px-6 py-3 rounded-full text-lg font-medium transition-all duration-300 transform hover:scale-105 btn-primary-dark">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const body = document.body;
+        const mainCardContainer = document.getElementById('mainContent'); // The main card container
+        const toggleLanguageBtn = document.getElementById('languageToggle');
+        const toggleThemeBtn = document.getElementById('darkModeToggle');
+        const themeIcon = toggleThemeBtn.querySelector('i');
+
+        const mainTitle = document.getElementById('mainTitle');
+        const tagline = document.getElementById('tagline');
+        const createLinkBtn = document.getElementById('createLinkBtn');
+        const createLinkBtnText = document.getElementById('createLinkBtnText');
+        const howItWorksTitle = document.getElementById('howItWorksTitle');
+        const howItWorksStepsContainer = document.getElementById('howItWorksSteps');
+        const additionalInfoText = document.getElementById('additionalInfoText');
+        const customModal = document.getElementById('customModal');
+        const modalContent = document.getElementById('modalContent');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+        // Content for different languages
+        const content = {
+            id: {
+                title: "LinkForge: Buka Akses & Dapatkan Pengikut!",
+                tagline: "Ubah tautan biasa menjadi kunci eksklusif, membuka konten premium sambil melipatgandakan pengikut dan pelanggan Anda. LinkForge adalah cara cerdas untuk monetisasi dan pertumbuhan audiens.",
+                howItWorksTitle: "Bagaimana Cara Kerjanya?",
+                howItWorksSteps: [
+                    "Masukkan tautan Anda dan sesuaikan dengan tugas unlock (misalnya, ikuti akun media sosial atau berlangganan channel YouTube Anda).",
+                    "Bagikan tautan LinkForge yang sudah dibuat kepada audiens Anda.",
+                    "Audiens Anda menyelesaikan tugas yang ditentukan untuk membuka akses ke tautan asli.",
+                    "Anda mendapatkan pengikut atau pelanggan baru, dan mereka mendapatkan akses konten yang diinginkan!"
+                ],
+                additionalInfo: "Dengan LinkForge, Anda tidak hanya membagikan konten, tetapi juga membangun komunitas. Strategi ini terbukti efektif untuk meningkatkan interaksi dan loyalitas audiens Anda secara organik dan berkelanjutan. Mulailah ubah cara Anda berinteraksi dengan penggemar dan lihat pertumbuhan Anda!",
+                callToAction: "Buat Link Anda Sekarang",
+                modalTitle: "Fungsi Pembuatan Link",
+                modalMessage: "Fitur pembuatan link Anda akan tersedia di sini! Ini adalah langkah pertama untuk mengembangkan audiens Anda.",
+                modalClose: "Tutup",
+                toggleLanguageText: "EN",
+                toggleThemeTitle: "Ubah Tema"
+            },
+            en: {
+                title: "LinkForge: Unlock Access & Gain Followers!",
+                tagline: "Transform ordinary links into exclusive keys, unlocking premium content while multiplying your followers and subscribers. LinkForge is the smart way to monetize and grow your audience.",
+                howItWorksTitle: "How It Works?",
+                howItWorksSteps: [
+                    "Enter your link and customize it with unlock tasks (e.g., follow your social media accounts or subscribe to your YouTube channel).",
+                    "Share your generated LinkForge link with your audience.",
+                    "Your audience completes the specified tasks to unlock access to the original link.",
+                    "You gain new followers or subscribers, and they get desired content access!"
+                ],
+                additionalInfo: "With LinkForge, you're not just sharing content; you're building a community. This strategy is proven effective for organically and sustainably increasing your audience's interaction and loyalty. Start transforming how you engage with fans and watch your growth!",
+                callToAction: "Create Your Link Now",
+                modalTitle: "Link Creation Functionality",
+                modalMessage: "Your link creation feature will be available here! This is the first step to growing your audience.",
+                modalClose: "Close",
+                toggleLanguageText: "ID",
+                toggleThemeTitle: "Toggle Theme"
+            }
+        };
+
+        // Initial state
+        let currentLanguage = 'id';
+        let currentTheme = 'dark'; // Default to dark theme
+
+        // Function to update content based on language
+        function updateContent() {
+            const currentLangContent = content[currentLanguage];
+
+            mainTitle.textContent = currentLangContent.title;
+            tagline.textContent = currentLangContent.tagline;
+            createLinkBtnText.textContent = currentLangContent.callToAction;
+            howItWorksTitle.textContent = currentLangContent.howItWorksTitle;
+            additionalInfoText.textContent = currentLangContent.additionalInfo;
+            modalTitle.textContent = currentLangContent.modalTitle;
+            modalMessage.textContent = currentLangContent.modalMessage;
+            modalCloseBtn.textContent = currentLangContent.modalClose;
+
+            // Update language toggle button text and title
+            toggleLanguageBtn.textContent = currentLangContent.toggleLanguageText;
+            toggleLanguageBtn.title = currentLangContent.toggleLanguageText === 'EN' ? 'Switch to English' : 'Ubah ke Bahasa Indonesia';
+
+            // Update theme toggle button title
+            toggleThemeBtn.title = currentLangContent.toggleThemeTitle;
+
+            // Update How It Works steps dynamically
+            howItWorksStepsContainer.innerHTML = ''; // Clear existing steps
+            currentLangContent.howItWorksSteps.forEach((step, index) => {
+                const stepDiv = document.createElement('div');
+                // Use specific classes for how-it-works cards within the main card
+                stepDiv.className = `p-6 rounded-xl shadow-xl flex flex-col items-center text-center transform hover:scale-105 transition-transform duration-300 how-it-works-card-${currentTheme} animate-fade-in`;
+                stepDiv.style.animationDelay = `${index * 0.2}s`;
+                stepDiv.innerHTML = `
+                    <div class="w-16 h-16 mb-4 flex items-center justify-center rounded-full bg-opacity-20 bg-indigo-500 text-indigo-300 text-3xl font-bold">
+                        ${index + 1}
+                    </div>
+                    <p class="text-lg">${step}</p>
+                `;
+                howItWorksStepsContainer.appendChild(stepDiv);
+            });
+        }
+
+        // Function to update theme classes and icon
+        function updateTheme() {
+            // Update body theme class
+            body.classList.remove('dark-theme', 'light-theme');
+            body.classList.add(`${currentTheme}-theme`);
+
+            // Update main card container theme class
+            mainCardContainer.classList.remove('main-card-container-dark', 'main-card-container-light'); // Remove old specific classes if any
+            if (currentTheme === 'dark') {
+                // Apply dark theme colors
+                mainCardContainer.style.backgroundColor = '#34495e'; /* Darker blue-gray */
+                mainCardContainer.style.borderColor = '#4a607a'; /* Darker border */
+            } else {
+                // Apply light theme colors (the subtle cream/off-white)
+                mainCardContainer.style.backgroundColor = '#fdfcf5'; /* Very light, warm cream/off-white */
+                mainCardContainer.style.borderColor = '#e0e0e0'; /* Subtle light border */
+            }
+
+
+            // Update button classes for primary button and modal close button
+            createLinkBtn.classList.remove('btn-primary-dark', 'btn-primary-light');
+            createLinkBtn.classList.add(`btn-primary-${currentTheme}`);
+
+            modalCloseBtn.classList.remove('btn-primary-dark', 'btn-primary-light');
+            modalCloseBtn.classList.add(`btn-primary-${currentTheme}`);
+
+            // Update icon for theme toggle
+            if (currentTheme === 'dark') {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            }
+
+            // Update card classes for "How It Works" steps and modal
+            document.querySelectorAll('#howItWorksSteps > div').forEach(card => {
+                card.classList.remove('how-it-works-card-dark', 'how-it-works-card-light');
+                if (currentTheme === 'dark') {
+                    card.classList.add('how-it-works-card-dark');
+                    card.style.backgroundColor = '#2c3e50'; // slightly darker blue-gray than main card dark
+                } else {
+                    card.classList.add('how-it-works-card-light');
+                    card.style.backgroundColor = '#edf2f7'; // slightly lighter gray than main card light
+                }
+            });
+            // Update modal content background
+            if (currentTheme === 'dark') {
+                modalContent.classList.add('how-it-works-card-dark'); // Use how-it-works-card style for consistency
+                modalContent.classList.remove('how-it-works-card-light');
+                modalContent.style.backgroundColor = '#2c3e50';
+            } else {
+                modalContent.classList.add('how-it-works-card-light');
+                modalContent.classList.remove('how-it-works-card-dark');
+                modalContent.style.backgroundColor = '#edf2f7';
+            }
+        }
+
+        // Event Listeners
+
+        // Toggle Language
+        toggleLanguageBtn.addEventListener('click', () => {
+            currentLanguage = currentLanguage === 'id' ? 'en' : 'id';
+            updateContent();
+        });
+
+        // Toggle Theme
+        toggleThemeBtn.addEventListener('click', () => {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            updateTheme();
+            updateContent(); // Re-render steps to update their card theme
+        });
+
+        // Create Link Button Click
+        createLinkBtn.addEventListener('click', () => {
+            // Mengarahkan pengguna ke URL yang ditentukan
+            window.location.href = 'https://SapiBersinar.github.io/create/'; 
+        });
+
+        // Modal Close Button Click
+        modalCloseBtn.addEventListener('click', () => {
+            customModal.classList.add('hidden');
+        });
+
+        // Initial setup
+        updateContent();
+        updateTheme();
+    </script>
+</body>
+</html>
+

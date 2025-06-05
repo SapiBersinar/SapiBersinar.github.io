@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkForge: Buat Tugas</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Custom Keyframes for Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        /* Animations for notifications */
+        @keyframes slideInFromTopNotification {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        /* Animation for modal appearance */
+        @keyframes scaleUp {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        /* New and improved animation for result section */
+        @keyframes resultSectionPop {
+            0% { transform: scale(0.9); opacity: 0; } /* Start slightly smaller and invisible */
+            50% { transform: scale(1.02); opacity: 1; } /* Pop out slightly */
+            100% { transform: scale(1); opacity: 1; } /* Settle to normal size */
+        }
+
+
+        .animate-fade-in-down { animation: fadeInDown 1s ease-out forwards; }
+        .animate-fade-in-up { animation: fadeInUp 1s ease-out forwards; }
+        .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
+        .animate-slide-in-right { animation: slideInRight 0.5s ease-out forwards; }
+        .animate-pulse { animation: pulse 1.5s infinite ease-in-out; }
+        .animate-slide-in-from-top-notification { animation: slideInFromTopNotification 0.3s ease-out forwards; }
+        .animate-scale-up { animation: scaleUp 0.3s ease-out forwards; }
+        .animate-result-section-pop { animation: resultSectionPop 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards; } /* Springy effect */
+
+
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top for longer content */
+            min-height: 100vh;
+            padding: 2rem 1.5rem; /* Increased top/bottom padding */
+            box-sizing: border-box;
+            /* Default theme handled by JS */
+        }
+        body.dark-theme {
+            background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%); /* Darker, deep blue-gray gradient */
+            color: #e2e8f0; /* gray-100 */
+        }
+        body.light-theme {
+            background: linear-gradient(135deg, #f0fff4 0%, #e0ffe0 100%); /* Light pastel green gradient */
+            color: #1a202c; /* gray-900 */
+        }
+
+        .main-card-container {
+            border-radius: 1.75rem; /* rounded-3xl */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15), 0 5px 15px rgba(0, 0, 0, 0.08); /* Deep, layered shadow */
+            padding: 2.5rem; /* Generous padding */
+            max-width: 900px; /* Wider max width */
+            width: 100%;
+            text-align: center;
+            border: 1px solid #e0e0e0; /* Subtle light border */
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; /* Smooth transition for theme change */
+            animation: fadeIn 0.8s ease-out; /* Simple fade-in animation */
+            position: relative;
+            z-index: 2;
+        }
+        body.light-theme .main-card-container {
+            background-color: #fdfcf5; /* Very light, warm cream/off-white */
+            border-color: #e0e0e0;
+        }
+        body.dark-theme .main-card-container {
+            background-color: #34495e; /* Darker blue-gray */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 5px 15px rgba(0, 0, 0, 0.15); /* Darker shadow */
+            border-color: #4a607a;
+        }
+
+        /* Button specific styles for theme */
+        .btn-primary-dark {
+            background: linear-gradient(to right, #8b5cf6, #6366f1); /* from-purple-600 to-indigo-600 */
+            transition: all 0.3s ease;
+        }
+        .btn-primary-dark:hover {
+            background: linear-gradient(to right, #7c3aed, #4f46e5); /* hover:from-purple-700 hover:to-indigo-700 */
+            transform: scale(1.05);
+        }
+
+        .btn-primary-light {
+            background: linear-gradient(to right, #3b82f6, #14b8a6); /* from-blue-500 to-teal-500 */
+            transition: all 0.3s ease;
+        }
+        .btn-primary-light:hover {
+            background: linear-gradient(to right, #2563eb, #0d9488); /* hover:from-blue-600 hover:to-teal-600 */
+            transform: scale(1.05);
+        }
+
+        /* Input and Select styles */
+        .input-field {
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem; /* rounded-xl */
+            border: 1px solid #cbd5e0; /* light gray border */
+            background-color: #ffffff;
+            color: #1a202c;
+            width: 100%;
+            transition: all 0.2s ease-in-out;
+        }
+        body.dark-theme .input-field {
+            background-color: #4a607a; /* Darker background for inputs */
+            border-color: #607a8a;
+            color: #e2e8f0;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #6366f1; /* indigo-500 */
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5); /* ring-indigo-500 */
+        }
+        .input-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            text-align: left;
+        }
+        .error-message {
+            color: #ef4444; /* red-500 */
+            font-size: 0.875rem; /* text-sm */
+            margin-top: 0.25rem; /* mt-1 */
+            text-align: left;
+        }
+
+        /* Task Card styles */
+        .task-card {
+            border-radius: 1rem; /* rounded-xl */
+            padding: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+            text-align: left;
+            transition: background-color 0.3s ease, border-color 0.3s ease; /* Ensure smooth color changes */
+        }
+        body.light-theme .task-card {
+            background-color: #edf2f7; /* light gray */
+            border: 1px solid #e2e8f0;
+        }
+        body.dark-theme .task-card {
+            background-color: #2c3e50; /* darker blue-gray */
+            border: 1px solid #4a607a;
+        }
+
+        /* Notification styles */
+        #notificationContainer {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            pointer-events: none; /* Allows clicks to pass through */
+        }
+        .notification-item {
+            background-color: #4CAF50; /* Green for success */
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0; /* Managed by JS for fade-in/out */
+            transform: translateY(-100%); /* Managed by JS for slide-in/out */
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Smooth transition */
+            min-width: 250px; /* Ensure it's wide enough for messages */
+            text-align: left;
+        }
+        .notification-item.error {
+            background-color: #f44336; /* Red for error */
+        }
+        .notification-item.dark-theme {
+            background-color: #1abc9c; /* Teal for success in dark theme */
+        }
+        .notification-item.dark-theme.error {
+            background-color: #e74c3c; /* Darker red for error in dark theme */
+        }
+
+
+        /* Toggle Button (copied from main page) */
+        #darkModeToggle {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            background-color: #e0e0e0;
+            color: #333;
+            border: none;
+            border-radius: 9999px;
+            padding: 0.75rem;
+            cursor: pointer;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            z-index: 10;
+        }
+        #darkModeToggle:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        body.dark-theme #darkModeToggle {
+            background-color: #5A626F;
+            color: #ecf0f1;
+        }
+        body.light-theme #darkModeToggle {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+        /* Language Toggle Button (copied from main page) */
+        #languageToggle {
+            position: fixed;
+            top: calc(1.5rem + 40px + 1rem);
+            right: 1.5rem;
+            background-color: #e0e0e0;
+            color: #333;
+            border: none;
+            border-radius: 9999px;
+            padding: 0.75rem 0.85rem;
+            min-width: 40px;
+            min-height: 40px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+            z-index: 10;
+        }
+        #languageToggle:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        body.dark-theme #languageToggle {
+            background-color: #5A626F;
+            color: #ecf0f1;
+        }
+        body.light-theme #languageToggle {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+            .main-card-container {
+                padding: 1.5rem;
+                border-radius: 1.25rem;
+            }
+            .title {
+                font-size: 1.75rem;
+            }
+            .input-field {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.9rem;
+            }
+            .input-label {
+                font-size: 0.9rem;
+            }
+            .task-card {
+                padding: 1rem;
+            }
+            #darkModeToggle, #languageToggle {
+                top: 1rem;
+                right: 1rem;
+                padding: 0.6rem;
+                font-size: 1rem;
+            }
+            #languageToggle {
+                top: calc(1rem + 32px + 0.5rem);
+                right: 1rem;
+                padding: 0.6rem 0.8rem;
+                min-width: 32px;
+                min-height: 32px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body class="dark-theme"> <!-- Default to dark-theme -->
+
+    <!-- Dark Mode Toggle Button -->
+    <button id="darkModeToggle" aria-label="Toggle dark mode" title="Ubah Tema">
+        <i class="fas fa-sun"></i> <!-- Icon will be dynamically changed by JS -->
+    </button>
+
+    <!-- Language Toggle Button -->
+    <button id="languageToggle" aria-label="Toggle language" title="Ubah Bahasa">
+        EN <!-- Text will be dynamically changed by JS -->
+    </button>
+
+    <!-- Notification Container (for custom alerts) -->
+    <div id="notificationContainer"></div>
+
+    <div id="mainContent" class="main-card-container">
+        <h1 id="pageTitle" class="text-4xl font-extrabold mb-8 animate-fade-in-down">Buat Link Tugas Baru</h1>
+
+        <!-- Form for Target URL -->
+        <div class="mb-8 p-6 rounded-xl shadow-md text-left task-card animate-fade-in" style="animation-delay: 0.2s;">
+            <label for="targetUrl" class="input-label" id="targetUrlLabel">URL Target (setelah semua tugas selesai):</label>
+            <input type="url" id="targetUrl" class="input-field mb-1" placeholder="Contoh: https://pastebin.com/0000000" required>
+            <span id="targetUrlError" class="error-message hidden">Harap isi URL target.</span>
+        </div>
+
+        <!-- Section for adding tasks -->
+        <div class="mb-8 p-6 rounded-xl shadow-md text-left task-card animate-fade-in" style="animation-delay: 0.4s;">
+            <h2 id="addTaskTitle" class="text-2xl font-bold mb-4">Tambahkan Tugas (Maksimal 5)</h2>
+            <div id="tasksContainer" class="space-y-4 mb-4">
+                <!-- Task items will be dynamically added here -->
+            </div>
+            <button id="addTaskBtn" class="w-full py-3 rounded-xl font-bold text-white transition-all duration-300 transform hover:scale-105 btn-primary-dark">
+                <i class="fas fa-plus mr-2"></i> <span id="addTaskBtnText">Tambah Tugas</span>
+            </button>
+        </div>
+
+        <!-- Section for required tasks count -->
+        <div class="mb-8 p-6 rounded-xl shadow-md text-left task-card animate-fade-in" style="animation-delay: 0.6s;">
+            <label for="requiredTasksCount" class="input-label" id="requiredTasksCountLabel">Jumlah Tugas yang Harus Diselesaikan:</label>
+            <input type="number" id="requiredTasksCount" class="input-field" min="1" value="1" required>
+            <p id="requiredTasksInfo" class="text-sm opacity-80 mt-2">Jumlah tugas yang harus diselesaikan oleh pengguna untuk membuka URL target. Harus lebih kecil atau sama dengan jumlah tugas yang ditambahkan.</p>
+        </div>
+
+        <!-- Action Buttons: Generate and Reset -->
+        <div class="mb-8 flex flex-col sm:flex-row gap-4 animate-fade-in-up" style="animation-delay: 0.8s;">
+            <button id="generateLinkBtn" class="flex-1 px-8 py-4 text-xl font-bold rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-opacity-75 btn-primary-dark">
+                <span class="relative z-10" id="generateLinkBtnText">Buat Link Tugas</span>
+            </button>
+            <button id="resetFormBtn" class="flex-1 px-8 py-4 text-xl font-bold rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-opacity-75 bg-gray-500 hover:bg-gray-600 text-white">
+                <i class="fas fa-redo mr-2"></i> <span id="resetFormBtnText">Reset Formulir</span>
+            </button>
+        </div>
+
+        <!-- Result Display and Copy -->
+        <div id="resultSection" class="hidden p-6 rounded-xl shadow-md text-left task-card">
+            <label for="generatedLink" class="input-label" id="generatedLinkLabel">Link Tugas Anda:</label>
+            <textarea id="generatedLink" class="input-field mb-4 h-24 resize-none" readonly></textarea>
+            <button id="copyLinkBtn" class="w-full py-3 rounded-xl font-bold text-white transition-all duration-300 transform hover:scale-105 btn-primary-dark">
+                <i class="fas fa-copy mr-2"></i> <span id="copyLinkBtnText">Salin Link</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Custom Modal (Message Box) for validation errors -->
+    <div id="customModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden animate-fade-in">
+        <div id="modalContent" class="p-8 rounded-xl shadow-2xl max-w-sm w-full text-center how-it-works-card-dark transform scale-95 animate-scale-up">
+            <h3 id="modalTitle" class="text-2xl font-bold mb-4">Peringatan!</h3>
+            <p id="modalMessage" class="text-lg mb-6">Pesan peringatan.</p>
+            <button id="modalCloseBtn" class="px-6 py-3 rounded-full text-lg font-medium transition-all duration-300 transform hover:scale-105 btn-primary-dark">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const body = document.body;
+        const mainCardContainer = document.getElementById('mainContent');
+        const toggleLanguageBtn = document.getElementById('languageToggle');
+        const toggleThemeBtn = document.getElementById('darkModeToggle');
+        const themeIcon = toggleThemeBtn.querySelector('i');
+
+        const pageTitle = document.getElementById('pageTitle');
+        const targetUrlInput = document.getElementById('targetUrl');
+        const targetUrlLabel = document.getElementById('targetUrlLabel');
+        const targetUrlError = document.getElementById('targetUrlError'); // New error element
+        const addTaskTitle = document.getElementById('addTaskTitle');
+        const tasksContainer = document.getElementById('tasksContainer');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const addTaskBtnText = document.getElementById('addTaskBtnText');
+        const requiredTasksCountInput = document.getElementById('requiredTasksCount');
+        const requiredTasksCountLabel = document.getElementById('requiredTasksCountLabel');
+        const requiredTasksInfo = document.getElementById('requiredTasksInfo');
+        const generateLinkBtn = document.getElementById('generateLinkBtn');
+        const generateLinkBtnText = document.getElementById('generateLinkBtnText');
+        const resetFormBtn = document.getElementById('resetFormBtn'); // New Reset Button
+        const resetFormBtnText = document.getElementById('resetFormBtnText'); // New Reset Button Text
+        const resultSection = document.getElementById('resultSection');
+        const generatedLinkTextarea = document.getElementById('generatedLink');
+        const generatedLinkLabel = document.getElementById('generatedLinkLabel');
+        const copyLinkBtn = document.getElementById('copyLinkBtn');
+        const copyLinkBtnText = document.getElementById('copyLinkBtnText');
+
+        const customModal = document.getElementById('customModal');
+        const modalContent = document.getElementById('modalContent');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMessage = document.getElementById('modalMessage');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+        const notificationContainer = document.getElementById('notificationContainer'); // New notification container
+
+        // Content for different languages
+        const content = {
+            id: {
+                pageTitle: "Buat Link Tugas Baru",
+                targetUrlLabel: "URL Target (setelah semua tugas selesai):",
+                addTaskTitle: "Tambahkan Tugas (Maksimal 5)",
+                addTaskBtnText: "Tambah Tugas",
+                requiredTasksCountLabel: "Jumlah Tugas yang Harus Diselesaikan:",
+                requiredTasksInfo: "Jumlah tugas yang harus diselesaikan oleh pengguna untuk membuka URL target. Harus lebih kecil atau sama dengan jumlah tugas yang ditambahkan.",
+                generateLinkBtnText: "Buat Link Tugas",
+                resetFormBtnText: "Reset Formulir", // New text
+                generatedLinkLabel: "Link Tugas Anda:",
+                copyLinkBtnText: "Salin Link",
+                taskTypes: {
+                    tiktok: "Tiktok",
+                    whatsapp: "WhatsApp",
+                    roblox: "Roblox",
+                    youtube: "YouTube"
+                },
+                taskPlaceholders: {
+                    tiktok: "Contoh: https://tiktok.com/@username atau https://tiktok.com/",
+                    whatsapp: "Contoh: https://wa.me/628123456789 atau https://whatsapp.com/",
+                    roblox: "Contoh: https://roblox.com/games/12345/GameName atau https://roblox.com/",
+                    youtube: "Contoh: https://youtube.com/channel/UC-ID atau https://youtube.com/watch?v=video_id"
+                },
+                buttonTextDefault: "Buka Konten Sekarang",
+                modalWarningTitle: "Peringatan!",
+                modalFillAllFields: "Harap isi semua kolom input yang diperlukan.", // General message for inline errors
+                modalInvalidCount: "Jumlah tugas yang harus diselesaikan tidak valid. Harus antara 1 dan jumlah tugas yang ditambahkan.",
+                modalNoTasks: "Harap tambahkan setidaknya satu tugas.",
+                modalLinkCreated: "Link telah berhasil dibuat!",
+                modalLinkCopied: "Link telah disalin!",
+                inlineErrorTargetUrl: "URL target tidak boleh kosong.", // Specific inline error
+                inlineErrorTaskType: "Pilih jenis tugas.", // Specific inline error
+                inlineErrorTaskUrl: "URL tugas tidak boleh kosong.", // Specific inline error
+                modalClose: "Tutup",
+                toggleLanguageText: "EN",
+                toggleThemeTitle: "Ubah Tema"
+            },
+            en: {
+                pageTitle: "Create New Task Link",
+                targetUrlLabel: "Target URL (after all tasks completed):",
+                addTaskTitle: "Add Task (Max 5)",
+                addTaskBtnText: "Add Task",
+                requiredTasksCountLabel: "Number of Tasks to Complete:",
+                requiredTasksInfo: "The number of tasks users must complete to unlock the target URL. Must be less than or equal to the total tasks added.",
+                generateLinkBtnText: "Generate Task Link",
+                resetFormBtnText: "Reset Form", // New text
+                generatedLinkLabel: "Your Task Link:",
+                copyLinkBtnText: "Copy Link",
+                taskTypes: {
+                    tiktok: "Tiktok",
+                    whatsapp: "WhatsApp",
+                    roblox: "Roblox",
+                    youtube: "YouTube"
+                },
+                taskPlaceholders: {
+                    tiktok: "Example: https://tiktok.com/@username or https://tiktok.com/",
+                    whatsapp: "Example: https://wa.me/628123456789 or https://whatsapp.com/",
+                    roblox: "Example: https://roblox.com/games/12345/GameName or https://roblox.com/",
+                    youtube: "Example: https://youtube.com/channel/UC-ID or https://youtube.com/watch?v=video_id"
+                },
+                buttonTextDefault: "Open Content Now",
+                modalWarningTitle: "Warning!",
+                modalFillAllFields: "Please fill in all required input fields.", // General message for inline errors
+                modalInvalidCount: "Invalid number of tasks to complete. Must be between 1 and the number of tasks added.",
+                modalNoTasks: "Please add at least one task.",
+                modalLinkCreated: "Link successfully created!",
+                modalLinkCopied: "Link copied!",
+                inlineErrorTargetUrl: "Target URL cannot be empty.", // Specific inline error
+                inlineErrorTaskType: "Select a task type.", // Specific inline error
+                inlineErrorTaskUrl: "Task URL cannot be empty.", // Specific inline error
+                modalClose: "Close",
+                toggleLanguageText: "ID",
+                toggleThemeTitle: "Toggle Theme"
+            }
+        };
+
+        // Initial state
+        let currentLanguage = 'id';
+        let currentTheme = 'dark'; // Default to dark theme for this page
+        let taskCounter = 0; // To keep track of added tasks
+        const MAX_TASKS = 5;
+
+        // Colors for result section highlight (for light and dark theme) - back to blue/grey
+        const resultColorsLight = [
+            '#e0e8f0', // Very light grey-blue
+            '#d4e0e8',
+            '#c8d8e0',
+            '#bccbd4',
+            '#b0bfc8'
+        ];
+        const resultColorsDark = [
+            '#3a5369', // Dark blue-grey
+            '#425b74',
+            '#4b637e',
+            '#536c87',
+            '#5b7590'
+        ];
+        let currentColorIndex = 0;
+
+        // Function to update content based on language
+        function updateContent() {
+            const currentLangContent = content[currentLanguage];
+
+            pageTitle.textContent = currentLangContent.pageTitle;
+            targetUrlLabel.textContent = currentLangContent.targetUrlLabel;
+            addTaskTitle.textContent = currentLangContent.addTaskTitle;
+            addTaskBtnText.textContent = currentLangContent.addTaskBtnText;
+            requiredTasksCountLabel.textContent = currentLangContent.requiredTasksCountLabel;
+            requiredTasksInfo.textContent = currentLangContent.requiredTasksInfo;
+            generateLinkBtnText.textContent = currentLangContent.generateLinkBtnText;
+            resetFormBtnText.textContent = currentLangContent.resetFormBtnText; // Update reset button text
+            generatedLinkLabel.textContent = currentLangContent.generatedLinkLabel;
+            copyLinkBtnText.textContent = currentLangContent.copyLinkBtnText;
+
+            // Update language toggle button text and title
+            toggleLanguageBtn.textContent = currentLangContent.toggleLanguageText;
+            toggleLanguageBtn.title = currentLangContent.toggleLanguageText === 'EN' ? 'Switch to English' : 'Ubah ke Bahasa Indonesia';
+
+            // Update theme toggle button title
+            toggleThemeBtn.title = currentLangContent.toggleThemeTitle;
+
+            // Update placeholders and labels for existing tasks
+            document.querySelectorAll('.task-item').forEach(taskDiv => {
+                const typeSelect = taskDiv.querySelector('.task-type-select');
+                const urlInput = taskDiv.querySelector('.task-url-input');
+                const selectedType = typeSelect.value;
+                if (selectedType) {
+                    urlInput.placeholder = currentLangContent.taskPlaceholders[selectedType];
+                }
+                // Update select options
+                Array.from(typeSelect.options).forEach(option => {
+                    if (option.value) {
+                        option.textContent = currentLangContent.taskTypes[option.value];
+                    } else { // Handle the default 'Add Task' option
+                        option.textContent = currentLangContent.addTaskBtnText;
+                    }
+                });
+            });
+
+            // Update target URL placeholder
+            targetUrlInput.placeholder = currentLanguage === 'id' ? "Contoh: https://pastebin.com/0000000" : "Example: https://pastebin.com/0000000";
+
+            // Update inline error messages for target URL if visible
+            if (!targetUrlError.classList.contains('hidden')) {
+                targetUrlError.textContent = currentLangContent.inlineErrorTargetUrl;
+            }
+            // Update inline error messages for existing tasks
+            document.querySelectorAll('.task-item').forEach(taskDiv => {
+                const typeError = taskDiv.querySelector('.task-type-error');
+                const urlError = taskDiv.querySelector('.task-url-error');
+                if (typeError && !typeError.classList.contains('hidden')) {
+                    typeError.textContent = currentLangContent.inlineErrorTaskType;
+                }
+                if (urlError && !urlError.classList.contains('hidden')) {
+                    urlError.textContent = currentLangContent.inlineErrorTaskUrl;
+                }
+            });
+        }
+
+        // Function to update theme classes and icon
+        function updateTheme() {
+            // Update body theme class
+            body.classList.remove('dark-theme', 'light-theme');
+            body.classList.add(`${currentTheme}-theme`);
+
+            // Update main card container theme class
+            if (currentTheme === 'dark') {
+                mainCardContainer.style.backgroundColor = '#34495e';
+                mainCardContainer.style.borderColor = '#4a607a';
+            } else {
+                mainCardContainer.style.backgroundColor = '#fdfcf5';
+                mainCardContainer.style.borderColor = '#e0e0e0';
+            }
+
+            // Update button classes for primary buttons
+            document.querySelectorAll('.btn-primary-dark, .btn-primary-light').forEach(btn => {
+                btn.classList.remove('btn-primary-dark', 'btn-primary-light');
+                btn.classList.add(`btn-primary-${currentTheme}`);
+            });
+
+            // Update Reset button theme (it's gray, but still needs theme consistency)
+            if (currentTheme === 'dark') {
+                resetFormBtn.classList.remove('bg-gray-500', 'hover:bg-gray-600');
+                resetFormBtn.classList.add('bg-gray-700', 'hover:bg-gray-800');
+            } else {
+                resetFormBtn.classList.remove('bg-gray-700', 'hover:bg-gray-800');
+                resetFormBtn.classList.add('bg-gray-500', 'hover:bg-gray-600');
+            }
+
+
+            // Update input field classes
+            document.querySelectorAll('.input-field').forEach(input => {
+                if (currentTheme === 'dark') {
+                    input.classList.add('dark-theme');
+                } else {
+                    input.classList.remove('dark-theme');
+                }
+            });
+
+            // Update task card classes
+            document.querySelectorAll('.task-card').forEach(card => {
+                if (currentTheme === 'dark') {
+                    card.classList.add('dark-theme');
+                    card.style.backgroundColor = '#2c3e50';
+                    card.style.borderColor = '#4a607a';
+                } else {
+                    card.classList.remove('dark-theme');
+                    card.style.backgroundColor = '#edf2f7';
+                    card.style.borderColor = '#e2e8f0';
+                }
+            });
+
+            // Update modal content background
+            if (currentTheme === 'dark') {
+                modalContent.classList.add('dark-theme');
+                modalContent.style.backgroundColor = '#2c3e50';
+            } else {
+                modalContent.classList.remove('dark-theme');
+                modalContent.style.backgroundColor = '#edf2f7';
+            }
+
+            // Update icon for theme toggle
+            if (currentTheme === 'dark') {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            }
+
+            // Re-apply theme to existing task items (dynamically added)
+            document.querySelectorAll('.task-item').forEach(card => {
+                if (currentTheme === 'dark') {
+                    card.classList.add('dark-theme');
+                    card.style.backgroundColor = '#2c3e50';
+                    card.style.borderColor = '#4a607a';
+                } else {
+                    card.classList.remove('dark-theme');
+                    card.style.backgroundColor = '#edf2f7';
+                    card.style.borderColor = '#e2e8f0';
+                }
+            });
+
+            // Update result section color based on theme (without re-triggering animation)
+            if (!resultSection.classList.contains('hidden')) {
+                updateResultSectionColor(false);
+            }
+        }
+
+        // Function to add a new task input group
+        function addTask() {
+            if (taskCounter >= MAX_TASKS) {
+                showModal(content[currentLanguage].modalWarningTitle, `Anda hanya dapat menambahkan maksimal ${MAX_TASKS} tugas.`);
+                return;
+            }
+
+            taskCounter++;
+            const taskId = `task-${taskCounter}`;
+            const taskDiv = document.createElement('div');
+            taskDiv.id = taskId;
+            taskDiv.className = `task-item flex flex-col sm:flex-row items-start sm:items-center gap-2 mb-4 animate-slide-in-right`; // Align items-start for label/error
+
+            // Apply theme colors directly based on currentTheme
+            if (currentTheme === 'dark') {
+                taskDiv.classList.add('dark-theme');
+                taskDiv.style.backgroundColor = '#2c3e50';
+                taskDiv.style.borderColor = '#4a607a';
+            } else {
+                taskDiv.classList.remove('dark-theme');
+                taskDiv.style.backgroundColor = '#edf2f7';
+                taskDiv.style.borderColor = '#e2e8f0';
+            }
+            taskDiv.style.borderRadius = '1rem';
+            taskDiv.style.padding = '1rem';
+            taskDiv.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.1)';
+
+
+            const currentLangContent = content[currentLanguage];
+
+            taskDiv.innerHTML = `
+                <div class="flex flex-col w-full sm:w-1/4">
+                    <select class="input-field task-type-select mb-1">
+                        <option value="" disabled selected>${currentLangContent.addTaskBtnText}</option>
+                        <option value="tiktok">${currentLangContent.taskTypes.tiktok}</option>
+                        <option value="whatsapp">${currentLangContent.taskTypes.whatsapp}</option>
+                        <option value="roblox">${currentLangContent.taskTypes.roblox}</option>
+                        <option value="youtube">${currentLangContent.taskTypes.youtube}</option>
+                    </select>
+                    <span class="error-message task-type-error hidden">${currentLangContent.inlineErrorTaskType}</span>
+                </div>
+                <div class="flex flex-col flex-grow w-full sm:w-auto">
+                    <input type="url" class="input-field task-url-input mt-2 sm:mt-0 mb-1" placeholder="${currentLangContent.taskPlaceholders.tiktok}" required>
+                    <span class="error-message task-url-error hidden">${currentLangContent.inlineErrorTaskUrl}</span>
+                </div>
+                <button type="button" class="remove-task-btn px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors mt-2 sm:mt-0">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            tasksContainer.appendChild(taskDiv);
+
+            // Apply theme to newly added input fields and select
+            const newInputs = taskDiv.querySelectorAll('.input-field');
+            newInputs.forEach(input => {
+                if (currentTheme === 'dark') {
+                    input.classList.add('dark-theme');
+                } else {
+                    input.classList.remove('dark-theme');
+                }
+            });
+
+            // Add event listener for removing task
+            taskDiv.querySelector('.remove-task-btn').addEventListener('click', () => {
+                tasksContainer.removeChild(taskDiv);
+                taskCounter--;
+                updateRequiredTasksCountMax();
+            });
+
+            // Add event listener for changing placeholder when task type changes
+            taskDiv.querySelector('.task-type-select').addEventListener('change', (e) => {
+                const selectedType = e.target.value;
+                const urlInput = taskDiv.querySelector('.task-url-input');
+                urlInput.placeholder = currentLangContent.taskPlaceholders[selectedType] || '';
+                // Hide error message on change
+                const typeError = taskDiv.querySelector('.task-type-error');
+                if (typeError) typeError.classList.add('hidden');
+            });
+            // Hide error message on input for URL
+            taskDiv.querySelector('.task-url-input').addEventListener('input', (e) => {
+                const urlError = taskDiv.querySelector('.task-url-error');
+                if (urlError) urlError.classList.add('hidden');
+            });
+
+
+            updateRequiredTasksCountMax();
+        }
+
+        // Function to update the max attribute of requiredTasksCount input
+        function updateRequiredTasksCountMax() {
+            requiredTasksCountInput.max = taskCounter;
+            if (parseInt(requiredTasksCountInput.value) > taskCounter) {
+                requiredTasksCountInput.value = taskCounter; // Adjust value if it exceeds new max
+            }
+            if (taskCounter === 0) {
+                requiredTasksCountInput.value = 0; // Set to 0 if no tasks
+            } else if (requiredTasksCountInput.value < 1) {
+                requiredTasksCountInput.value = 1; // Ensure minimum 1 if tasks exist
+            }
+        }
+
+        // Function to show custom modal (for validation errors, etc.)
+        function showModal(title, message) {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            customModal.classList.remove('hidden');
+            // Ensure modal theme matches current theme
+            if (currentTheme === 'dark') {
+                modalContent.classList.add('dark-theme');
+                modalContent.style.backgroundColor = '#2c3e50';
+            } else {
+                modalContent.classList.remove('dark-theme');
+                modalContent.style.backgroundColor = '#edf2f7';
+            }
+        }
+
+        // Function to show a temporary notification (toast/snackbar style)
+        function showNotification(message, type = 'success', duration = 2100) { // Duration 2.1 seconds
+            const notificationDiv = document.createElement('div');
+            notificationDiv.className = `notification-item ${type} ${currentTheme === 'dark' ? 'dark-theme' : ''}`;
+            notificationDiv.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-times-circle'}"></i>
+                <span>${message}</span>
+            `;
+
+            // Append to body or notificationContainer
+            notificationContainer.appendChild(notificationDiv);
+
+            // Make it visible
+            setTimeout(() => {
+                notificationDiv.style.opacity = '1';
+                notificationDiv.style.transform = 'translateY(0)';
+            }, 10); // Small delay to trigger transition
+
+            // Hide after duration
+            setTimeout(() => {
+                notificationDiv.style.opacity = '0';
+                notificationDiv.style.transform = 'translateY(-100%)';
+                // Remove element after transition completes
+                notificationDiv.addEventListener('transitionend', function handler() {
+                    notificationContainer.removeChild(notificationDiv);
+                    notificationDiv.removeEventListener('transitionend', handler); // Clean up
+                });
+            }, duration);
+        }
+
+        // Function to update the background color of the result section and trigger its animation
+        function updateResultSectionColor(triggerAnimation = true) {
+            const colors = currentTheme === 'dark' ? resultColorsDark : resultColorsLight;
+            
+            resultSection.style.backgroundColor = colors[currentColorIndex];
+            
+            if (triggerAnimation) {
+                // Remove previous animation to allow restart
+                resultSection.classList.remove('animate-result-section-pop');
+                // Force reflow/repaint to restart the animation
+                void resultSection.offsetWidth; 
+                // Add new animation class
+                resultSection.classList.add('animate-result-section-pop');
+            }
+
+            currentColorIndex = (currentColorIndex + 1) % colors.length; // Cycle through colors
+        }
+
+        // Function to clear all form fields and reset task counter
+        function resetForm() {
+            targetUrlInput.value = '';
+            targetUrlError.classList.add('hidden'); // Hide error
+            tasksContainer.innerHTML = ''; // Clear all dynamic tasks
+            taskCounter = 0;
+            requiredTasksCountInput.value = 1;
+            updateRequiredTasksCountMax();
+            resultSection.classList.add('hidden'); // Hide result section
+            showNotification(currentLanguage === 'id' ? "Formulir berhasil direset!" : "Form successfully reset!", 'success');
+        }
+
+        // Function to generate the task link
+        function generateLink() {
+            let isValid = true;
+            const currentLangContent = content[currentLanguage];
+
+            // Hide all previous inline error messages
+            targetUrlError.classList.add('hidden');
+            document.querySelectorAll('.task-item').forEach(taskDiv => {
+                taskDiv.querySelector('.task-type-error').classList.add('hidden');
+                taskDiv.querySelector('.task-url-error').classList.add('hidden');
+            });
+
+            // Validate Target URL
+            const targetUrl = targetUrlInput.value.trim();
+            if (!targetUrl) {
+                targetUrlError.textContent = currentLangContent.inlineErrorTargetUrl;
+                targetUrlError.classList.remove('hidden');
+                isValid = false;
+            }
+
+            const tasks = [];
+            document.querySelectorAll('.task-item').forEach(taskDiv => {
+                const typeSelect = taskDiv.querySelector('.task-type-select');
+                const urlInput = taskDiv.querySelector('.task-url-input');
+                const typeError = taskDiv.querySelector('.task-type-error');
+                const urlError = taskDiv.querySelector('.task-url-error');
+
+                const type = typeSelect.value;
+                const url = urlInput.value.trim();
+
+                if (!type) {
+                    typeError.textContent = currentLangContent.inlineErrorTaskType;
+                    typeError.classList.remove('hidden');
+                    isValid = false;
+                }
+                if (!url) {
+                    urlError.textContent = currentLangContent.inlineErrorTaskUrl;
+                    urlError.classList.remove('hidden');
+                    isValid = false;
+                }
+                tasks.push({ type, url });
+            });
+
+            if (tasks.length === 0) {
+                showModal(currentLangContent.modalWarningTitle, currentLangContent.modalNoTasks);
+                isValid = false;
+            }
+
+            const requiredTasks = parseInt(requiredTasksCountInput.value);
+            if (isNaN(requiredTasks) || requiredTasks < 1 || requiredTasks > tasks.length) {
+                showModal(currentLangContent.modalWarningTitle, currentLangContent.modalInvalidCount);
+                isValid = false;
+            }
+
+            if (!isValid) {
+                // If any validation failed, stop here
+                return;
+            }
+
+            const taskData = {
+                target: targetUrl,
+                buttonText: currentLangContent.buttonTextDefault,
+                requiredTasks: requiredTasks,
+                tasks: tasks
+            };
+
+            const encodedData = btoa(JSON.stringify(taskData));
+            // Corrected path to lowercase 'task'
+            const generatedLink = `https://SapiBersinar.github.io/task/?data=${encodedData}`;
+
+            generatedLinkTextarea.value = generatedLink;
+            resultSection.classList.remove('hidden'); // Show the result section with the link
+
+            // Update the color of the result section and trigger its animation
+            updateResultSectionColor(true); // Trigger animation
+
+            // Show success notification using the toast
+            showNotification(currentLangContent.modalLinkCreated, 'success');
+
+            // Optionally clear the form after successful generation for a fresh start
+            // targetUrlInput.value = '';
+            // tasksContainer.innerHTML = '';
+            // taskCounter = 0;
+            // requiredTasksCountInput.value = 1;
+            // updateRequiredTasksCountMax();
+        }
+
+        // Function to copy the generated link
+        function copyLink() {
+            generatedLinkTextarea.select();
+            document.execCommand('copy');
+            showNotification(content[currentLanguage].modalLinkCopied, 'success'); // Show copy success notification in toast
+        }
+
+        // Event Listeners
+        toggleLanguageBtn.addEventListener('click', () => {
+            currentLanguage = currentLanguage === 'id' ? 'en' : 'id';
+            updateContent();
+            // Ensure result section color is also updated on language change if visible
+            if (!resultSection.classList.contains('hidden')) {
+                updateResultSectionColor(false); // Do not trigger animation
+            }
+        });
+
+        toggleThemeBtn.addEventListener('click', () => {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            updateTheme();
+        });
+
+        addTaskBtn.addEventListener('click', addTask);
+        generateLinkBtn.addEventListener('click', generateLink);
+        resetFormBtn.addEventListener('click', resetForm); // Event listener for reset button
+        copyLinkBtn.addEventListener('click', copyLink); // Event listener for copy button
+
+        modalCloseBtn.addEventListener('click', () => {
+            customModal.classList.add('hidden');
+        });
+
+        // Hide targetUrlError on input
+        targetUrlInput.addEventListener('input', () => {
+            targetUrlError.classList.add('hidden');
+        });
+
+        requiredTasksCountInput.addEventListener('input', () => {
+            const currentVal = parseInt(requiredTasksCountInput.value);
+            if (currentVal > taskCounter) {
+                requiredTasksCountInput.value = taskCounter;
+            } else if (currentVal < 1 && taskCounter > 0) {
+                requiredTasksCountInput.value = 1;
+            } else if (taskCounter === 0) {
+                 requiredTasksCountInput.value = 0;
+            }
+        });
+
+
+        // Initial setup
+        updateContent();
+        updateTheme(); // Call updateTheme to set initial theme colors correctly
+        updateRequiredTasksCountMax(); // Set initial max for required tasks
+    </script>
+</body>
+</html>
+

@@ -3,7 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LinkForge: Buat Tugas</title>
+    <title>SapiBersinar: Buat Tugas</title>
+    <!-- SEO Meta Tags for SapiBersinar Create Page -->
+    <meta name="description" content="Buat link tugas unik Anda dengan SapiBersinar. Kustomisasi halaman tugas, tambahkan tugas, dan hasilkan link yang menarik untuk konten eksklusif atau promosi.">
+    <meta name="keywords" content="buat link tugas, generator link, kustomisasi halaman, tugas media sosial, promosi online, SapiBersinar, alat creator, link monetisasi">
+    <meta name="author" content="SapiBersinar">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Social Media Meta Tags (untuk berbagi di media sosial) -->
+    <meta property="og:title" content="Buat Link Tugas Anda di SapiBersinar">
+    <meta property="og:description" content="Buat link tugas unik Anda dengan SapiBersinar. Kustomisasi halaman tugas, tambahkan tugas, dan hasilkan link yang menarik untuk konten eksklusif atau promosi.">
+    <meta property="og:url" content="https://sapibersinar.github.io/create/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://placehold.co/1200x630/0d9488/ffffff?text=Buat+Link+Tugas"> <!-- Ganti dengan URL gambar logo/banner Anda -->
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-K5JQPNMVEF"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-K5JQPNMVEF'); // Your new GA4 Measurement ID
+    </script>
+    
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts - Inter -->
@@ -352,61 +378,14 @@
             <p id="requiredTasksInfo" class="text-sm opacity-80 mt-2">Jumlah tugas yang harus diselesaikan oleh pengguna untuk membuka URL target. Harus lebih kecil atau sama dengan jumlah tugas yang ditambahkan.</p>
         </div>
 
-        <!-- Section for Task Page Customization -->
+        <!-- Section for Task Page Customization - Simplified -->
         <div class="mb-8 p-6 rounded-xl shadow-md text-left task-card animate-fade-in" style="animation-delay: 0.8s;">
             <h2 id="customizePageTitle" class="text-2xl font-bold mb-4">Kustomisasi Tampilan Halaman Tugas</h2>
             
             <div class="mb-4">
-                <label for="bgColor" class="input-label" id="bgColorLabel">Warna Latar Belakang Halaman:</label>
-                <select id="bgColor" class="input-field">
-                    <option value="default-theme">Default (Tema Aktif)</option>
-                    <option value="blue">Biru (Blue)</option>
-                    <option value="green">Hijau (Green)</option>
-                    <option value="purple">Ungu (Purple)</option>
-                    <option value="red">Merah (Red)</option>
-                    <option value="teal">Toska (Teal)</option>
-                    <option value="indigo">Indigo (Indigo)</option>
-                </select>
-            </div>
-
-            <div class="mb-4">
-                <label for="cardBgColor" class="input-label" id="cardBgColorLabel">Warna Latar Belakang Kartu Tugas:</label>
-                <select id="cardBgColor" class="input-field">
-                    <option value="default-theme">Default (Tema Aktif)</option>
-                    <option value="blue">Biru (Blue)</option>
-                    <option value="green">Hijau (Green)</option>
-                    <option value="purple">Ungu (Purple)</option>
-                    <option value="red">Merah (Red)</option>
-                    <option value="teal">Toska (Teal)</option>
-                    <option value="indigo">Indigo (Indigo)</option>
-                </select>
-            </div>
-
-            <div class="mb-4">
-                <label for="textColor" class="input-label" id="textColorLabel">Warna Teks Utama:</label>
-                <select id="textColor" class="input-field">
-                    <option value="default-theme">Default (Tema Aktif)</option>
-                    <option value="dark-text">Gelap (Dark)</option>
-                    <option value="light-text">Terang (Light)</option>
-                    <option value="blue-text">Biru (Blue)</option>
-                    <option value="green-text">Hijau (Green)</option>
-                    <option value="purple-text">Ungu (Purple)</option>
-                    <option value="red-text">Merah (Red)</option>
-                    <option value="teal-text">Toska (Teal)</option>
-                    <option value="indigo-text">Indigo (Indigo)</option>
-                </select>
-            </div>
-
-            <div class="mb-4">
-                <label for="btnColor" class="input-label" id="btnColorLabel">Warna Tombol Aksi:</label>
-                <select id="btnColor" class="input-field">
-                    <option value="default-theme">Default (Tema Aktif)</option>
-                    <option value="blue-btn">Biru (Blue)</option>
-                    <option value="green-btn">Hijau (Green)</option>
-                    <option value="purple-btn">Ungu (Purple)</option>
-                    <option value="red-btn">Merah (Red)</option>
-                    <option value="teal-btn">Toska (Teal)</option>
-                    <option value="indigo-btn">Indigo (Indigo)</option>
+                <label for="colorScheme" class="input-label" id="colorSchemeLabel">Pilih Skema Warna:</label>
+                <select id="colorScheme" class="input-field">
+                    <!-- Options populated by JavaScript -->
                 </select>
             </div>
         </div>
@@ -432,7 +411,7 @@
         </div>
     </div>
 
-    <!-- Custom Modal (Message Box) for validation errors -->
+    <!-- Custom Modal (Message Box) for validation errors) -->
     <div id="customModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden animate-fade-in">
         <div id="modalContent" class="p-8 rounded-xl shadow-2xl max-w-sm w-full text-center how-it-works-card-dark transform scale-95 animate-scale-up">
             <h3 id="modalTitle" class="text-2xl font-bold mb-4">Peringatan!</h3>
@@ -454,7 +433,7 @@
         const pageTitle = document.getElementById('pageTitle');
         const targetUrlInput = document.getElementById('targetUrl');
         const targetUrlLabel = document.getElementById('targetUrlLabel');
-        const targetUrlError = document.getElementById('targetUrlError'); // New error element
+        const targetUrlError = document.getElementById('targetUrlError');
         const addTaskTitle = document.getElementById('addTaskTitle');
         const tasksContainer = document.getElementById('tasksContainer');
         const addTaskBtn = document.getElementById('addTaskBtn');
@@ -464,8 +443,8 @@
         const requiredTasksInfo = document.getElementById('requiredTasksInfo');
         const generateLinkBtn = document.getElementById('generateLinkBtn');
         const generateLinkBtnText = document.getElementById('generateLinkBtnText');
-        const resetFormBtn = document.getElementById('resetFormBtn'); // New Reset Button
-        const resetFormBtnText = document.getElementById('resetFormBtnText'); // New Reset Button Text
+        const resetFormBtn = document.getElementById('resetFormBtn');
+        const resetFormBtnText = document.getElementById('resetFormBtnText');
         const resultSection = document.getElementById('resultSection');
         const generatedLinkTextarea = document.getElementById('generatedLink');
         const generatedLinkLabel = document.getElementById('generatedLinkLabel');
@@ -474,14 +453,8 @@
 
         // Customization elements
         const customizePageTitle = document.getElementById('customizePageTitle');
-        const bgColorSelect = document.getElementById('bgColor');
-        const bgColorLabel = document.getElementById('bgColorLabel');
-        const cardBgColorSelect = document.getElementById('cardBgColor');
-        const cardBgColorLabel = document.getElementById('cardBgColorLabel');
-        const textColorSelect = document.getElementById('textColor');
-        const textColorLabel = document.getElementById('textColorLabel');
-        const btnColorSelect = document.getElementById('btnColor');
-        const btnColorLabel = document.getElementById('btnColorLabel');
+        const colorSchemeSelect = document.getElementById('colorScheme');
+        const colorSchemeLabel = document.getElementById('colorSchemeLabel');
 
 
         const customModal = document.getElementById('customModal');
@@ -490,7 +463,7 @@
         const modalMessage = document.getElementById('modalMessage');
         const modalCloseBtn = document.getElementById('modalCloseBtn');
 
-        const notificationContainer = document.getElementById('notificationContainer'); // For toast notifications
+        const notificationContainer = document.getElementById('notificationContainer');
 
         // Content for different languages
         const content = {
@@ -502,7 +475,7 @@
                 requiredTasksCountLabel: "Jumlah Tugas yang Harus Diselesaikan:",
                 requiredTasksInfo: "Jumlah tugas yang harus diselesaikan oleh pengguna untuk membuka URL target. Harus lebih kecil atau sama dengan jumlah tugas yang ditambahkan.",
                 generateLinkBtnText: "Buat Link Tugas",
-                resetFormBtnText: "Reset Formulir", // New text
+                resetFormBtnText: "Reset Formulir",
                 generatedLinkLabel: "Link Tugas Anda:",
                 copyLinkBtnText: "Salin Link",
                 taskTypes: {
@@ -519,34 +492,28 @@
                 },
                 buttonTextDefault: "Buka Konten Sekarang",
                 modalWarningTitle: "Peringatan!",
-                modalFillAllFields: "Harap isi semua kolom input yang diperlukan.", // General message for inline errors
+                modalFillAllFields: "Harap isi semua kolom input yang diperlukan.",
                 modalInvalidCount: "Jumlah tugas yang harus diselesaikan tidak valid. Harus antara 1 dan jumlah tugas yang ditambahkan.",
                 modalNoTasks: "Harap tambahkan setidaknya satu tugas.",
                 modalLinkCreated: "Link telah berhasil dibuat!",
                 modalLinkCopied: "Link telah disalin!",
-                inlineErrorTargetUrl: "URL target tidak boleh kosong.", // Specific inline error
-                inlineErrorTaskType: "Pilih jenis tugas.", // Specific inline error
-                inlineErrorTaskUrl: "URL tugas tidak boleh kosong.", // Specific inline error
+                inlineErrorTargetUrl: "URL target tidak boleh kosong.",
+                inlineErrorTaskType: "Pilih jenis tugas.",
+                inlineErrorTaskUrl: "URL tugas tidak boleh kosong.",
                 modalClose: "Tutup",
                 toggleLanguageText: "EN",
                 toggleThemeTitle: "Ubah Tema",
                 formResetSuccess: "Formulir berhasil direset!",
                 // Customization texts
                 customizePageTitle: "Kustomisasi Tampilan Halaman Tugas",
-                bgColorLabel: "Warna Latar Belakang Halaman:",
-                cardBgColorLabel: "Warna Latar Belakang Kartu Tugas:",
-                textColorLabel: "Warna Teks Utama:",
-                btnColorLabel: "Warna Tombol Aksi:",
-                colorOptions: {
-                    defaultTheme: "Default (Tema Aktif)",
-                    blue: "Biru (Blue)",
-                    green: "Hijau (Green)",
-                    purple: "Ungu (Purple)",
-                    red: "Merah (Red)",
-                    teal: "Toska (Teal)",
-                    indigo: "Indigo (Indigo)",
-                    dark: "Gelap (Dark)",
-                    light: "Terang (Light)"
+                colorSchemeLabel: "Pilih Skema Warna:",
+                colorSchemeOptions: {
+                    default: "Default (Tema Aktif)",
+                    modernBlue: "Modern Biru",
+                    energeticGreen: "Hijau Energik",
+                    vibrantPurple: "Ungu Cerah",
+                    warmRed: "Merah Hangat",
+                    coolGrey: "Abu-abu Sejuk"
                 }
             },
             en: {
@@ -557,7 +524,7 @@
                 requiredTasksCountLabel: "Number of Tasks to Complete:",
                 requiredTasksInfo: "The number of tasks users must complete to unlock the target URL. Must be less than or equal to the total tasks added.",
                 generateLinkBtnText: "Generate Task Link",
-                resetFormBtnText: "Reset Form", // New text
+                resetFormBtnText: "Reset Form",
                 generatedLinkLabel: "Your Task Link:",
                 copyLinkBtnText: "Copy Link",
                 taskTypes: {
@@ -574,37 +541,121 @@
                 },
                 buttonTextDefault: "Open Content Now",
                 modalWarningTitle: "Warning!",
-                modalFillAllFields: "Please fill in all required input fields.", // General message for inline errors
+                modalFillAllFields: "Please fill in all required input fields.",
                 modalInvalidCount: "Invalid number of tasks to complete. Must be between 1 and the number of tasks added.",
                 modalNoTasks: "Please add at least one task.",
                 modalLinkCreated: "Link successfully created!",
                 modalLinkCopied: "Link copied!",
-                inlineErrorTargetUrl: "Target URL cannot be empty.", // Specific inline error
-                inlineErrorTaskType: "Select a task type.", // Specific inline error
-                inlineErrorTaskUrl: "Task URL cannot be empty.", // Specific inline error
+                inlineErrorTargetUrl: "Target URL cannot be empty.",
+                inlineErrorTaskType: "Select a task type.",
+                inlineErrorTaskUrl: "Task URL cannot be empty.",
                 modalClose: "Close",
                 toggleLanguageText: "ID",
                 toggleThemeTitle: "Toggle Theme",
                 formResetSuccess: "Form successfully reset!",
                 // Customization texts
                 customizePageTitle: "Customize Task Page Appearance",
-                bgColorLabel: "Page Background Color:",
-                cardBgColorLabel: "Task Card Background Color:",
-                textColorLabel: "Main Text Color:",
-                btnColorLabel: "Action Button Color:",
-                colorOptions: {
-                    defaultTheme: "Default (Active Theme)",
-                    blue: "Blue",
-                    green: "Green",
-                    purple: "Purple",
-                    red: "Red",
-                    teal: "Teal",
-                    indigo: "Indigo",
-                    dark: "Dark",
-                    light: "Light"
+                colorSchemeLabel: "Select Color Scheme:",
+                colorSchemeOptions: {
+                    default: "Default (Active Theme)",
+                    modernBlue: "Modern Blue",
+                    energeticGreen: "Energetic Green",
+                    vibrantPurple: "Vibrant Purple",
+                    warmRed: "Warm Red",
+                    coolGrey: "Cool Grey"
                 }
             }
         };
+
+        // Custom Color Schemes - cohesive palettes for task page
+        // Each scheme defines colors for light and dark modes
+        const customColorSchemes = {
+            'default': {
+                bodyBgLight: 'linear-gradient(135deg, #f0fff4 0%, #e0ffe0 100%)', // light-theme default
+                bodyBgDark: 'linear-gradient(135deg, #2c3e50 0%, #1a252f 100%)',  // dark-theme default
+                cardBgLight: '#fdfcf5',
+                cardBgDark: '#34495e',
+                textColorLight: '#1a202c',
+                textColorDark: '#e2e8f0',
+                btnGradientLight: 'linear-gradient(to right, #3b82f6, #14b8a6)',
+                btnGradientDark: 'linear-gradient(to right, #8b5cf6, #6366f1)',
+                cardBorderLight: '#e0e0e0',
+                cardBorderDark: '#4a607a',
+                progressBarLight: '#2563eb', // blue-600
+                progressBarDark: '#6366f1' // indigo-500
+            },
+            'modernBlue': {
+                bodyBgLight: 'linear-gradient(135deg, #e0f7fa 0%, #b3e5fc 100%)', // Light sky blue
+                bodyBgDark: 'linear-gradient(135deg, #0d47a1 0%, #1a237e 100%)',  // Dark navy blue
+                cardBgLight: '#ffffff',
+                cardBgDark: '#263238', // Dark blue-gray
+                textColorLight: '#263238',
+                textColorDark: '#e3f2fd', // Lightest blue
+                btnGradientLight: 'linear-gradient(to right, #2196f3, #1976d2)', // Blue shades
+                btnGradientDark: 'linear-gradient(to right, #64b5f6, #42a5f5)',
+                cardBorderLight: '#90caf9',
+                cardBorderDark: '#455a64',
+                progressBarLight: '#2196f3',
+                progressBarDark: '#42a5f5'
+            },
+            'energeticGreen': {
+                bodyBgLight: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)', // Light mint green
+                bodyBgDark: 'linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%)',  // Dark forest green
+                cardBgLight: '#ffffff',
+                cardBgDark: '#212121', // Dark gray
+                textColorLight: '#333333',
+                textColorDark: '#a5d6a7', // Light green
+                btnGradientLight: 'linear-gradient(to right, #4caf50, #388e3c)', // Green shades
+                btnGradientDark: 'linear-gradient(to right, #81c784, #66bb6a)',
+                cardBorderLight: '#a5d6a7',
+                cardBorderDark: '#4caf50',
+                progressBarLight: '#4caf50',
+                progressBarDark: '#66bb6a'
+            },
+            'vibrantPurple': {
+                bodyBgLight: 'linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)', // Light lilac
+                bodyBgDark: 'linear-gradient(135deg, #4a148c 0%, #6a1b9a 100%)',  // Deep purple
+                cardBgLight: '#ffffff',
+                cardBgDark: '#311b92', // Darker purple
+                textColorLight: '#4a148c',
+                textColorDark: '#e0b2e8', // Lighter purple
+                btnGradientLight: 'linear-gradient(to right, #9c27b0, #7b1fa2)', // Purple shades
+                btnGradientDark: 'linear-gradient(to right, #ce93d8, #ba68c8)',
+                cardBorderLight: '#ce93d8',
+                cardBorderDark: '#7b1fa2',
+                progressBarLight: '#9c27b0',
+                progressBarDark: '#ce93d8'
+            },
+            'warmRed': {
+                bodyBgLight: 'linear-gradient(135deg, #ffe0b2 0%, #ffcc80 100%)', // Light peach/orange
+                bodyBgDark: 'linear-gradient(135deg, #bf360c 0%, #e64a19 100%)',  // Dark orange-red
+                cardBgLight: '#ffffff',
+                cardBgDark: '#3e2723', // Dark brown-red
+                textColorLight: '#4e342e',
+                textColorDark: '#ffccbc', // Light orange
+                btnGradientLight: 'linear-gradient(to right, #f44336, #d32f2f)', // Red shades
+                btnGradientDark: 'linear-gradient(to right, #ef9a9a, #e57373)',
+                cardBorderLight: '#ffab91',
+                cardBorderDark: '#d32f2f',
+                progressBarLight: '#f44336',
+                progressBarDark: '#e57373'
+            },
+            'coolGrey': {
+                bodyBgLight: 'linear-gradient(135deg, #eceff1 0%, #cfd8dc 100%)', // Light blue-grey
+                bodyBgDark: 'linear-gradient(135deg, #263238 0%, #37474f 100%)',  // Dark blue-grey
+                cardBgLight: '#ffffff',
+                cardBgDark: '#455a64', // Medium blue-grey
+                textColorLight: '#37474f',
+                textColorDark: '#b0bec5', // Light grey
+                btnGradientLight: 'linear-gradient(to right, #607d8b, #455a64)', // Grey-blue shades
+                btnGradientDark: 'linear-gradient(to right, #90a4ae, #78909c)',
+                cardBorderLight: '#90a4ae',
+                cardBorderDark: '#607d8b',
+                progressBarLight: '#607d8b',
+                progressBarDark: '#78909c'
+            }
+        };
+
 
         // Initial state
         let currentLanguage = 'id';
@@ -631,60 +682,49 @@
 
         // Function to populate customization select options
         function populateCustomizationOptions() {
-            const currentLangContent = content[currentLanguage].colorOptions;
-            const colors = ['default-theme', 'blue', 'green', 'purple', 'red', 'teal', 'indigo'];
-            const textColors = ['default-theme', 'dark-text', 'light-text', 'blue-text', 'green-text', 'purple-text', 'red-text', 'teal-text', 'indigo-text'];
-            const btnColors = ['default-theme', 'blue-btn', 'green-btn', 'purple-btn', 'red-btn', 'teal-btn', 'indigo-btn'];
+            const currentLangOptions = content[currentLanguage].colorSchemeOptions;
+            colorSchemeSelect.innerHTML = ''; // Clear existing options
 
-
-            // Helper to populate a select element
-            function populateSelect(selectElement, optionsArray) {
-                selectElement.innerHTML = ''; // Clear existing options
-                optionsArray.forEach(value => {
-                    const option = document.createElement('option');
-                    option.value = value;
-                    // Use mapping for display text
-                    option.textContent = currentLangContent[value.replace('-text', '').replace('-btn', '').replace('-theme', '')] || value;
-                    selectElement.appendChild(option);
-                });
+            for (const key in currentLangOptions) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = currentLangOptions[key];
+                colorSchemeSelect.appendChild(option);
             }
-
-            populateSelect(bgColorSelect, colors);
-            populateSelect(cardBgColorSelect, colors);
-            populateSelect(textColorSelect, textColors);
-            populateSelect(btnColorSelect, btnColors);
         }
 
         // Function to update content based on language
         function updateContent() {
             const currentLangContent = content[currentLanguage];
 
-            pageTitle.textContent = currentLangContent.pageTitle;
+            // Branding updates
+            pageTitle.textContent = currentLangContent.pageTitle.replace('LinkForge', 'SapiBersinar'); // Ensure branding update
+
             targetUrlLabel.textContent = currentLangContent.targetUrlLabel;
             addTaskTitle.textContent = currentLangContent.addTaskTitle;
             addTaskBtnText.textContent = currentLangContent.addTaskBtnText;
             requiredTasksCountLabel.textContent = currentLangContent.requiredTasksCountLabel;
             requiredTasksInfo.textContent = currentLangContent.requiredTasksInfo;
             generateLinkBtnText.textContent = currentLangContent.generateLinkBtnText;
-            resetFormBtnText.textContent = currentLangContent.resetFormBtnText; // Update reset button text
+            resetFormBtnText.textContent = currentLangContent.resetFormBtnText;
             generatedLinkLabel.textContent = currentLangContent.generatedLinkLabel;
             copyLinkBtnText.textContent = currentLangContent.copyLinkBtnText;
 
-            // Update customization section texts
+            // Customization section texts
             customizePageTitle.textContent = currentLangContent.customizePageTitle;
-            bgColorLabel.textContent = currentLangContent.bgColorLabel;
-            cardBgColorLabel.textContent = currentLangContent.cardBgColorLabel;
-            textColorLabel.textContent = currentLangContent.textColorLabel;
-            btnColorLabel.textContent = currentLangContent.btnColorLabel;
+            colorSchemeLabel.textContent = currentLangContent.colorSchemeLabel;
 
             // Repopulate customization options for selected language
             populateCustomizationOptions();
+            // Ensure the previously selected value is maintained if available
+            if (colorSchemeSelect.dataset.selected) {
+                 colorSchemeSelect.value = colorSchemeSelect.dataset.selected;
+            }
 
-            // Update language toggle button text and title
+
+            // Language and Theme Toggle buttons
             toggleLanguageBtn.textContent = currentLangContent.toggleLanguageText;
             toggleLanguageBtn.title = currentLangContent.toggleLanguageText === 'EN' ? 'Switch to English' : 'Ubah ke Bahasa Indonesia';
-
-            // Update theme toggle button title
             toggleThemeBtn.title = currentLangContent.toggleThemeTitle;
 
             // Update placeholders and labels for existing tasks
@@ -699,20 +739,19 @@
                 Array.from(typeSelect.options).forEach(option => {
                     if (option.value) {
                         option.textContent = currentLangContent.taskTypes[option.value];
-                    } else { // Handle the default 'Add Task' option
+                    } else {
                         option.textContent = currentLangContent.addTaskBtnText;
                     }
                 });
             });
 
-            // Update target URL placeholder
+            // Target URL placeholder
             targetUrlInput.placeholder = currentLanguage === 'id' ? "Contoh: https://pastebin.com/0000000" : "Example: https://pastebin.com/0000000";
 
-            // Update inline error messages for target URL if visible
+            // Inline error messages
             if (!targetUrlError.classList.contains('hidden')) {
                 targetUrlError.textContent = currentLangContent.inlineErrorTargetUrl;
             }
-            // Update inline error messages for existing tasks
             document.querySelectorAll('.task-item').forEach(taskDiv => {
                 const typeError = taskDiv.querySelector('.task-type-error');
                 const urlError = taskDiv.querySelector('.task-url-error');
@@ -727,11 +766,10 @@
 
         // Function to update theme classes and icon
         function updateTheme() {
-            // Update body theme class
+            // Apply default theme to body and main card container
             body.classList.remove('dark-theme', 'light-theme');
             body.classList.add(`${currentTheme}-theme`);
 
-            // Update main card container theme class
             if (currentTheme === 'dark') {
                 mainCardContainer.style.backgroundColor = '#34495e';
                 mainCardContainer.style.borderColor = '#4a607a';
@@ -740,13 +778,13 @@
                 mainCardContainer.style.borderColor = '#e0e0e0';
             }
 
-            // Update button classes for primary buttons
+            // Update primary buttons
             document.querySelectorAll('.btn-primary-dark, .btn-primary-light').forEach(btn => {
                 btn.classList.remove('btn-primary-dark', 'btn-primary-light');
                 btn.classList.add(`btn-primary-${currentTheme}`);
             });
 
-            // Update Reset button theme (it's gray, but still needs theme consistency)
+            // Update Reset button theme
             if (currentTheme === 'dark') {
                 resetFormBtn.classList.remove('bg-gray-500', 'hover:bg-gray-600');
                 resetFormBtn.classList.add('bg-gray-700', 'hover:bg-gray-800');
@@ -754,7 +792,6 @@
                 resetFormBtn.classList.remove('bg-gray-700', 'hover:bg-gray-800');
                 resetFormBtn.classList.add('bg-gray-500', 'hover:bg-gray-600');
             }
-
 
             // Update input field classes
             document.querySelectorAll('.input-field').forEach(input => {
@@ -796,23 +833,8 @@
                 themeIcon.classList.add('fa-moon');
             }
 
-            // Re-apply theme to existing task items (dynamically added)
-            document.querySelectorAll('.task-item').forEach(card => {
-                if (currentTheme === 'dark') {
-                    card.classList.add('dark-theme');
-                    card.style.backgroundColor = '#2c3e50';
-                    card.style.borderColor = '#4a607a';
-                } else {
-                    card.classList.remove('dark-theme');
-                    card.style.backgroundColor = '#edf2f7';
-                    card.style.borderColor = '#e2e8f0';
-                }
-            });
-
-            // Update result section color based on theme (without re-triggering animation)
-            if (!resultSection.classList.contains('hidden')) {
-                updateResultSectionColor(false);
-            }
+            // Re-render steps to update their card theme
+            updateContent(); 
         }
 
         // Function to add a new task input group
@@ -826,9 +848,8 @@
             const taskId = `task-${taskCounter}`;
             const taskDiv = document.createElement('div');
             taskDiv.id = taskId;
-            taskDiv.className = `task-item flex flex-col sm:flex-row items-start sm:items-center gap-2 mb-4 animate-slide-in-right`; // Align items-start for label/error
+            taskDiv.className = `task-item flex flex-col sm:flex-row items-start sm:items-center gap-2 mb-4 animate-slide-in-right`;
 
-            // Apply theme colors directly based on currentTheme
             if (currentTheme === 'dark') {
                 taskDiv.classList.add('dark-theme');
                 taskDiv.style.backgroundColor = '#2c3e50';
@@ -866,7 +887,6 @@
             `;
             tasksContainer.appendChild(taskDiv);
 
-            // Apply theme to newly added input fields and select
             const newInputs = taskDiv.querySelectorAll('.input-field');
             newInputs.forEach(input => {
                 if (currentTheme === 'dark') {
@@ -876,28 +896,23 @@
                 }
             });
 
-            // Add event listener for removing task
             taskDiv.querySelector('.remove-task-btn').addEventListener('click', () => {
                 tasksContainer.removeChild(taskDiv);
                 taskCounter--;
                 updateRequiredTasksCountMax();
             });
 
-            // Add event listener for changing placeholder when task type changes
             taskDiv.querySelector('.task-type-select').addEventListener('change', (e) => {
                 const selectedType = e.target.value;
                 const urlInput = taskDiv.querySelector('.task-url-input');
                 urlInput.placeholder = currentLangContent.taskPlaceholders[selectedType] || '';
-                // Hide error message on change
                 const typeError = taskDiv.querySelector('.task-type-error');
                 if (typeError) typeError.classList.add('hidden');
             });
-            // Hide error message on input for URL
             taskDiv.querySelector('.task-url-input').addEventListener('input', (e) => {
                 const urlError = taskDiv.querySelector('.task-url-error');
                 if (urlError) urlError.classList.add('hidden');
             });
-
 
             updateRequiredTasksCountMax();
         }
@@ -906,12 +921,12 @@
         function updateRequiredTasksCountMax() {
             requiredTasksCountInput.max = taskCounter;
             if (parseInt(requiredTasksCountInput.value) > taskCounter) {
-                requiredTasksCountInput.value = taskCounter; // Adjust value if it exceeds new max
+                requiredTasksCountInput.value = taskCounter;
             }
             if (taskCounter === 0) {
-                requiredTasksCountInput.value = 0; // Set to 0 if no tasks
+                requiredTasksCountInput.value = 0;
             } else if (requiredTasksCountInput.value < 1) {
-                requiredTasksCountInput.value = 1; // Ensure minimum 1 if tasks exist
+                requiredTasksCountInput.value = 1;
             }
         }
 
@@ -920,7 +935,6 @@
             modalTitle.textContent = title;
             modalMessage.textContent = message;
             customModal.classList.remove('hidden');
-            // Ensure modal theme matches current theme
             if (currentTheme === 'dark') {
                 modalContent.classList.add('dark-theme');
                 modalContent.style.backgroundColor = '#2c3e50';
@@ -931,7 +945,7 @@
         }
 
         // Function to show a temporary notification (toast/snackbar style)
-        function showNotification(message, type = 'success', duration = 2100) { // Duration 2.1 seconds
+        function showNotification(message, type = 'success', duration = 2100) {
             const notificationDiv = document.createElement('div');
             notificationDiv.className = `notification-item ${type} ${currentTheme === 'dark' ? 'dark-theme' : ''}`;
             notificationDiv.innerHTML = `
@@ -939,23 +953,19 @@
                 <span>${message}</span>
             `;
 
-            // Append to body or notificationContainer
             notificationContainer.appendChild(notificationDiv);
 
-            // Make it visible
             setTimeout(() => {
                 notificationDiv.style.opacity = '1';
                 notificationDiv.style.transform = 'translateY(0)';
-            }, 10); // Small delay to trigger transition
+            }, 10);
 
-            // Hide after duration
             setTimeout(() => {
                 notificationDiv.style.opacity = '0';
                 notificationDiv.style.transform = 'translateY(-100%)';
-                // Remove element after transition completes
                 notificationDiv.addEventListener('transitionend', function handler() {
                     notificationContainer.removeChild(notificationDiv);
-                    notificationDiv.removeEventListener('transitionend', handler); // Clean up
+                    notificationDiv.removeEventListener('transitionend', handler);
                 });
             }, duration);
         }
@@ -967,32 +977,27 @@
             resultSection.style.backgroundColor = colors[currentColorIndex];
             
             if (triggerAnimation) {
-                // Remove previous animation to allow restart
                 resultSection.classList.remove('animate-result-section-pop');
-                // Force reflow/repaint to restart the animation
                 void resultSection.offsetWidth; 
-                // Add new animation class
                 resultSection.classList.add('animate-result-section-pop');
             }
 
-            currentColorIndex = (currentColorIndex + 1) % colors.length; // Cycle through colors
+            currentColorIndex = (currentColorIndex + 1) % colors.length;
         }
 
         // Function to clear all form fields and reset task counter
         function resetForm() {
             targetUrlInput.value = '';
-            targetUrlError.classList.add('hidden'); // Hide error
-            tasksContainer.innerHTML = ''; // Clear all dynamic tasks
+            targetUrlError.classList.add('hidden');
+            tasksContainer.innerHTML = '';
             taskCounter = 0;
             requiredTasksCountInput.value = 1;
             updateRequiredTasksCountMax();
-            resultSection.classList.add('hidden'); // Hide result section
+            resultSection.classList.add('hidden');
             
             // Reset customization options to default
-            bgColorSelect.value = 'default-theme';
-            cardBgColorSelect.value = 'default-theme';
-            textColorSelect.value = 'default-theme';
-            btnColorSelect.value = 'default-theme';
+            colorSchemeSelect.value = 'default';
+            colorSchemeSelect.dataset.selected = 'default'; // Keep track for language change
 
             showNotification(content[currentLanguage].formResetSuccess, 'success');
         }
@@ -1002,14 +1007,12 @@
             let isValid = true;
             const currentLangContent = content[currentLanguage];
 
-            // Hide all previous inline error messages
             targetUrlError.classList.add('hidden');
             document.querySelectorAll('.task-item').forEach(taskDiv => {
                 taskDiv.querySelector('.task-type-error').classList.add('hidden');
                 taskDiv.querySelector('.task-url-error').classList.add('hidden');
             });
 
-            // Validate Target URL
             const targetUrl = targetUrlInput.value.trim();
             if (!targetUrl) {
                 targetUrlError.textContent = currentLangContent.inlineErrorTargetUrl;
@@ -1052,38 +1055,30 @@
             }
 
             if (!isValid) {
-                // If any validation failed, stop here
                 return;
             }
 
-            // Get customization options
-            const customOptions = {
-                bgColor: bgColorSelect.value,
-                cardBgColor: cardBgColorSelect.value,
-                textColor: textColorSelect.value,
-                btnColor: btnColorSelect.value
-            };
-
+            // Get selected color scheme
+            const selectedColorScheme = colorSchemeSelect.value;
 
             const taskData = {
                 target: targetUrl,
                 buttonText: currentLangContent.buttonTextDefault,
                 requiredTasks: requiredTasks,
                 tasks: tasks,
-                custom: customOptions // Add customization options to taskData
+                custom: {
+                    colorScheme: selectedColorScheme
+                }
             };
 
             const encodedData = btoa(JSON.stringify(taskData));
-            // Corrected path to lowercase 'task'
             const generatedLink = `https://SapiBersinar.github.io/task/?data=${encodedData}`;
 
             generatedLinkTextarea.value = generatedLink;
-            resultSection.classList.remove('hidden'); // Show the result section with the link
+            resultSection.classList.remove('hidden');
 
-            // Update the color of the result section and trigger its animation
-            updateResultSectionColor(true); // Trigger animation
+            updateResultSectionColor(true);
 
-            // Show success notification using the toast
             showNotification(currentLangContent.modalLinkCreated, 'success');
         }
 
@@ -1091,16 +1086,15 @@
         function copyLink() {
             generatedLinkTextarea.select();
             document.execCommand('copy');
-            showNotification(content[currentLanguage].modalLinkCopied, 'success'); // Show copy success notification in toast
+            showNotification(content[currentLanguage].modalLinkCopied, 'success');
         }
 
         // Event Listeners
         toggleLanguageBtn.addEventListener('click', () => {
             currentLanguage = currentLanguage === 'id' ? 'en' : 'id';
             updateContent();
-            // Ensure result section color is also updated on language change if visible
             if (!resultSection.classList.contains('hidden')) {
-                updateResultSectionColor(false); // Do not trigger animation
+                updateResultSectionColor(false);
             }
         });
 
@@ -1111,14 +1105,13 @@
 
         addTaskBtn.addEventListener('click', addTask);
         generateLinkBtn.addEventListener('click', generateLink);
-        resetFormBtn.addEventListener('click', resetForm); // Event listener for reset button
-        copyLinkBtn.addEventListener('click', copyLink); // Event listener for copy button
+        resetFormBtn.addEventListener('click', resetForm);
+        copyLinkBtn.addEventListener('click', copyLink);
 
         modalCloseBtn.addEventListener('click', () => {
             customModal.classList.add('hidden');
         });
 
-        // Hide targetUrlError on input
         targetUrlInput.addEventListener('input', () => {
             targetUrlError.classList.add('hidden');
         });
@@ -1134,12 +1127,16 @@
             }
         });
 
+        // Store selected color scheme on change to persist across language toggles
+        colorSchemeSelect.addEventListener('change', () => {
+            colorSchemeSelect.dataset.selected = colorSchemeSelect.value;
+        });
 
         // Initial setup
-        populateCustomizationOptions(); // Populate options on load
-        updateContent();
-        updateTheme(); // Call updateTheme to set initial theme colors correctly
-        updateRequiredTasksCountMax(); // Set initial max for required tasks
+        populateCustomizationOptions();
+        updateContent(); // Populates text based on language and then renders steps
+        updateTheme(); // Sets initial theme colors and re-renders elements
+        updateRequiredTasksCountMax();
     </script>
 </body>
 </html>

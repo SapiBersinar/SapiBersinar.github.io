@@ -418,7 +418,7 @@
             Memuat tugas...
         </div>
         <div id="errorMessage" class="text-lg text-red-500 font-bold" style="display: none;">
-            Terjadi kesalahan saat memuat tugas. Link mungkin tidak valid atau rusak.
+            Terjadi kesalahan saat memuat tugas. Link mungkin tidak valid atau rusak, dan beberapa kemungkinan disebabkan pembaharuan pada website.
         </div>
 
         <!-- Task List Container -->
@@ -491,12 +491,15 @@
         let completedCount = 0;
         let customizationOptions = {}; // Stores custom colors from URL
 
+        // Store the keys for the currently displayed modal message
+        let currentModalTitleKey = '';
+        let currentModalMessageKey = '';
+
         // --- Custom Color Schemes - cohesive palettes for task page ---
-        // These schemes are defined here and are expected to match the 'create' page
         const customColorSchemes = {
             'default': {
-                bodyBgLight: 'linear-gradient(135deg, #f0fff4 0%, #e0ffe0 100%)', // light-theme default
-                bodyBgDark: 'linear-gradient(135deg, #2c3e50 0%, #1a252f 100%)',  // dark-theme default
+                bodyBgLight: 'linear-gradient(135deg, #f0fff4 0%, #e0ffe0 100%)',
+                bodyBgDark: 'linear-gradient(135deg, #2c3e50 0%, #1a252f 100%)',
                 cardBgLight: '#fdfcf5',
                 cardBgDark: '#34495e',
                 textColorLight: '#1a202c',
@@ -505,17 +508,17 @@
                 btnGradientDark: 'linear-gradient(to right, #8b5cf6, #6366f1)',
                 cardBorderLight: '#e0e0e0',
                 cardBorderDark: '#4a607a',
-                progressBarLight: '#2563eb', // blue-600
-                progressBarDark: '#6366f1' // indigo-500
+                progressBarLight: '#2563eb',
+                progressBarDark: '#6366f1'
             },
             'modernBlue': {
-                bodyBgLight: 'linear-gradient(135deg, #e0f7fa 0%, #b3e5fc 100%)', // Light sky blue
-                bodyBgDark: 'linear-gradient(135deg, #0d47a1 0%, #1a237e 100%)',  // Dark navy blue
+                bodyBgLight: 'linear-gradient(135deg, #e0f7fa 0%, #b3e5fc 100%)',
+                bodyBgDark: 'linear-gradient(135deg, #0d47a1 0%, #1a237e 100%)',
                 cardBgLight: '#ffffff',
-                cardBgDark: '#263238', // Dark blue-gray
+                cardBgDark: '#263238',
                 textColorLight: '#263238',
-                textColorDark: '#e3f2fd', // Lightest blue
-                btnGradientLight: 'linear-gradient(to right, #2196f3, #1976d2)', // Blue shades
+                textColorDark: '#e3f2fd',
+                btnGradientLight: 'linear-gradient(to right, #2196f3, #1976d2)',
                 btnGradientDark: 'linear-gradient(to right, #64b5f6, #42a5f5)',
                 cardBorderLight: '#90caf9',
                 cardBorderDark: '#455a64',
@@ -523,13 +526,13 @@
                 progressBarDark: '#42a5f5'
             },
             'energeticGreen': {
-                bodyBgLight: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)', // Light mint green
-                bodyBgDark: 'linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%)',  // Dark forest green
+                bodyBgLight: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)',
+                bodyBgDark: 'linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%)',
                 cardBgLight: '#ffffff',
-                cardBgDark: '#212121', // Dark gray
+                cardBgDark: '#212121',
                 textColorLight: '#333333',
-                textColorDark: '#a5d6a7', // Light green
-                btnGradientLight: 'linear-gradient(to right, #4caf50, #388e3c)', // Green shades
+                textColorDark: '#a5d6a7',
+                btnGradientLight: 'linear-gradient(to right, #4caf50, #388e3c)',
                 btnGradientDark: 'linear-gradient(to right, #81c784, #66bb6a)',
                 cardBorderLight: '#a5d6a7',
                 cardBorderDark: '#4caf50',
@@ -537,13 +540,13 @@
                 progressBarDark: '#66bb6a'
             },
             'vibrantPurple': {
-                bodyBgLight: 'linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)', // Light lilac
-                bodyBgDark: 'linear-gradient(135deg, #4a148c 0%, #6a1b9a 100%)',  // Deep purple
+                bodyBgLight: 'linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)',
+                bodyBgDark: 'linear-gradient(135deg, #4a148c 0%, #6a1b9a 100%)',
                 cardBgLight: '#ffffff',
-                cardBgDark: '#311b92', // Darker purple
+                cardBgDark: '#311b92',
                 textColorLight: '#4a148c',
-                textColorDark: '#e0b2e8', // Lighter purple
-                btnGradientLight: 'linear-gradient(to right, #9c27b0, #7b1fa2)', // Purple shades
+                textColorDark: '#e0b2e8',
+                btnGradientLight: 'linear-gradient(to right, #9c27b0, #7b1fa2)',
                 btnGradientDark: 'linear-gradient(to right, #ce93d8, #ba68c8)',
                 cardBorderLight: '#ce93d8',
                 cardBorderDark: '#7b1fa2',
@@ -551,13 +554,13 @@
                 progressBarDark: '#ce93d8'
             },
             'warmRed': {
-                bodyBgLight: 'linear-gradient(135deg, #ffe0b2 0%, #ffcc80 100%)', // Light peach/orange
-                bodyBgDark: 'linear-gradient(135deg, #bf360c 0%, #e64a19 100%)',  // Dark orange-red
+                bodyBgLight: 'linear-gradient(135deg, #ffe0b2 0%, #ffcc80 100%)',
+                bodyBgDark: 'linear-gradient(135deg, #bf360c 0%, #e64a19 100%)',
                 cardBgLight: '#ffffff',
-                cardBgDark: '#3e2723', // Dark brown-red
+                cardBgDark: '#3e2723',
                 textColorLight: '#4e342e',
-                textColorDark: '#ffccbc', // Light orange
-                btnGradientLight: 'linear-gradient(to right, #f44336, #d32f2f)', // Red shades
+                textColorDark: '#ffccbc',
+                btnGradientLight: 'linear-gradient(to right, #f44336, #d32f2f)',
                 btnGradientDark: 'linear-gradient(to right, #ef9a9a, #e57373)',
                 cardBorderLight: '#ffab91',
                 cardBorderDark: '#d32f2f',
@@ -565,13 +568,13 @@
                 progressBarDark: '#e57373'
             },
             'coolGrey': {
-                bodyBgLight: 'linear-gradient(135deg, #eceff1 0%, #cfd8dc 100%)', // Light blue-grey
-                bodyBgDark: 'linear-gradient(135deg, #263238 0%, #37474f 100%)',  // Dark blue-grey
+                bodyBgLight: 'linear-gradient(135deg, #eceff1 0%, #cfd8dc 100%)',
+                bodyBgDark: 'linear-gradient(135deg, #263238 0%, #37474f 100%)',
                 cardBgLight: '#ffffff',
-                cardBgDark: '#455a64', // Medium blue-grey
+                cardBgDark: '#455a64',
                 textColorLight: '#37474f',
-                textColorDark: '#b0bec5', // Light grey
-                btnGradientLight: 'linear-gradient(to right, #607d8b, #455a64)', // Grey-blue shades
+                textColorDark: '#b0bec5',
+                btnGradientLight: 'linear-gradient(to right, #607d8b, #455a64)',
                 btnGradientDark: 'linear-gradient(to right, #90a4ae, #78909c)',
                 cardBorderLight: '#90a4ae',
                 cardBorderDark: '#607d8b',
@@ -585,57 +588,59 @@
             id: {
                 pageTitle: "Selesaikan Minimal 1 Tugas untuk membuka tautan ekslusif",
                 loadingMessage: "Memuat tugas...",
-                errorMessage: "Terjadi kesalahan saat memuat tugas. Link mungkin tidak valid atau rusak.",
+                errorMessage: "Terjadi kesalahan saat memuat tugas. Link mungkin tidak valid atau rusak, dan beberapa kemungkinan disebabkan pembaharuan pada website.", // Updated
                 tasksProgress: (completed, total, percentage) => `${percentage}% Selesai (${completed} dari ${total} tugas)`,
                 openTargetBtnText: "Buka Konten Sekarang",
                 goToTaskBtn: "Kunjungi Tugas",
                 verifyingText: "Memverifikasi...",
                 completedText: "Selesai",
                 modalWarningTitle: "Peringatan!",
-                modalInvalidLink: "Link tugas tidak valid atau rusak. Silakan periksa kembali URL.",
+                modalInvalidLink: `Mohon maaf, sepertinya terjadi masalah pada link ini. Ini bisa disebabkan oleh pembaruan website, link rusak, atau kesalahan lainnya. Pemilik link dimohon untuk membuat ulang link tugas ini.`,
                 modalCompletionError: "Terjadi kesalahan saat menandai tugas. Silakan coba lagi.",
                 modalClose: "Tutup",
                 toggleLanguageText: "EN",
                 toggleThemeTitle: "Ubah Tema",
-                promotionTitle: "Buat Tugasmu Sendiri di SapiBersinar!", // Updated branding
+                promotionTitle: "Buat Tugasmu Sendiri di SapiBersinar!",
                 promotionText: `
                     Ingin punya halaman tugasmu sendiri untuk meningkatkan engagement atau mendapatkan pengikut?
                     Gabung sekarang di SapiBersinar dan buat link unikmu hanya dalam hitungan menit!
-                `, // Updated branding
+                `,
                 promotionBtnText: "Gabung Sekarang!",
                 taskTypes: { // Specific phrases for task types
                     tiktok: "Ikuti akun Tiktok",
-                    whatsapp: "Bergabung dengan saluran WhatsApp", // Corrected
+                    whatsapp: "Bergabung dengan saluran WhatsApp",
                     roblox: "Ikuti/gabung akun Roblox",
-                    youtube: "Subscribe channel YouTube"
+                    youtube: "Subscribe channel YouTube",
+                    discord: "Gabung Discord"
                 }
             },
             en: {
                 pageTitle: "Complete At Least 1 Task to Unlock Exclusive Link",
                 loadingMessage: "Loading tasks...",
-                errorMessage: "An error occurred while loading tasks. The link might be invalid or corrupted.",
+                errorMessage: "An error occurred while loading tasks. The link might be invalid or corrupted, and some possibilities are due to website updates.", // Updated
                 tasksProgress: (completed, total, percentage) => `${percentage}% Complete (${completed} of ${total} tasks)`,
                 openTargetBtnText: "Open Content Now",
                 goToTaskBtn: "Visit Task",
                 verifyingText: "Verifying...",
                 completedText: "Completed",
                 modalWarningTitle: "Warning!",
-                modalInvalidLink: "Invalid or corrupted task link. Please check the URL.",
+                modalInvalidLink: `We apologize, it seems there's an issue with this link. This could be due to website updates, a corrupted link, or other errors. The link owner is kindly requested to recreate this task link.`,
                 modalCompletionError: "An error occurred while marking task. Please try again.",
                 modalClose: "Close",
                 toggleLanguageText: "ID",
                 toggleThemeTitle: "Toggle Theme",
-                promotionTitle: "Create Your Own Tasks with SapiBersinar!", // Updated branding
+                promotionTitle: "Create Your Own Tasks with SapiBersinar!",
                 promotionText: `
                     Want to create your own task page to boost engagement or gain followers?
                     Join SapiBersinar now and create your unique links in minutes!
-                `, // Updated branding
+                `,
                 promotionBtnText: "Join Now!",
                 taskTypes: { // This should match content from create page
                     tiktok: "Follow TikTok account",
-                    whatsapp: "Join WhatsApp channel", // Corrected
+                    whatsapp: "Join WhatsApp channel",
                     roblox: "Follow/join Roblox account",
-                    youtube: "Subscribe YouTube channel"
+                    youtube: "Subscribe YouTube channel",
+                    discord: "Join Discord"
                 }
             }
         };
@@ -646,7 +651,7 @@
 
             pageTitle.textContent = currentLangContent.pageTitle;
             loadingMessage.textContent = currentLangContent.loadingMessage;
-            errorMessage.textContent = currentLangContent.errorMessage;
+            errorMessage.textContent = currentLangContent.errorMessage; // This one is updated
             openTargetBtnText.textContent = currentLangContent.openTargetBtnText;
             
             promotionTitle.textContent = currentLangContent.promotionTitle;
@@ -664,6 +669,12 @@
             if (tasksData && tasksData.tasks) {
                 renderTasks(tasksData.tasks);
                 updateProgress();
+            }
+
+            // IMPORTANT: If modal is open, re-render its content for language change
+            if (!customModal.classList.contains('hidden') && currentModalTitleKey && currentModalMessageKey) {
+                // Re-call showModal using the *keys* to get the translated version
+                showModal(currentModalTitleKey, currentModalMessageKey);
             }
         }
 
@@ -779,9 +790,15 @@
         }
 
         // Function to show custom modal
-        function showModal(title, message) {
-            modalTitle.textContent = title;
-            modalMessage.textContent = message;
+        // Now accepts keys for messages instead of direct strings
+        function showModal(titleKey, messageKey) {
+            currentModalTitleKey = titleKey; // Store keys for language toggle
+            currentModalMessageKey = messageKey; // Store keys for language toggle
+
+            // Look up the actual message in the current language content
+            modalTitle.textContent = content[currentLanguage][titleKey];
+            modalMessage.innerHTML = content[currentLanguage][messageKey]; // Use innerHTML for line breaks
+
             customModal.classList.remove('hidden');
             // Ensure modal theme matches current theme
             if (currentTheme === 'dark') {
@@ -973,7 +990,8 @@
             if (!encodedData) {
                 loadingMessage.style.display = 'none';
                 errorMessage.style.display = 'block';
-                showModal(content[currentLanguage].modalWarningTitle, content[currentLanguage].modalInvalidLink);
+                // Pass content keys instead of direct strings
+                showModal('modalWarningTitle', 'modalInvalidLink');
                 return;
             }
 
@@ -1005,7 +1023,8 @@
                 console.error("Error parsing task data:", e);
                 loadingMessage.style.display = 'none';
                 errorMessage.style.display = 'block';
-                showModal(content[currentLanguage].modalWarningTitle, content[currentLanguage].modalInvalidLink);
+                // Pass content keys instead of direct strings
+                showModal('modalWarningTitle', 'modalInvalidLink');
             }
         }
 
@@ -1024,8 +1043,9 @@
             if (tasksData && completedCount >= tasksData.requiredTasks) {
                 window.open(tasksData.target, '_blank');
             } else {
-                // This scenario should ideally not happen if button is disabled, but good for fallback
-                showModal(content[currentLanguage].modalWarningTitle, content[currentLanguage].tasksProgress(completedCount, tasksData.tasks.length, Math.round((completedCount / tasksData.tasks.length) * 100)) + ". " + content[currentLanguage].openTargetBtnText + ".");
+                // Pass content keys instead of direct strings
+                // Using modalCompletionError here, you might want a specific key for "not enough tasks completed"
+                showModal('modalWarningTitle', 'modalCompletionError'); 
             }
         });
 

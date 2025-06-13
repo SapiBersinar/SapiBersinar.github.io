@@ -12,7 +12,7 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
-      gtag('config', 'G-K5JQPNMVEF'); // Your new GA4 Measurement ID
+      gtag('config', 'G-K5JQPNMVEF'); // Your GA4 Measurement ID
     </script>
 
     <!-- SEO Meta Tags for SapiBersinar Task Page -->
@@ -588,7 +588,7 @@
             id: {
                 pageTitle: "Selesaikan Minimal 1 Tugas untuk membuka tautan ekslusif",
                 loadingMessage: "Memuat tugas...",
-                errorMessage: "Terjadi kesalahan saat memuat tugas. Link mungkin tidak valid atau rusak, dan beberapa kemungkinan disebabkan pembaharuan pada website.", // Updated
+                errorMessage: "Terjadi kesalahan saat memuat tugas. Link mungkin tidak valid atau rusak, dan beberapa kemungkinan disebabkan pembaharuan pada website.",
                 tasksProgress: (completed, total, percentage) => `${percentage}% Selesai (${completed} dari ${total} tugas)`,
                 openTargetBtnText: "Buka Konten Sekarang",
                 goToTaskBtn: "Kunjungi Tugas",
@@ -612,12 +612,13 @@
                     roblox: "Ikuti/gabung akun Roblox",
                     youtube: "Subscribe channel YouTube",
                     discord: "Gabung Discord"
-                }
+                },
+                multipleLinksOpenAlert: "Anda akan diarahkan ke beberapa tautan!"
             },
             en: {
                 pageTitle: "Complete At Least 1 Task to Unlock Exclusive Link",
                 loadingMessage: "Loading tasks...",
-                errorMessage: "An error occurred while loading tasks. The link might be invalid or corrupted, and some possibilities are due to website updates.", // Updated
+                errorMessage: "An error occurred while loading tasks. The link might be invalid or corrupted, and some possibilities are due to website updates.",
                 tasksProgress: (completed, total, percentage) => `${percentage}% Complete (${completed} of ${total} tasks)`,
                 openTargetBtnText: "Open Content Now",
                 goToTaskBtn: "Visit Task",
@@ -641,7 +642,8 @@
                     roblox: "Follow/join Roblox account",
                     youtube: "Subscribe YouTube channel",
                     discord: "Join Discord"
-                }
+                },
+                multipleLinksOpenAlert: "You will be redirected to multiple links!"
             }
         };
 
@@ -651,7 +653,7 @@
 
             pageTitle.textContent = currentLangContent.pageTitle;
             loadingMessage.textContent = currentLangContent.loadingMessage;
-            errorMessage.textContent = currentLangContent.errorMessage; // This one is updated
+            errorMessage.textContent = currentLangContent.errorMessage;
             openTargetBtnText.textContent = currentLangContent.openTargetBtnText;
             
             promotionTitle.textContent = currentLangContent.promotionTitle;
@@ -823,7 +825,7 @@
                 taskDiv.className = `task-card flex flex-col sm:flex-row items-center gap-4 transition-all duration-300 ${isCompleted ? 'task-completed' : ''}`;
                 
                 // Apply custom card colors if available, otherwise default theme
-                const scheme = customColorSchemes[customizationOptions.colorScheme || 'default'];
+                const scheme = customColorScheemes[customizationOptions.colorScheme || 'default'];
                 const mode = currentTheme;
 
                 taskDiv.style.backgroundColor = scheme[`cardBg${mode.charAt(0).toUpperCase() + mode.slice(1)}`];
@@ -946,7 +948,7 @@
                 // Button permanently disabled after completion
                 button.disabled = true;
                 button.classList.remove('opacity-70', 'cursor-not-allowed'); // Remove temporary styles
-            }, 8500); // 8.5 seconds verification time
+            }, 15000); // 15 seconds verification time
         }
 
         // Function to update progress text and progress bar
@@ -982,6 +984,16 @@
             }
         }
 
+        // Function to validate URL format
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
         // Function to parse URL data
         function parseUrlData() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -1002,9 +1014,14 @@
                 // Extract customization options
                 customizationOptions = tasksData.custom || {}; // Use empty object if custom is not present
 
-                // Basic validation of parsed data structure
-                if (!tasksData.target || !tasksData.buttonText || !Array.isArray(tasksData.tasks) || tasksData.requiredTasks === undefined) {
-                    throw new Error("Invalid data structure");
+                // Validate and ensure targets is an array of valid URLs
+                if (!Array.isArray(tasksData.targets) || tasksData.targets.length === 0 || !tasksData.targets.every(isValidUrl)) {
+                    throw new Error("Invalid or missing target URLs");
+                }
+
+                // Basic validation of parsed data structure for tasks
+                if (!tasksData.buttonText || !Array.isArray(tasksData.tasks) || tasksData.requiredTasks === undefined) {
+                    throw new Error("Invalid task data structure");
                 }
                 
                 // Ensure requiredTasks is within bounds (at least 1, max total tasks)
@@ -1041,7 +1058,18 @@
 
         openTargetBtn.addEventListener('click', () => {
             if (tasksData && completedCount >= tasksData.requiredTasks) {
-                window.open(tasksData.target, '_blank');
+                // If multiple targets, show alert first
+                if (tasksData.targets.length > 1) {
+                    // Using a simple alert for now as per previous instruction to avoid custom modals for simple things.
+                    // If you want a custom modal for this, let me know!
+                    // Note: window.alert() is typically avoided in production code, but allowed for simple prompts here.
+                    // For a better UX, a custom modal with "Continue" or "Cancel" would be ideal.
+                    alert(content[currentLanguage].multipleLinksOpenAlert); 
+                }
+                // Open all target URLs
+                tasksData.targets.forEach(url => {
+                    window.open(url, '_blank');
+                });
             } else {
                 // Pass content keys instead of direct strings
                 // Using modalCompletionError here, you might want a specific key for "not enough tasks completed"

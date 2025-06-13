@@ -296,43 +296,6 @@
             color: #333;
         }
 
-        /* Task Page Preview styles */
-        #taskPreviewContainer {
-            border-radius: 1rem;
-            overflow: hidden;
-            border: 2px solid #6366f1; /* Indigo border for preview */
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
-            aspect-ratio: 9/16; /* Portrait orientation for phone-like preview */
-            max-width: 400px; /* Limit width to simulate phone */
-            width: 100%;
-            margin-left: auto;
-            margin-right: auto;
-            /* margin-top: 2rem; REMOVED as it's now inside resultSection */
-            display: flex; /* To center iframe content if needed */
-            align-items: center;
-            justify-content: center;
-            background-color: #ccc; /* Placeholder background */
-        }
-        body.dark-theme #taskPreviewContainer {
-            border-color: #8b5cf6; /* Purple for dark theme */
-            background-color: #555;
-        }
-        #taskPreviewIframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        .preview-placeholder {
-            text-align: center;
-            padding: 2rem;
-            color: #666;
-            font-size: 1.1rem;
-        }
-        body.dark-theme .preview-placeholder {
-            color: #aaa;
-        }
-
-
         /* Responsive adjustments for smaller screens */
         @media (max-width: 640px) {
             body {
@@ -369,10 +332,6 @@
                 min-height: 32px;
                 font-size: 0.9rem;
             }
-            #taskPreviewContainer {
-                aspect-ratio: 9/16; /* Maintain aspect ratio on small screens */
-                height: auto; /* Allow height to adjust */
-            }
         }
     </style>
 </head>
@@ -394,11 +353,16 @@
     <div id="mainContent" class="main-card-container">
         <h1 id="pageTitle" class="text-4xl font-extrabold mb-8 animate-fade-in-down">Buat Link Tugas Baru</h1>
 
-        <!-- Form for Target URL -->
+        <!-- Section for adding target URLs -->
         <div class="mb-8 p-6 rounded-xl shadow-md text-left task-card animate-fade-in" style="animation-delay: 0.2s;">
-            <label for="targetUrl" class="input-label" id="targetUrlLabel">URL Target (setelah semua tugas selesai):</label>
-            <input type="url" id="targetUrl" class="input-field mb-1" placeholder="Contoh: https://pastebin.com/0000000" required>
-            <span id="targetUrlError" class="error-message hidden">Harap isi URL target.</span>
+            <h2 id="targetUrlSectionTitle" class="text-2xl font-bold mb-4">Tambahkan URL Target (Maksimal 5)</h2>
+            <div id="targetUrlsContainer" class="space-y-4 mb-4">
+                <!-- Target URL inputs will be dynamically added here -->
+            </div>
+            <button id="addTargetUrlBtn" class="w-full py-3 rounded-xl font-bold text-white transition-all duration-300 transform hover:scale-105 btn-primary-dark">
+                <i class="fas fa-plus mr-2"></i> <span id="addTargetUrlBtnText">Tambah URL Target</span>
+            </button>
+            <span id="targetUrlError" class="error-message hidden mt-2">Harap isi setidaknya satu URL target yang valid.</span>
         </div>
 
         <!-- Section for adding tasks -->
@@ -441,25 +405,13 @@
             </button>
         </div>
 
-        <!-- Result Display and Copy - NOW INCLUDES PREVIEW -->
+        <!-- Result Display and Copy -->
         <div id="resultSection" class="hidden p-6 rounded-xl shadow-md text-left task-card">
             <label for="generatedLink" class="input-label" id="generatedLinkLabel">Link Tugas Anda:</label>
             <textarea id="generatedLink" class="input-field mb-4 h-24 resize-none" readonly></textarea>
             <button id="copyLinkBtn" class="w-full py-3 rounded-xl font-bold text-white transition-all duration-300 transform hover:scale-105 btn-primary-dark">
                 <i class="fas fa-copy mr-2"></i> <span id="copyLinkBtnText">Salin Link</span>
             </button>
-
-            <!-- Task Page Preview Section - MOVED HERE -->
-            <div class="mt-8 pt-4 border-t border-gray-300 dark:border-gray-600">
-                <h2 id="previewTitle" class="text-2xl font-bold mb-4">Pratinjau Halaman Tugas Anda</h2>
-                <p id="previewInfo" class="text-sm opacity-80 mb-4">Lihat bagaimana halaman tugas Anda akan terlihat.</p>
-                <div id="taskPreviewContainer">
-                    <iframe id="taskPreviewIframe" title="Pratinjau Halaman Tugas"></iframe>
-                    <div id="previewPlaceholder" class="preview-placeholder">
-                        Isi formulir di atas untuk melihat pratinjau halaman tugas Anda di sini.
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -483,9 +435,13 @@
         const themeIcon = toggleThemeBtn.querySelector('i');
 
         const pageTitle = document.getElementById('pageTitle');
-        const targetUrlInput = document.getElementById('targetUrl');
-        const targetUrlLabel = document.getElementById('targetUrlLabel');
-        const targetUrlError = document.getElementById('targetUrlError');
+        
+        const targetUrlSectionTitle = document.getElementById('targetUrlSectionTitle'); // New
+        const targetUrlsContainer = document.getElementById('targetUrlsContainer'); // New
+        const addTargetUrlBtn = document.getElementById('addTargetUrlBtn'); // New
+        const addTargetUrlBtnText = document.getElementById('addTargetUrlBtnText'); // New
+        const targetUrlError = document.getElementById('targetUrlError'); // Updated, now for multiple URLs
+
         const addTaskTitle = document.getElementById('addTaskTitle');
         const tasksContainer = document.getElementById('tasksContainer');
         const addTaskBtn = document.getElementById('addTaskBtn');
@@ -508,14 +464,6 @@
         const colorSchemeSelect = document.getElementById('colorScheme');
         const colorSchemeLabel = document.getElementById('colorSchemeLabel');
 
-        // Preview elements
-        const previewTitle = document.getElementById('previewTitle');
-        const previewInfo = document.getElementById('previewInfo');
-        const taskPreviewIframe = document.getElementById('taskPreviewIframe');
-        const previewPlaceholder = document.getElementById('previewPlaceholder');
-        const taskPreviewContainer = document.getElementById('taskPreviewContainer');
-
-
         const customModal = document.getElementById('customModal');
         const modalContent = document.getElementById('modalContent');
         const modalTitle = document.getElementById('modalTitle');
@@ -528,7 +476,11 @@
         const content = {
             id: {
                 pageTitle: "Buat Link Tugas Baru",
-                targetUrlLabel: "URL Target (setelah semua tugas selesai):",
+                targetUrlSectionTitle: "Tambahkan URL Target (Maksimal 5)", // New
+                addTargetUrlBtnText: "Tambah URL Target", // New
+                targetUrlPlaceholder: "Contoh: https://link-tujuan-anda.com/konten-rahasia", // New
+                targetUrlError: "Harap isi setidaknya satu URL target yang valid.", // Updated
+
                 addTaskTitle: "Tambahkan Tugas (Maksimal 5)",
                 addTaskBtnText: "Tambah Tugas",
                 requiredTasksCountLabel: "Jumlah Tugas yang Harus Diselesaikan:",
@@ -558,7 +510,7 @@
                 modalNoTasks: "Harap tambahkan setidaknya satu tugas.",
                 modalLinkCreated: "Link telah berhasil dibuat!",
                 modalLinkCopied: "Link telah disalin!",
-                inlineErrorTargetUrl: "URL target tidak boleh kosong.",
+                inlineErrorTargetUrl: "URL target tidak boleh kosong.", // This will now be for individual target URLs
                 inlineErrorTaskType: "Pilih jenis tugas.",
                 inlineErrorTaskUrl: "URL tugas tidak boleh kosong.",
                 modalClose: "Tutup",
@@ -575,15 +527,15 @@
                     vibrantPurple: "Ungu Cerah",
                     warmRed: "Merah Hangat",
                     coolGrey: "Abu-abu Sejuk"
-                },
-                // Preview texts
-                previewTitle: "Pratinjau Halaman Tugas Anda",
-                previewInfo: "Lihat bagaimana halaman tugas Anda akan terlihat.", // Simplified text
-                previewPlaceholder: "Isi formulir di atas untuk melihat pratinjau halaman tugas Anda di sini."
+                }
             },
             en: {
                 pageTitle: "Create New Task Link",
-                targetUrlLabel: "Target URL (after all tasks completed):",
+                targetUrlSectionTitle: "Add Target URLs (Max 5)", // New
+                addTargetUrlBtnText: "Add Target URL", // New
+                targetUrlPlaceholder: "Example: https://your-destination-link.com/secret-content", // New
+                targetUrlError: "Please enter at least one valid target URL.", // Updated
+
                 addTaskTitle: "Add Task (Max 5)",
                 addTaskBtnText: "Add Task",
                 requiredTasksCountLabel: "Number of Tasks to Complete:",
@@ -613,7 +565,7 @@
                 modalNoTasks: "Please add at least one task.",
                 modalLinkCreated: "Link successfully created!",
                 modalLinkCopied: "Link copied!",
-                inlineErrorTargetUrl: "Target URL cannot be empty.",
+                inlineErrorTargetUrl: "Target URL cannot be empty.", // This will now be for individual target URLs
                 inlineErrorTaskType: "Select a task type.",
                 inlineErrorTaskUrl: "Task URL cannot be empty.",
                 modalClose: "Close",
@@ -630,11 +582,7 @@
                     vibrantPurple: "Vibrant Purple",
                     warmRed: "Warm Red",
                     coolGrey: "Cool Grey"
-                },
-                // Preview texts
-                previewTitle: "Preview Your Task Page",
-                previewInfo: "See how your task page will look.", // Simplified text
-                previewPlaceholder: "Fill out the form above to see a preview of your task page here."
+                }
             }
         };
 
@@ -732,6 +680,8 @@
         let currentTheme = 'dark'; // Default to dark theme for this page
         let taskCounter = 0; // To keep track of added tasks
         const MAX_TASKS = 5;
+        let targetUrlCounter = 0; // New: To keep track of added target URLs
+        const MAX_TARGET_URLS = 5; // New: Max target URLs
 
         // Colors for result section highlight (for light and dark theme) - back to blue/grey
         const resultColorsLight = [
@@ -768,8 +718,11 @@
             const currentLangContent = content[currentLanguage];
 
             pageTitle.textContent = currentLangContent.pageTitle;
+            
+            targetUrlSectionTitle.textContent = currentLangContent.targetUrlSectionTitle; // New
+            addTargetUrlBtnText.textContent = currentLangContent.addTargetUrlBtnText; // New
+            targetUrlError.textContent = currentLangContent.targetUrlError; // Updated
 
-            targetUrlLabel.textContent = currentLangContent.targetUrlLabel;
             addTaskTitle.textContent = currentLangContent.addTaskTitle;
             addTaskBtnText.textContent = currentLangContent.addTaskBtnText;
             requiredTasksCountLabel.textContent = currentLangContent.requiredTasksCountLabel;
@@ -783,12 +736,6 @@
             customizePageTitle.textContent = currentLangContent.customizePageTitle;
             colorSchemeLabel.textContent = currentLangContent.colorSchemeLabel;
 
-            // Preview texts
-            previewTitle.textContent = currentLangContent.previewTitle;
-            previewInfo.textContent = currentLangContent.previewInfo;
-            previewPlaceholder.textContent = currentLangContent.previewPlaceholder;
-
-
             // Repopulate customization options for selected language
             populateCustomizationOptions();
             // Ensure the previously selected value is maintained if available
@@ -796,19 +743,22 @@
                  colorSchemeSelect.value = colorSchemeSelect.dataset.selected;
             }
 
-
             // Language and Theme Toggle buttons
             toggleLanguageBtn.textContent = currentLangContent.toggleLanguageText;
             toggleLanguageBtn.title = currentLangContent.toggleLanguageText === 'EN' ? 'Switch to English' : 'Ubah ke Bahasa Indonesia';
             toggleThemeBtn.title = currentLangContent.toggleThemeTitle;
 
-            // Update placeholders and labels for existing tasks
+            // Update placeholders and labels for existing target URLs and tasks
+            document.querySelectorAll('.target-url-input').forEach(input => { // New
+                input.placeholder = currentLangContent.targetUrlPlaceholder;
+            });
+
             document.querySelectorAll('.task-item').forEach(taskDiv => {
                 const typeSelect = taskDiv.querySelector('.task-type-select');
                 const urlInput = taskDiv.querySelector('.task-url-input');
                 const selectedType = typeSelect.value;
                 if (selectedType) {
-                    urlInput.placeholder = currentLangContent.taskPlaceholders[selectedType];
+                    urlInput.placeholder = currentLangContent.taskPlaceholders[selectedType] || '';
                 }
                 // Update select options
                 Array.from(typeSelect.options).forEach(option => {
@@ -820,12 +770,9 @@
                 });
             });
 
-            // Target URL placeholder
-            targetUrlInput.placeholder = currentLanguage === 'id' ? "Contoh: https://pastebin.com/0000000" : "Example: https://pastebin.com/0000000";
-
             // Inline error messages
             if (!targetUrlError.classList.contains('hidden')) {
-                targetUrlError.textContent = currentLangContent.inlineErrorTargetUrl;
+                targetUrlError.textContent = currentLangContent.targetUrlError;
             }
             document.querySelectorAll('.task-item').forEach(taskDiv => {
                 const typeError = taskDiv.querySelector('.task-type-error');
@@ -848,13 +795,9 @@
             if (currentTheme === 'dark') {
                 mainCardContainer.style.backgroundColor = '#34495e';
                 mainCardContainer.style.borderColor = '#4a607a';
-                taskPreviewContainer.style.borderColor = '#8b5cf6';
-                taskPreviewContainer.style.backgroundColor = '#555';
             } else {
                 mainCardContainer.style.backgroundColor = '#fdfcf5';
                 mainCardContainer.style.borderColor = '#e0e0e0';
-                taskPreviewContainer.style.borderColor = '#6366f1';
-                taskPreviewContainer.style.backgroundColor = '#ccc';
             }
 
             // Update primary buttons
@@ -881,7 +824,7 @@
                 }
             });
 
-            // Update task card classes
+            // Update task card classes (used for all sections)
             document.querySelectorAll('.task-card').forEach(card => {
                 if (currentTheme === 'dark') {
                     card.classList.add('dark-theme');
@@ -896,10 +839,10 @@
 
             // Update modal content background
             if (currentTheme === 'dark') {
-                modalContent.classList.add('dark-theme');
+                modalContent.classList.add('how-it-works-card-dark');
                 modalContent.style.backgroundColor = '#2c3e50';
             } else {
-                modalContent.classList.remove('dark-theme');
+                modalContent.classList.add('how-it-works-card-light');
                 modalContent.style.backgroundColor = '#edf2f7';
             }
 
@@ -912,9 +855,51 @@
                 themeIcon.classList.add('fa-moon');
             }
 
-            // Re-render steps to update their card theme
             updateContent(); 
         }
+
+        // New: Function to add a new target URL input group
+        function addTargetUrl() {
+            if (targetUrlCounter >= MAX_TARGET_URLS) {
+                showModal(content[currentLanguage].modalWarningTitle, `Anda hanya dapat menambahkan maksimal ${MAX_TARGET_URLS} URL target.`);
+                return;
+            }
+
+            targetUrlCounter++;
+            const targetUrlDiv = document.createElement('div');
+            targetUrlDiv.className = `flex flex-col sm:flex-row items-center gap-2 mb-2 animate-slide-in-right`;
+
+            targetUrlDiv.innerHTML = `
+                <input type="url" class="input-field target-url-input flex-grow" placeholder="${content[currentLanguage].targetUrlPlaceholder}" required>
+                <button type="button" class="remove-target-url-btn px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors mt-2 sm:mt-0">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            targetUrlsContainer.appendChild(targetUrlDiv);
+
+            const newInputs = targetUrlDiv.querySelectorAll('.input-field');
+            newInputs.forEach(input => {
+                if (currentTheme === 'dark') {
+                    input.classList.add('dark-theme');
+                } else {
+                    input.classList.remove('dark-theme');
+                }
+            });
+
+            targetUrlDiv.querySelector('.remove-target-url-btn').addEventListener('click', () => {
+                targetUrlsContainer.removeChild(targetUrlDiv);
+                targetUrlCounter--;
+                if (targetUrlCounter === 0) {
+                    targetUrlError.classList.remove('hidden'); // Show error if no target URLs left
+                }
+            });
+
+            // Hide error message if at least one URL is added
+            if (targetUrlCounter > 0) {
+                targetUrlError.classList.add('hidden');
+            }
+        }
+
 
         // Function to add a new task input group
         function addTask() {
@@ -980,7 +965,6 @@
                 tasksContainer.removeChild(taskDiv);
                 taskCounter--;
                 updateRequiredTasksCountMax();
-                // updatePreview(); // REMOVED: Preview only on generate
             });
 
             taskDiv.querySelector('.task-type-select').addEventListener('change', (e) => {
@@ -989,16 +973,13 @@
                 urlInput.placeholder = currentLangContent.taskPlaceholders[selectedType] || '';
                 const typeError = taskDiv.querySelector('.task-type-error');
                 if (typeError) typeError.classList.add('hidden');
-                // updatePreview(); // REMOVED: Preview only on generate
             });
             taskDiv.querySelector('.task-url-input').addEventListener('input', (e) => {
                 const urlError = taskDiv.querySelector('.task-url-error');
                 if (urlError) urlError.classList.add('hidden');
-                // updatePreview(); // REMOVED: Preview only on generate
             });
 
             updateRequiredTasksCountMax();
-            // updatePreview(); // REMOVED: Preview only on generate
         }
 
         // Function to update the max attribute of requiredTasksCount input
@@ -1012,7 +993,6 @@
             } else if (requiredTasksCountInput.value < 1) {
                 requiredTasksCountInput.value = 1;
             }
-            // updatePreview(); // REMOVED: Preview only on generate
         }
 
         // Function to show custom modal (for validation errors, etc.)
@@ -1072,8 +1052,11 @@
 
         // Function to clear all form fields and reset task counter
         function resetForm() {
-            targetUrlInput.value = '';
-            targetUrlError.classList.add('hidden');
+            // Reset target URLs
+            targetUrlsContainer.innerHTML = '';
+            targetUrlCounter = 0;
+            targetUrlError.classList.remove('hidden'); // Show error since no URLs exist initially
+
             tasksContainer.innerHTML = '';
             taskCounter = 0;
             requiredTasksCountInput.value = 1;
@@ -1084,11 +1067,17 @@
             colorSchemeSelect.value = 'default';
             colorSchemeSelect.dataset.selected = 'default';
 
-            taskPreviewIframe.src = 'about:blank'; // Clear iframe content
-            taskPreviewIframe.classList.add('hidden');
-            previewPlaceholder.classList.remove('hidden'); // Show placeholder
-
             showNotification(content[currentLanguage].formResetSuccess, 'success');
+        }
+
+        // Function to validate URL format
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (e) {
+                return false;
+            }
         }
 
         // Function to generate the task link
@@ -1096,22 +1085,37 @@
             let isValid = true;
             const currentLangContent = content[currentLanguage];
 
-            // Don't show errors for preview generation
+            // Validate Target URLs
+            const targets = [];
+            const targetUrlInputs = document.querySelectorAll('.target-url-input');
+            if (targetUrlInputs.length === 0) {
+                if (!isForPreview) {
+                    targetUrlError.textContent = currentLangContent.targetUrlError;
+                    targetUrlError.classList.remove('hidden');
+                }
+                isValid = false;
+            } else {
+                targetUrlInputs.forEach(input => {
+                    const url = input.value.trim();
+                    if (!url || !isValidUrl(url)) {
+                        isValid = false;
+                        if (!isForPreview) {
+                            input.classList.add('border-red-500', 'ring-red-500'); // Highlight invalid input
+                            showModal(currentLangContent.modalWarningTitle, currentLangContent.targetUrlError);
+                        }
+                    } else {
+                        input.classList.remove('border-red-500', 'ring-red-500');
+                        targets.push(url);
+                    }
+                });
+            }
+
+            // Don't show task-related errors for preview generation
             if (!isForPreview) {
-                targetUrlError.classList.add('hidden');
                 document.querySelectorAll('.task-item').forEach(taskDiv => {
                     taskDiv.querySelector('.task-type-error').classList.add('hidden');
                     taskDiv.querySelector('.task-url-error').classList.add('hidden');
                 });
-            }
-
-            const targetUrl = targetUrlInput.value.trim();
-            if (!targetUrl) {
-                if (!isForPreview) {
-                    targetUrlError.textContent = currentLangContent.inlineErrorTargetUrl;
-                    targetUrlError.classList.remove('hidden');
-                }
-                isValid = false;
             }
 
             const tasks = [];
@@ -1137,6 +1141,12 @@
                         urlError.classList.remove('hidden');
                     }
                     isValid = false;
+                } else if (!isValidUrl(url)) { // Validate task URL format as well
+                    isValid = false;
+                    if (!isForPreview) {
+                        urlError.textContent = currentLangContent.inlineErrorTaskUrl + " (format URL tidak valid)";
+                        urlError.classList.remove('hidden');
+                    }
                 }
                 tasks.push({ type, url });
             });
@@ -1163,7 +1173,7 @@
             const selectedColorScheme = colorSchemeSelect.value;
 
             const taskData = {
-                target: targetUrl,
+                targets: targets, // Now an array of URLs
                 buttonText: currentLangContent.buttonTextDefault,
                 requiredTasks: requiredTasks,
                 tasks: tasks,
@@ -1177,20 +1187,6 @@
 
             return generatedLink;
         }
-
-        // Function to update the preview iframe
-        function updatePreview(linkUrl) { // Now accepts link URL as argument
-            if (linkUrl) {
-                taskPreviewIframe.src = linkUrl;
-                taskPreviewIframe.classList.remove('hidden');
-                previewPlaceholder.classList.add('hidden');
-            } else {
-                taskPreviewIframe.src = 'about:blank'; // Clear iframe content
-                taskPreviewIframe.classList.add('hidden');
-                previewPlaceholder.classList.remove('hidden');
-            }
-        }
-
 
         // Function to copy the generated link
         function copyLink() {
@@ -1213,7 +1209,9 @@
             updateTheme();
         });
 
+        addTargetUrlBtn.addEventListener('click', addTargetUrl); // New event listener
         addTaskBtn.addEventListener('click', addTask);
+
         generateLinkBtn.addEventListener('click', () => {
             const link = generateLink(false); // Generate final link, show errors
             if (link) {
@@ -1221,11 +1219,9 @@
                 resultSection.classList.remove('hidden'); // Show the result section
                 updateResultSectionColor(true); // Trigger color animation for result section
                 showNotification(content[currentLanguage].modalLinkCreated, 'success');
-                updatePreview(link); // Pass the generated link to update the preview
             } else {
-                // If link generation failed, ensure result section and preview are hidden
+                // If link generation failed, ensure result section is hidden
                 resultSection.classList.add('hidden');
-                updatePreview(null);
             }
         });
         resetFormBtn.addEventListener('click', resetForm);
@@ -1235,26 +1231,9 @@
             customModal.classList.add('hidden');
         });
 
-        targetUrlInput.addEventListener('input', () => {
-            targetUrlError.classList.add('hidden');
-            // updatePreview(); // Removed from real-time
-        });
-
-        requiredTasksCountInput.addEventListener('input', () => {
-            const currentVal = parseInt(requiredTasksCountInput.value);
-            if (currentVal > taskCounter) {
-                requiredTasksCountInput.value = taskCounter;
-            } else if (currentVal < 1 && taskCounter > 0) {
-                requiredTasksCountInput.value = 1;
-            } else if (taskCounter === 0) {
-                 requiredTasksCountInput.value = 0;
-            }
-            // updatePreview(); // Removed from real-time
-        });
-
+        // Store selected color scheme on change to persist across language toggles
         colorSchemeSelect.addEventListener('change', () => {
             colorSchemeSelect.dataset.selected = colorSchemeSelect.value;
-            // updatePreview(); // Removed from real-time
         });
 
         // Initial setup
@@ -1262,8 +1241,7 @@
         updateContent();
         updateTheme();
         updateRequiredTasksCountMax();
-        // updatePreview(null); // Explicitly hide preview initially
-        // No initial call to updatePreview() as it's hidden by default now
+        addTargetUrl(); // Add one target URL input on load
     </script>
 </body>
 </html>

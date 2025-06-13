@@ -1040,14 +1040,15 @@
         // Function to update the max attribute of requiredTasksCount input
         function updateRequiredTasksCountMax() {
             requiredTasksCountInput.max = taskCounter;
-            if (parseInt(requiredTasksCountInput.value) > taskCounter) {
-                requiredTasksCountInput.value = taskCounter;
-            }
-            if (taskCounter === 0) {
-                requiredTasksCountInput.value = 0;
-            } else if (requiredTasksCountInput.value < 1) {
-                requiredTasksCountInput.value = 1;
-            }
+            // Removed the following lines as per request:
+            // if (parseInt(requiredTasksCountInput.value) > taskCounter) {
+            //     requiredTasksCountInput.value = taskCounter;
+            // }
+            // if (taskCounter === 0) {
+            //     requiredTasksCountInput.value = 0;
+            // } else if (requiredTasksCountInput.value < 1) {
+            //     requiredTasksCountInput.value = 1;
+            // }
         }
 
         // Function to show custom modal (for validation errors, etc.)

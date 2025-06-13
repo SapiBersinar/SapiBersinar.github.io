@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SapiBersinar: Pembuat Kode</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-K5JQPNMVEF"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-K5JQPNMVEF'); // Your GA4 Measurement ID
+    </script>
+    
+    <!-- SEO Meta Tags for SapiBersinar Code Creator Page -->
+    <meta name="description" content="Buat link kode unik Anda dengan SapiBersinar. Masukkan judul, jenis bahasa, dan kode, lalu hasilkan URL yang dapat dibagikan dengan penyorotan sintaks otomatis.">
+    <meta name="keywords" content="buat link kode, generator link kode, syntax highlight, berbagi kode, SapiBersinar, alat developer, kode lua, kode javascript, kode python">
+    <meta name="author" content="SapiBersinar">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Social Media Meta Tags (untuk berbagi di media sosial) -->
+    <meta property="og:title" content="Buat Link Kode Anda di SapiBersinar">
+    <meta property="og:description" content="Buat link kode unik Anda dengan SapiBersinar. Masukkan judul, jenis bahasa, dan kode, lalu hasilkan URL yang dapat dibagikan dengan penyorotan sintaks otomatis.">
+    <meta property="og:url" content="https://sapibersinar.github.io/create/source-code/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://placehold.co/1200x630/007bff/ffffff?text=Buat+Link+Kode"> <!-- Placeholder image for social media share -->
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Tailwind CSS CDN for quick and responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        // Set dark mode preference on initial load
+        // If 'dark' theme is stored or system prefers dark, add 'dark' class to html element
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Light mode background: light blue-purple gradient */
+            background: linear-gradient(135deg, #e0f2fe 0%, #e8eaf6 100%); /* Light blue to very light purple */
+            transition: background-color 0.3s ease; /* Smooth transition for color changes */
+        }
+        .dark body {
+            background-color: #1a202c; /* Dark mode background color */
+        }
+        .container {
+            background-color: #ffffff; /* Light mode container background color */
+            transition: background-color 0.3s ease; /* Smooth transition for color changes */
+        }
+        .dark .container {
+            background-color: #2d3748; /* Dark mode container background color */
+        }
+        /* Text color adjustments for dark mode */
+        .dark .text-gray-800, .dark .text-gray-700 {
+            color: #e2e8f0; /* Light text in dark mode */
+        }
+        /* Input and textarea adjustments for dark mode */
+        .dark input, .dark textarea, .dark select { /* Added select */
+            background-color: #4a5568;
+            border-color: #4a5568;
+            color: #e2e8f0;
+        }
+        .dark input::placeholder, .dark textarea::placeholder {
+            color: #cbd5e0;
+        }
+        /* Button adjustments for dark mode */
+        .dark .bg-blue-600 {
+            background-color: #63b3ed; /* Lighter blue for dark mode */
+        }
+        .dark .hover\:bg-blue-700:hover {
+            background-color: #4299e1;
+        }
+        .dark .bg-green-600 {
+            background-color: #48bb78; /* Lighter green for dark mode */
+        }
+        .dark .hover\:bg-green-700:hover {
+            background-color: #38a169;
+        }
+        /* URL display area adjustments for dark mode */
+        .dark #urlDisplayArea {
+            background-color: #4a5568;
+            border-color: #636b77;
+        }
+        .dark #generatedUrl {
+            color: #e2e8f0;
+        }
+        /* Confirmation and error message adjustments for dark mode */
+        .dark #copyMessage {
+            color: #68d391;
+        }
+        .dark #errorMessage {
+            color: #fc8181;
+        }
+        textarea {
+            resize: vertical;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4 sm:p-6 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-gray-800 dark:to-gray-900 transition-colors duration-300">
+    <!-- Theme toggle button -->
+    <div class="absolute top-4 right-4">
+        <button id="themeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300">
+            <!-- Icon will be dynamically updated by JS -->
+            ☀️
+        </button>
+    </div>
+
+    <div class="container bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl shadow-lg w-full">
+        <h1 class="text-3xl font-bold text-center text-gray-800 dark:text-gray-100 mb-6 sm:mb-8">Pembuat URL Kode</h1>
+
+        <!-- Input for Title -->
+        <div class="mb-4">
+            <label for="titleInput" class="block text-gray-700 dark:text-gray-200 text-sm font-semibold mb-2">Judul:</label>
+            <input type="text" id="titleInput" class="shadow-sm appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 dark:text-gray-100 dark:bg-gray-700 dark:border-gray-600 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200" placeholder="Masukkan judul kode Anda">
+        </div>
+
+        <!-- Input for Code Type (Dropdown) -->
+        <div class="mb-4">
+            <label for="codeTypeInput" class="block text-gray-700 dark:text-gray-200 text-sm font-semibold mb-2">Jenis Kode:</label>
+            <select id="codeTypeInput" class="shadow-sm appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 dark:text-gray-100 dark:bg-gray-700 dark:border-gray-600 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200">
+                <option value="" disabled selected>Pilih jenis kode</option>
+                <option value="plaintext">Plain Text</option>
+                <option value="lua">Lua</option>
+                <option value="javascript">JavaScript</option>
+                <option value="python">Python</option>
+                <option value="html">HTML</option>
+                <option value="css">CSS</option>
+                <option value="php">PHP</option>
+                <option value="java">Java</option>
+                <option value="csharp">C#</option>
+                <option value="cpp">C++</option>
+                <option value="json">JSON</option>
+                <option value="markdown">Markdown</option>
+                <option value="xml">XML</option>
+                <!-- Add more languages as needed supported by Highlight.js -->
+            </select>
+        </div>
+
+        <!-- Input for Code Content -->
+        <div class="mb-6">
+            <label for="codeContentInput" class="block text-gray-700 dark:text-gray-200 text-sm font-semibold mb-2">Kode:</label>
+            <textarea id="codeContentInput" rows="10" class="shadow-sm appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 dark:text-gray-100 dark:bg-gray-700 dark:border-gray-600 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200" placeholder="Tulis kode Anda di sini..."></textarea>
+        </div>
+
+        <!-- Button to Generate URL -->
+        <button id="generateUrlButton" class="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 w-full mb-4 transition duration-200 transform hover:scale-105">
+            Buat URL Kode
+        </button>
+
+        <!-- Area to Display URL -->
+        <div id="urlDisplayArea" class="hidden mb-4 p-4 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg flex flex-col sm:flex-row items-center justify-between gap-3">
+            <span id="generatedUrl" class="text-sm sm:text-base text-gray-800 dark:text-gray-100 break-all pr-2"></span>
+            <button id="copyUrlButton" class="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition duration-200 transform hover:scale-105 flex-shrink-0">
+                Salin URL
+            </button>
+        </div>
+
+        <!-- Copy Confirmation Message -->
+        <div id="copyMessage" class="hidden text-center text-sm font-medium text-green-700 dark:text-green-400 mt-2">
+            URL berhasil disalin!
+        </div>
+
+        <!-- Error Message Area -->
+        <div id="errorMessage" class="hidden text-center text-sm font-medium text-red-600 dark:text-red-400 mt-2">
+            Mohon isi semua bidang yang diperlukan.
+        </div>
+    </div>
+
+    <script>
+        const titleInput = document.getElementById('titleInput');
+        const codeTypeInput = document.getElementById('codeTypeInput'); // Now a select element
+        const codeContentInput = document.getElementById('codeContentInput');
+        const generateUrlButton = document.getElementById('generateUrlButton');
+        const urlDisplayArea = document.getElementById('urlDisplayArea');
+        const generatedUrl = document.getElementById('generatedUrl');
+        const copyUrlButton = document.getElementById('copyUrlButton');
+        const copyMessage = document.getElementById('copyMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const themeToggle = document.getElementById('themeToggle');
+
+        // Function to hide messages after a duration
+        function hideMessage(element) {
+            setTimeout(() => {
+                element.classList.add('hidden');
+            }, 3000); // Hide after 3 seconds
+        }
+
+        // Function to update the theme toggle icon
+        function updateThemeToggleIcon() {
+            if (document.documentElement.classList.contains('dark')) {
+                themeToggle.textContent = '🌙'; // Moon icon for dark mode
+            } else {
+                themeToggle.textContent = '☀️'; // Sun icon for light mode
+            }
+        }
+
+        // Initialize theme toggle icon on page load
+        updateThemeToggleIcon();
+
+        // Theme toggle logic
+        themeToggle.addEventListener('click', () => {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+            updateThemeToggleIcon();
+        });
+
+        // Function to generate the URL
+        generateUrlButton.addEventListener('click', () => {
+            const title = titleInput.value.trim();
+            const codeType = codeTypeInput.value; // Get value from select
+            const code = codeContentInput.value.trim();
+
+            // Hide previous messages
+            errorMessage.classList.add('hidden');
+            copyMessage.classList.add('hidden');
+
+            // Validate inputs
+            if (!title || !codeType || !code) {
+                errorMessage.classList.remove('hidden');
+                hideMessage(errorMessage);
+                urlDisplayArea.classList.add('hidden');
+                return;
+            }
+
+            // Create data object
+            const data = {
+                title: title,
+                type: codeType,
+                code: code
+            };
+
+            // Convert data object to JSON string
+            const jsonData = JSON.stringify(data);
+
+            // Encode JSON string to Base64 (using encodeURIComponent for special characters)
+            const encodedData = btoa(encodeURIComponent(jsonData));
+
+            // Hardcode base URL for the viewer page based on the new structure
+            const baseUrlForViewer = 'https://SapiBersinar.github.io/source-code/'; 
+            const fullUrl = `${baseUrlForViewer}?data=${encodedData}`;
+
+            // Display the generated URL
+            generatedUrl.textContent = fullUrl;
+            urlDisplayArea.classList.remove('hidden');
+
+            // Update button text to "URL Disalin!" temporarily
+            const originalButtonText = copyUrlButton.textContent;
+            copyUrlButton.textContent = 'Salin URL!';
+            setTimeout(() => {
+                copyUrlButton.textContent = originalButtonText;
+            }, 3000);
+        });
+
+        // Function to copy the URL to clipboard
+        copyUrlButton.addEventListener('click', () => {
+            const urlToCopy = generatedUrl.textContent;
+            // Use document.execCommand('copy') as navigator.clipboard.writeText() might not work in iframes
+            const textArea = document.createElement("textarea");
+            textArea.value = urlToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    copyMessage.classList.remove('hidden');
+                    hideMessage(copyMessage);
+                } else {
+                    console.error("Failed to copy URL.");
+                }
+            } catch (err) {
+                console.error("Failed to copy URL: ", err);
+            }
+            document.body.removeChild(textArea);
+        });
+
+        // Function to load data from URL on page load
+        window.onload = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const dataParam = urlParams.get('data');
+
+            if (dataParam) {
+                try {
+                    // Decode Base64 back, then decode URI component, then parse JSON
+                    const decodedData = decodeURIComponent(atob(dataParam));
+                    const parsedData = JSON.parse(decodedData);
+
+                    // Populate inputs with parsed data
+                    if (parsedData.title) {
+                        titleInput.value = parsedData.title;
+                    }
+                    if (parsedData.type) {
+                        // Ensure the option exists before setting
+                        const optionExists = Array.from(codeTypeInput.options).some(option => option.value === parsedData.type);
+                        if (optionExists) {
+                            codeTypeInput.value = parsedData.type;
+                        } else {
+                            codeTypeInput.value = 'plaintext'; // Fallback if language not found
+                        }
+                    }
+                    if (parsedData.code) {
+                        codeContentInput.value = parsedData.code;
+                    }
+
+                    // Automatically generate and display the URL after loading
+                    generateUrlButton.click();
+
+                } catch (e) {
+                    console.error("Failed to parse data from URL:", e);
+                }
+            }
+        };
+    </script>
+</body>
+</html>
+

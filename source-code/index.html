@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="displayTitle">SapiBersinar: Lihat Kode</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-K5JQPNMVEF"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-K5JQPNMVEF'); // Your GA4 Measurement ID
+    </script>
+    
+    <!-- SEO Meta Tags for SapiBersinar Code Viewer Page -->
+    <meta name="description" content="Lihat dan salin potongan kode yang dibagikan melalui SapiBersinar, dengan penyorotan sintaks otomatis untuk berbagai bahasa pemrograman.">
+    <meta name="keywords" content="lihat kode, penampil kode, syntax highlight, berbagi kode, SapiBersinar, kode lua, kode javascript, kode python">
+    <meta name="author" content="SapiBersinar">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Social Media Meta Tags (untuk berbagi di media sosial) -->
+    <meta property="og:title" content="Lihat Kode di SapiBersinar">
+    <meta property="og:description" content="Lihat dan salin potongan kode yang dibagikan melalui SapiBersinar, dengan penyorotan sintaks otomatis untuk berbagai bahasa pemrograman.">
+    <meta property="og:url" content="https://sapibersinar.github.io/source-code/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://placehold.co/1200x630/007bff/ffffff?text=Lihat+Kode"> <!-- Placeholder image for social media share -->
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Highlight.js CSS for light theme (default) -->
+    <link id="highlightTheme" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Light mode background: light blue-purple gradient */
+            background: linear-gradient(135deg, #e0f2fe 0%, #e8eaf6 100%); /* Light blue to very light purple */
+            transition: background-color 0.3s ease; /* Smooth transition */
+        }
+        .dark body {
+            background-color: #1a202c; /* Dark mode background color */
+        }
+        .container {
+            background-color: #ffffff; /* Light mode container background color */
+            transition: background-color 0.3s ease; /* Smooth transition */
+        }
+        .dark .container {
+            background-color: #2d3748; /* Dark mode container background color */
+        }
+        /* Text color adjustments for dark mode */
+        .dark .text-gray-800, .dark .text-gray-100 {
+            color: #e2e8f0;
+        }
+        .dark .text-gray-600, .dark .text-gray-300 {
+            color: #cbd5e0;
+        }
+        /* Button adjustments for dark mode */
+        .dark .bg-blue-600 {
+            background-color: #63b3ed;
+        }
+        .dark .hover\:bg-blue-700:hover {
+            background-color: #4299e1;
+        }
+        .dark .bg-gray-200 {
+            background-color: #4a5568; /* Darker gray button for dark mode */
+        }
+        .dark .hover\:bg-gray-300:hover {
+            background-color: #636b77;
+        }
+
+        /* --- STYLING FOR NEATER CODE DISPLAY --- */
+        pre {
+            /* Ensure sufficient padding around the code */
+            padding: 1.5rem;
+            border-radius: 0.75rem; /* Slightly more rounded */
+            /* Use shadow to distinguish code block */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow-x: auto; /* Enable horizontal scroll for very long lines */
+            /* Ensure code lines don't break suddenly and wrap if necessary */
+            white-space: pre-wrap; /* Allows wrapping */
+            word-break: break-word; /* Breaks words if necessary to prevent overflow */
+            line-height: 1.6; /* Increase line spacing */
+            background-color: #f7fafc; /* Default background color for code block in light mode */
+            border: 1px solid #e2e8f0; /* Subtle light border */
+        }
+        .dark pre {
+            background-color: #1f2937; /* Background color for code block in dark mode (slightly darker than container) */
+            border-color: #4a5568;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.12); /* Slightly darker shadow */
+        }
+        code {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+            font-size: 0.925rem; /* Slightly larger font size */
+        }
+
+        /* Scrollbar styling (optional, for cleaner look in supported browsers) */
+        pre::-webkit-scrollbar {
+            height: 8px;
+            background-color: #f1f1f1;
+            border-radius: 4px;
+        }
+        pre::-webkit-scrollbar-thumb {
+            background-color: #cbd5e0;
+            border-radius: 4px;
+        }
+        .dark pre::-webkit-scrollbar {
+            background-color: #2d3748;
+        }
+        .dark pre::-webkit-scrollbar-thumb {
+            background-color: #4a5568;
+        }
+
+        /* Copy confirmation message adjustments */
+        .dark #copyMessage {
+            color: #68d391;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4 sm:p-6 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-gray-800 dark:to-gray-900 transition-colors duration-300">
+    <!-- Theme toggle button -->
+    <div class="absolute top-4 right-4">
+        <button id="themeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300">
+            ☀️
+        </button>
+    </div>
+
+    <div class="container bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl shadow-lg w-full max-w-4xl transition-colors duration-300">
+        <h1 id="codeTitle" class="text-3xl font-bold text-center text-gray-800 dark:text-gray-100 mb-6 sm:mb-8">Memuat Kode...</h1>
+        <p id="codeTypeDisplay" class="text-center text-gray-600 dark:text-gray-300 mb-4"></p>
+
+        <!-- Code display area -->
+        <div class="relative mb-6">
+            <pre class="overflow-auto rounded-lg shadow-inner border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+                <code id="codeContent" class="language-plaintext"></code>
+            </pre>
+            <button id="copyCodeButton" class="absolute top-4 right-4 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 p-2 rounded-md text-sm font-semibold opacity-75 hover:opacity-100 transition-opacity duration-200">
+                Salin Kode
+            </button>
+        </div>
+
+        <!-- Copy confirmation message -->
+        <div id="copyMessage" class="hidden text-center text-sm font-medium text-green-700 dark:text-green-400 mt-2">
+            Kode berhasil disalin!
+        </div>
+
+        <!-- Button to go back to Creator -->
+        <div class="text-center mt-6">
+            <a href="../create/source-code/" class="inline-block bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 transform hover:scale-105">
+                Buat Kode Lain
+            </a>
+        </div>
+    </div>
+
+    <!-- Highlight.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- Highlight.js language definitions (loading common ones) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/lua.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script> <!-- For HTML -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/cpp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/markdown.min.js"></script>
+
+
+    <script>
+        const codeTitle = document.getElementById('codeTitle');
+        const codeTypeDisplay = document.getElementById('codeTypeDisplay');
+        const codeContent = document.getElementById('codeContent');
+        const copyCodeButton = document.getElementById('copyCodeButton');
+        const copyMessage = document.getElementById('copyMessage');
+        const displayTitle = document.getElementById('displayTitle');
+        const highlightThemeLink = document.getElementById('highlightTheme');
+        const themeToggle = document.getElementById('themeToggle');
+
+        // Function to hide messages after a duration
+        function hideMessage(element) {
+            setTimeout(() => {
+                element.classList.add('hidden');
+            }, 3000); // Hide after 3 seconds
+        }
+
+        // Set theme preference on page load
+        function applyThemeOnLoad() {
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                // Change highlight.js theme to dark
+                highlightThemeLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css';
+            } else {
+                document.documentElement.classList.remove('dark');
+                // Change highlight.js theme to light (github.min.css is a light theme)
+                highlightThemeLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+            }
+            updateThemeToggleIcon();
+        }
+
+        // Function to update the theme toggle icon
+        function updateThemeToggleIcon() {
+            if (document.documentElement.classList.contains('dark')) {
+                themeToggle.textContent = '🌙'; // Moon icon for dark mode
+            } else {
+                themeToggle.textContent = '☀️'; // Sun icon for light mode
+            }
+        }
+
+        // Initialize theme on page load
+        applyThemeOnLoad();
+
+        // Theme toggle logic
+        themeToggle.addEventListener('click', () => {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+                highlightThemeLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+                highlightThemeLink.href = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css';
+            }
+            updateThemeToggleIcon();
+            // Re-highlight code after theme change to ensure colors are updated
+            if (codeContent.textContent.trim() !== '' && codeTitle.textContent !== "Memuat Kode...") { // Only re-highlight if there's content
+                 hljs.highlightElement(codeContent);
+            }
+        });
+
+        // Load data from URL on page load
+        window.onload = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const dataParam = urlParams.get('data');
+
+            if (dataParam) {
+                try {
+                    // Decode Base64 back, then decode URI component, then parse JSON
+                    const decodedData = decodeURIComponent(atob(dataParam));
+                    const parsedData = JSON.parse(decodedData);
+
+                    if (parsedData.title) {
+                        codeTitle.textContent = parsedData.title;
+                        displayTitle.textContent = `Kode: ${parsedData.title}`; // Update browser tab title
+                    } else {
+                        codeTitle.textContent = "Kode Tanpa Judul";
+                        displayTitle.textContent = "Kode Tanpa Judul";
+                    }
+
+                    if (parsedData.type) {
+                        codeTypeDisplay.textContent = `Jenis: ${parsedData.type.toUpperCase()}`;
+                        // Set class for highlight.js, ensure it's lowercase
+                        codeContent.className = `language-${parsedData.type.toLowerCase()}`;
+                    } else {
+                        codeTypeDisplay.textContent = "Jenis: Tidak Diketahui";
+                        codeContent.className = 'language-plaintext'; // Default to plaintext
+                    }
+
+                    if (parsedData.code) {
+                        codeContent.textContent = parsedData.code;
+                        hljs.highlightElement(codeContent); // Highlight the code
+                    } else {
+                        codeContent.textContent = "Tidak ada kode untuk ditampilkan.";
+                    }
+
+                } catch (e) {
+                    codeTitle.textContent = "Kesalahan Memuat Kode";
+                    codeTypeDisplay.textContent = "";
+                    codeContent.textContent = "Terjadi kesalahan saat mencoba memuat atau mengurai data kode dari URL. Pastikan URL valid.";
+                    console.error("Error parsing code from URL:", e);
+                }
+            } else {
+                codeTitle.textContent = "Tidak Ada Kode Ditemukan";
+                codeTypeDisplay.textContent = "";
+                codeContent.textContent = "URL tidak memiliki parameter 'data' yang berisi kode untuk ditampilkan.";
+            }
+        };
+
+        // Copy code to clipboard
+        copyCodeButton.addEventListener('click', () => {
+            const codeToCopy = codeContent.textContent;
+            const textArea = document.createElement("textarea");
+            textArea.value = codeToCopy;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    // Update button text temporarily
+                    const originalButtonText = copyCodeButton.textContent;
+                    copyCodeButton.textContent = 'Disalin!';
+                    copyMessage.classList.remove('hidden');
+                    hideMessage(copyMessage); // Hide confirmation message after duration
+                    setTimeout(() => {
+                        copyCodeButton.textContent = originalButtonText; // Revert button text
+                    }, 3000);
+                } else {
+                    console.error("Failed to copy code.");
+                }
+            } catch (err) {
+                console.error("Failed to copy code: ", err);
+            }
+            document.body.removeChild(textArea);
+        });
+    </script>
+</body>
+</html>
+

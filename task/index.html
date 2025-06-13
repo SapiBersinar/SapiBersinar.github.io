@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SapiBersinar: Selesaikan Tugas</title>
 
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-K5JQPNMVEF"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -15,26 +14,17 @@
       gtag('config', 'G-K5JQPNMVEF'); // Your GA4 Measurement ID
     </script>
 
-    <!-- SEO Meta Tags for SapiBersinar Task Page -->
     <meta name="description" content="Selesaikan tugas-tugas sederhana yang dibuat dengan SapiBersinar untuk membuka akses ke konten eksklusif atau tautan tujuan rahasia.">
     <meta name="keywords" content="selesaikan tugas, buka akses, konten eksklusif, tautan rahasia, SapiBersinar, verifikasi tugas, media sosial, ikuti, subscribe, bergabung">
     <meta name="author" content="SapiBersinar">
-    <meta name="robots" content="noindex, follow"> <!-- noindex karena ini halaman unik per link -->
-
-    <!-- Open Graph / Social Media Meta Tags (untuk berbagi di media sosial) -->
-    <meta property="og:title" content="Selesaikan Tugas untuk Buka Akses di SapiBersinar">
+    <meta name="robots" content="noindex, follow"> <meta property="og:title" content="Selesaikan Tugas untuk Buka Akses di SapiBersinar">
     <meta property="og:description" content="Selesaikan tugas-tugas sederhana yang dibuat dengan SapiBersinar untuk membuka akses ke konten eksklusif atau tautan tujuan rahasia.">
-    <meta property="og:url" content="https://sapibersinar.github.io/task/"> <!-- Perhatikan ini adalah URL dasar /task/ -->
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="https://placehold.co/1200x630/0d9488/ffffff?text=Selesaikan+Tugas"> <!-- Ganti dengan URL gambar logo/banner Anda -->
-    <meta property="og:image:width" content="1200">
+    <meta property="og:url" content="https://sapibersinar.github.io/task/"> <meta property="og:type" content="website">
+    <meta property="og:image" content="https://placehold.co/1200x630/0d9488/ffffff?text=Selesaikan+Tugas"> <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
 
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts - Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
-    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* Custom Keyframes for Animations */
@@ -387,19 +377,12 @@
         }
     </style>
 </head>
-<body class="dark-theme"> <!-- Default to dark-theme -->
+<body class="dark-theme"> <button id="darkModeToggle" aria-label="Toggle dark mode" title="Ubah Tema">
+        <i class="fas fa-sun"></i> </button>
 
-    <!-- Dark Mode Toggle Button -->
-    <button id="darkModeToggle" aria-label="Toggle dark mode" title="Ubah Tema">
-        <i class="fas fa-sun"></i> <!-- Icon will be dynamically changed by JS -->
-    </button>
-
-    <!-- Language Toggle Button -->
     <button id="languageToggle" aria-label="Toggle language" title="Ubah Bahasa">
-        EN <!-- Text will be dynamically changed by JS -->
-    </button>
+        EN </button>
 
-    <!-- Custom Modal (Message Box) for validation errors and success messages) -->
     <div id="customModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 hidden animate-fade-in">
         <div id="modalContent" class="p-8 rounded-xl shadow-2xl max-w-sm w-full text-center how-it-works-card-dark transform scale-95 animate-scale-up">
             <h3 id="modalTitle" class="text-2xl font-bold mb-4">Peringatan!</h3>
@@ -412,8 +395,6 @@
 
     <div id="mainContent" class="main-card-container">
         <h1 id="pageTitle" class="text-4xl font-extrabold mb-8 animate-fade-in-down">Selesaikan Minimal 1 Tugas untuk membuka tautan ekslusif</h1>
-        <!-- Subtitle removed as requested -->
-
         <div id="loadingMessage" class="text-lg opacity-80 animate-pulse" style="display: none;">
             Memuat tugas...
         </div>
@@ -421,12 +402,9 @@
             Terjadi kesalahan saat memuat tugas. Link mungkin tidak valid atau rusak, dan beberapa kemungkinan disebabkan pembaharuan pada website.
         </div>
 
-        <!-- Task List Container -->
         <div id="tasksListContainer" class="space-y-4 mb-8">
-            <!-- Tasks will be dynamically loaded here -->
-        </div>
+            </div>
 
-        <!-- Progress Bar and Indicator -->
         <div class="progress-bar-container mb-2">
             <div id="progressBar" class="progress-bar" style="width: 0%;"></div>
         </div>
@@ -434,12 +412,10 @@
             0% Selesai (0 dari 0 tugas)
         </p>
 
-        <!-- Open Target Button -->
         <button id="openTargetBtn" class="w-full px-8 py-4 text-xl font-bold rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-opacity-75 btn-primary-dark" disabled>
             <span id="openTargetBtnText">Buka Konten Sekarang</span>
         </button>
 
-        <!-- SapiBersinar Promotion Section -->
         <div id="promotionSection" class="mt-12 p-6 rounded-xl shadow-md task-card animate-fade-in-up">
             <h2 id="promotionTitle" class="text-2xl font-bold mb-4">Buat Tugasmu Sendiri di SapiBersinar!</h2>
             <p id="promotionText" class="text-lg mb-6">
@@ -590,7 +566,9 @@
                 loadingMessage: "Memuat tugas...",
                 errorMessage: "Terjadi kesalahan saat memuat tugas. Link mungkin tidak valid atau rusak, dan beberapa kemungkinan disebabkan pembaharuan pada website.",
                 tasksProgress: (completed, total, percentage) => `${percentage}% Selesai (${completed} dari ${total} tugas)`,
-                openTargetBtnText: "Buka Konten Sekarang",
+                openTargetBtnText: "Buka Konten Sekarang", // Default for single target
+                openAllContentText: "Buka Semua Konten", // For multiple targets
+                linksText: "Tautan", // For pluralization (X Tautan)
                 goToTaskBtn: "Kunjungi Tugas",
                 verifyingText: "Memverifikasi...",
                 completedText: "Selesai",
@@ -620,7 +598,9 @@
                 loadingMessage: "Loading tasks...",
                 errorMessage: "An error occurred while loading tasks. The link might be invalid or corrupted, and some possibilities are due to website updates.",
                 tasksProgress: (completed, total, percentage) => `${percentage}% Complete (${completed} of ${total} tasks)`,
-                openTargetBtnText: "Open Content Now",
+                openTargetBtnText: "Open Content Now", // Default for single target
+                openAllContentText: "Open All Content", // For multiple targets
+                linksText: "Links", // For pluralization (X Links)
                 goToTaskBtn: "Visit Task",
                 verifyingText: "Verifying...",
                 completedText: "Completed",
@@ -654,8 +634,8 @@
             pageTitle.textContent = currentLangContent.pageTitle;
             loadingMessage.textContent = currentLangContent.loadingMessage;
             errorMessage.textContent = currentLangContent.errorMessage;
-            openTargetBtnText.textContent = currentLangContent.openTargetBtnText;
-            
+            // openTargetBtnText.textContent handled by updateOpenButtonState
+
             promotionTitle.textContent = currentLangContent.promotionTitle;
             promotionText.innerHTML = currentLangContent.promotionText; // Use innerHTML for multi-line text
             promotionBtnText.textContent = currentLangContent.promotionBtnText;
@@ -825,7 +805,7 @@
                 taskDiv.className = `task-card flex flex-col sm:flex-row items-center gap-4 transition-all duration-300 ${isCompleted ? 'task-completed' : ''}`;
                 
                 // Apply custom card colors if available, otherwise default theme
-                const scheme = customColorScheemes[customizationOptions.colorScheme || 'default'];
+                const scheme = customColorSchemes[customizationOptions.colorScheme || 'default'];
                 const mode = currentTheme;
 
                 taskDiv.style.backgroundColor = scheme[`cardBg${mode.charAt(0).toUpperCase() + mode.slice(1)}`];
@@ -930,7 +910,7 @@
                 completedTasksMap[taskId] = true;
                 completedCount++;
                 updateProgress();
-                updateOpenButtonState();
+                updateOpenButtonState(); // Call this to update button text/state
 
                 // Apply visual completion styles
                 taskDiv.classList.add('task-completed');
@@ -961,12 +941,21 @@
             progressBar.style.width = `${percentage}%`;
         }
 
-        // Function to enable/disable open target button
+        // Function to enable/disable open target button and update its text
         function updateOpenButtonState() {
             if (!tasksData) {
                 openTargetBtn.disabled = true;
+                openTargetBtnText.textContent = content[currentLanguage].openTargetBtnText; // Default text
                 return;
             }
+
+            const totalTargets = tasksData.targets ? tasksData.targets.length : 0;
+            if (totalTargets > 1) {
+                openTargetBtnText.textContent = `${content[currentLanguage].openAllContentText} (${totalTargets} ${content[currentLanguage].linksText})`;
+            } else {
+                openTargetBtnText.textContent = tasksData.buttonText; // Use custom text from create page
+            }
+
             if (completedCount >= tasksData.requiredTasks) {
                 openTargetBtn.disabled = false;
                 // Apply custom button color if set, otherwise default theme primary
@@ -1030,8 +1019,7 @@
                 loadingMessage.style.display = 'none';
                 renderTasks(tasksData.tasks);
                 updateProgress();
-                updateOpenButtonState();
-                openTargetBtnText.textContent = tasksData.buttonText; // Set custom button text
+                updateOpenButtonState(); // Set button text and state after tasksData is ready
 
                 // Apply custom styles immediately after parsing data
                 applyCustomStyles();
@@ -1060,10 +1048,6 @@
             if (tasksData && completedCount >= tasksData.requiredTasks) {
                 // If multiple targets, show alert first
                 if (tasksData.targets.length > 1) {
-                    // Using a simple alert for now as per previous instruction to avoid custom modals for simple things.
-                    // If you want a custom modal for this, let me know!
-                    // Note: window.alert() is typically avoided in production code, but allowed for simple prompts here.
-                    // For a better UX, a custom modal with "Continue" or "Cancel" would be ideal.
                     alert(content[currentLanguage].multipleLinksOpenAlert); 
                 }
                 // Open all target URLs
@@ -1072,7 +1056,6 @@
                 });
             } else {
                 // Pass content keys instead of direct strings
-                // Using modalCompletionError here, you might want a specific key for "not enough tasks completed"
                 showModal('modalWarningTitle', 'modalCompletionError'); 
             }
         });

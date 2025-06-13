@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SapiBersinar: Pengalihan Link</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-K5JQPNMVEF"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-K5JQPNMVEF'); // Your GA4 Measurement ID
+    </script>
+    
+    <!-- SEO Meta Tags for SapiBersinar Short Link Page -->
+    <meta name="description" content="SapiBersinar Short Link: Pengalihan cepat ke konten Anda. Dapatkan akses instan ke halaman, kode, atau tugas yang dibagikan.">
+    <meta name="keywords" content="short link, pemendek url, pengalihan link, link cepat, SapiBersinar, akses instan">
+    <meta name="author" content="SapiBersinar">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="SapiBersinar Short Link">
+    <meta property="og:description" content="Pengalihan cepat ke konten Anda.">
+    <meta property="og:url" content="https://sapibersinar.github.io/short/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://placehold.co/1200x630/007bff/ffffff?text=Short+Link">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        // Set dark mode preference on initial load
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #e8eaf6 100%); /* Light blue to very light purple */
+            transition: background-color 0.3s ease;
+        }
+        .dark body {
+            background-color: #1a202c;
+        }
+        .container {
+            background-color: #ffffff;
+            transition: background-color 0.3s ease;
+        }
+        .dark .container {
+            background-color: #2d3748;
+        }
+        .dark .text-gray-800, .dark .text-gray-700 {
+            color: #e2e8f0;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4 sm:p-6 transition-colors duration-300">
+    <!-- Theme toggle button - still available for visual consistency, though not strictly needed for redirect page -->
+    <div class="absolute top-4 right-4">
+        <button id="themeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300">
+            ☀️
+        </button>
+    </div>
+
+    <div class="container bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl shadow-lg text-center w-full max-w-md">
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Mengarahkan Anda...</h1>
+        <p class="text-gray-700 dark:text-gray-300 mb-6">Jika pengalihan tidak otomatis, silakan klik tautan di bawah ini:</p>
+        <a id="redirectLink" href="#" class="inline-block bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 transform hover:scale-105">
+            Klik di Sini untuk Melanjutkan
+        </a>
+        <p id="errorMessage" class="text-red-600 dark:text-red-400 mt-4 hidden">Link tidak ditemukan atau terjadi kesalahan.</p>
+    </div>
+
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const redirectLink = document.getElementById('redirectLink');
+        const errorMessage = document.getElementById('errorMessage');
+        const DATA_FILE_URL = 'https://raw.githubusercontent.com/SapiBersinar/SapiBersinar.github.io/refs/heads/main/data.txt';
+
+        // Function to update the theme toggle icon
+        function updateThemeToggleIcon() {
+            if (document.documentElement.classList.contains('dark')) {
+                themeToggle.textContent = '🌙'; // Moon icon for dark mode
+            } else {
+                themeToggle.textContent = '☀️'; // Sun icon for light mode
+            }
+        }
+
+        // Initialize theme toggle icon on page load
+        updateThemeToggleIcon();
+
+        // Theme toggle logic
+        themeToggle.addEventListener('click', () => {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+            updateThemeToggleIcon();
+        });
+
+        // Function to parse the data.txt content
+        function parseDataFile(text) {
+            const lines = text.split('\n');
+            const dataMap = {};
+            lines.forEach(line => {
+                const trimmedLine = line.trim();
+                if (trimmedLine) { // Ensure line is not empty
+                    const parts = trimmedLine.split('=');
+                    if (parts.length >= 2) {
+                        const keyword = parts[0].trim();
+                        const url = parts.slice(1).join('=').trim(); // Join back in case URL contains '='
+                        dataMap[keyword] = url;
+                    }
+                }
+            });
+            return dataMap;
+        }
+
+        // Main redirection logic
+        window.onload = async () => {
+            // Get the keyword from the URL path (e.g., /short/keyword -> keyword)
+            const pathSegments = window.location.pathname.split('/').filter(segment => segment !== '');
+            // The keyword should be the segment after 'short'
+            const shortIndex = pathSegments.indexOf('short');
+            let keyword = null;
+
+            if (shortIndex !== -1 && shortIndex + 1 < pathSegments.length) {
+                keyword = pathSegments[shortIndex + 1];
+            }
+
+            if (!keyword) {
+                errorMessage.textContent = "Keyword link tidak ditemukan di URL.";
+                errorMessage.classList.remove('hidden');
+                redirectLink.classList.add('hidden'); // Hide button if no keyword
+                return;
+            }
+
+            try {
+                const response = await fetch(DATA_FILE_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const dataText = await response.text();
+                const dataMap = parseDataFile(dataText);
+
+                const targetUrl = dataMap[keyword];
+
+                if (targetUrl) {
+                    redirectLink.href = targetUrl;
+                    // Attempt immediate redirection
+                    window.location.replace(targetUrl);
+                } else {
+                    errorMessage.textContent = `Link untuk '${keyword}' tidak ditemukan.`;
+                    errorMessage.classList.remove('hidden');
+                    redirectLink.classList.add('hidden'); // Hide button if link not found
+                }
+            } catch (e) {
+                errorMessage.textContent = `Gagal memuat data link: ${e.message}`;
+                errorMessage.classList.remove('hidden');
+                redirectLink.classList.add('hidden'); // Hide button on fetch error
+                console.error("Error fetching or parsing data.txt:", e);
+            }
+        };
+    </script>
+</body>
+</html>
+

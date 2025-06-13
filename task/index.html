@@ -461,7 +461,7 @@
     </div>
 
     <div id="mainContent" class="main-card-container">
-        <h1 id="pageTitle" class="text-4xl font-extrabold mb-8 animate-fade-in-down">Selesaikan Minimal 1 Tugas untuk membuka tautan ekslusif</h1>
+        <h1 id="pageTitle" class="text-4xl font-extrabold mb-8 animate-fade-in-down"></h1>
         <!-- Subtitle removed as requested -->
 
         <div id="loadingMessage" class="text-lg opacity-80 animate-pulse" style="display: none;">
@@ -488,11 +488,6 @@
         <div id="targetButtonsContainer" class="hidden">
             <!-- Target buttons will be dynamically added here -->
         </div>
-
-        <!-- Old: Open Target Button (removed) -->
-        <!-- <button id="openTargetBtn" class="w-full px-8 py-4 text-xl font-bold rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-opacity-75 btn-primary-dark" disabled>
-            <span id="openTargetBtnText">Buka Konten Sekarang</span>
-        </button> -->
 
         <!-- SapiBersinar Promotion Section -->
         <div id="promotionSection" class="mt-12 p-6 rounded-xl shadow-md task-card animate-fade-in-up">
@@ -522,9 +517,7 @@
         const tasksListContainer = document.getElementById('tasksListContainer');
         const tasksProgress = document.getElementById('tasksProgress');
         const progressBar = document.getElementById('progressBar'); // Progress bar element
-        // const openTargetBtn = document.getElementById('openTargetBtn'); // Removed
-        // const openTargetBtnText = document.getElementById('openTargetBtnText'); // Removed
-
+        
         const targetButtonsContainer = document.getElementById('targetButtonsContainer'); // New container for buttons
 
         const promotionTitle = document.getElementById('promotionTitle');
@@ -643,16 +636,17 @@
         // Content for different languages
         const content = {
             id: {
-                pageTitle: "Selesaikan Minimal 1 Tugas untuk membuka tautan ekslusif",
+                // Dynamic pageTitle based on requiredTasks
+                pageTitleTemplate: (count) => `Selesaikan Minimal ${count} Tugas untuk membuka tautan ekslusif`,
                 loadingMessage: "Memuat tugas...",
                 errorMessage: "Terjadi kesalahan saat memuat tugas. Link mungkin tidak valid atau rusak, dan beberapa kemungkinan disebabkan pembaharuan pada website.",
                 tasksProgress: (completed, total, percentage) => `${percentage}% Selesai (${completed} dari ${total} tugas)`,
-                // openTargetBtnText: "Buka Konten Sekarang", // Removed
+                
                 openSingleContentText: "Buka Konten Kamu", // New
                 openContentNText: "Buka Konten", // For "Buka Konten 1", "Buka Konten 2"
                 goToTaskBtn: "Kunjungi Tugas",
-                verifyingText: "Memverifikasi...",
-                completedText: "Selesai",
+                verifyingText: "Sedang verifikasi...", // Updated
+                completedText: "Berhasil", // Updated
                 modalWarningTitle: "Peringatan!",
                 modalInvalidLink: `Mohon maaf, sepertinya terjadi masalah pada link ini. Ini bisa disebabkan oleh pembaruan website, link rusak, atau kesalahan lainnya. Pemilik link dimohon untuk membuat ulang link tugas ini.`,
                 modalCompletionError: "Terjadi kesalahan saat menandai tugas. Silakan coba lagi.",
@@ -665,26 +659,36 @@
                     Gabung sekarang di SapiBersinar dan buat link unikmu hanya dalam hitungan menit!
                 `,
                 promotionBtnText: "Gabung Sekarang!",
-                taskTypes: { // Specific phrases for task types
-                    tiktok: "Ikuti akun Tiktok",
-                    whatsapp: "Bergabung dengan saluran WhatsApp",
-                    roblox: "Ikuti/gabung akun Roblox",
-                    youtube: "Subscribe channel YouTube",
-                    discord: "Gabung Discord"
+                // New: Task descriptions based on type and action
+                taskDescriptions: {
+                    youtube_subscribe: "Subscribe channel YouTube",
+                    youtube_like: "Like video YouTube",
+                    youtube_watch: "Tonton video YouTube",
+                    roblox_follow: "Ikuti akun Roblox",
+                    roblox_join: "Bergabung dengan grup Roblox",
+                    tiktok_like: "Like video TikTok",
+                    tiktok_follow: "Follow akun TikTok",
+                    whatsapp_visit: "Kunjungi saluran WhatsApp", // Implicit action
+                    discord_visit: "Gabung server Discord",     // Implicit action
+                    blogger_visit: "Kunjungi postingan blog"   // Implicit action
                 },
-                multipleLinksOpenAlert: "Anda akan diarahkan ke beberapa tautan!" // This alert will now be triggered by individual buttons if they are clicked quickly after enabled
+                // Helper function to get the correct task description string
+                getTaskDescription: (type, action) => {
+                    const key = `${type}_${action}`;
+                    return content.id.taskDescriptions[key] || `Selesaikan tugas ${type}`; // Fallback to current language
+                }
             },
             en: {
-                pageTitle: "Complete At Least 1 Task to Unlock Exclusive Link",
+                pageTitleTemplate: (count) => `Complete At Least ${count} Tasks to Unlock Exclusive Link`,
                 loadingMessage: "Loading tasks...",
                 errorMessage: "An error occurred while loading tasks. The link might be invalid or corrupted, and some possibilities are due to website updates.",
                 tasksProgress: (completed, total, percentage) => `${percentage}% Complete (${completed} of ${total} tasks)`,
-                // openTargetBtnText: "Open Content Now", // Removed
+                
                 openSingleContentText: "Open Your Content", // New
                 openContentNText: "Open Content", // For "Open Content 1", "Open Content 2"
                 goToTaskBtn: "Visit Task",
-                verifyingText: "Verifying...",
-                completedText: "Completed",
+                verifyingText: "Verifying...", // Updated
+                completedText: "Success", // Updated
                 modalWarningTitle: "Warning!",
                 modalInvalidLink: `We apologize, it seems there's an issue with this link. This could be due to website updates, a corrupted link, or other errors. The link owner is kindly requested to recreate this task link.`,
                 modalCompletionError: "An error occurred while marking task. Please try again.",
@@ -697,14 +701,24 @@
                     Join SapiBersinar now and create your unique links in minutes!
                 `,
                 promotionBtnText: "Join Now!",
-                taskTypes: { // This should match content from create page
-                    tiktok: "Follow TikTok account",
-                    whatsapp: "Join WhatsApp channel",
-                    roblox: "Follow/join Roblox account",
-                    youtube: "Subscribe YouTube channel",
-                    discord: "Join Discord"
+                // New: Task descriptions based on type and action
+                taskDescriptions: {
+                    youtube_subscribe: "Subscribe YouTube channel",
+                    youtube_like: "Like YouTube video",
+                    youtube_watch: "Watch YouTube video",
+                    roblox_follow: "Follow Roblox account",
+                    roblox_join: "Join Roblox group",
+                    tiktok_like: "Like TikTok video",
+                    tiktok_follow: "Follow TikTok account",
+                    whatsapp_visit: "Visit WhatsApp channel",
+                    discord_visit: "Join Discord server",
+                    blogger_visit: "Visit blog post"
                 },
-                multipleLinksOpenAlert: "You will be redirected to multiple links!"
+                // Helper function to get the correct task description string
+                getTaskDescription: (type, action) => {
+                    const key = `${type}_${action}`;
+                    return content.en.taskDescriptions[key] || `Complete ${type} task`; // Fallback to current language
+                }
             }
         };
 
@@ -712,11 +726,17 @@
         function updateContent() {
             const currentLangContent = content[currentLanguage];
 
-            pageTitle.textContent = currentLangContent.pageTitle;
+            // Update pageTitle dynamically here after tasksData is set
+            if (tasksData) {
+                pageTitle.textContent = currentLangContent.pageTitleTemplate(tasksData.requiredTasks);
+            } else {
+                // Default text before tasksData is loaded, or if there's an error
+                pageTitle.textContent = currentLangContent.pageTitleTemplate(1); // Fallback to 1 if not loaded
+            }
+
             loadingMessage.textContent = currentLangContent.loadingMessage;
             errorMessage.textContent = currentLangContent.errorMessage;
-            // openTargetBtnText.textContent handled by updateOpenButtonState
-
+            
             promotionTitle.textContent = currentLangContent.promotionTitle;
             promotionText.innerHTML = currentLangContent.promotionText; // Use innerHTML for multi-line text
             promotionBtnText.textContent = currentLangContent.promotionBtnText;
@@ -801,7 +821,7 @@
                 card.classList.remove('dark-theme', 'light-theme'); // Ensure no lingering default theme classes
                 // Re-apply completed border color if needed
                 if (card.classList.contains('task-completed')) {
-                    card.style.borderColor = (mode === 'dark' ? '#0d9488' : '#10b981'); // Specific green for completed
+                    card.style.borderColor = (mode === 'dark' ? '#0d9488' : '#10b981'); /* specific green for completed */
                     card.style.boxShadow = `0 0 0 3px ${(mode === 'dark' ? '#0d9488' : '#10b981')}`;
                 }
             });
@@ -813,9 +833,9 @@
                     el.style.color = scheme.textColorLight && scheme.textColorDark ? scheme[`textColor${mode.charAt(0).toUpperCase() + mode.slice(1)}`] : '';
                 }
             });
-            // Also apply to task descriptions
-            document.querySelectorAll('.task-description').forEach(desc => {
-                desc.style.color = scheme.textColorLight && scheme.textColorDark ? scheme[`textColor${mode.charAt(0).toUpperCase() + mode.slice(1)}`] : '';
+            // Also apply to task descriptions (initial and status text)
+            document.querySelectorAll('.task-initial-text, .task-status-text').forEach(textSpan => {
+                textSpan.style.color = scheme.textColorLight && scheme.textColorDark ? scheme[`textColor${mode.charAt(0).toUpperCase() + mode.slice(1)}`] : '';
             });
 
 
@@ -856,7 +876,7 @@
                 if (scheme.btnGradientLight && scheme.btnGradientDark) {
                     btn.style.background = scheme[`btnGradient${mode.charAt(0).toUpperCase() + mode.slice(1)}`];
                 } else {
-                    btn.classList.add(`btn-primary-${currentTheme}`);
+                    btn.classList.add(`btn-primary-${currentTheme}`); // Fallback
                 }
                 // Re-apply disabled state after styling
                 if (btn.disabled) {
@@ -937,8 +957,13 @@
                                 <i class="fas fa-check"></i>
                             </div>
                         </div>
-                        <span class="task-description text-lg font-semibold flex-grow text-left ${isCompleted ? 'line-through text-gray-500' : ''}">
-                            ${content[currentLanguage].taskTypes[task.type] || task.type}
+                        <span class="task-description text-lg font-semibold flex-grow text-left">
+                            <span class="task-initial-text ${isCompleted ? 'hidden' : ''}">
+                                ${content[currentLanguage].getTaskDescription(task.type, task.action)}
+                            </span>
+                            <span class="task-status-text ${isCompleted ? '' : 'hidden'}">
+                                ${isCompleted ? content[currentLanguage].completedText : ''}
+                            </span>
                         </span>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
@@ -949,13 +974,15 @@
                 `;
                 tasksListContainer.appendChild(taskDiv);
 
-                // Apply custom text color to task-description if set
-                const taskDescriptionSpan = taskDiv.querySelector('.task-description');
-                if (taskDescriptionSpan) {
-                     taskDescriptionSpan.style.color = scheme[`textColor${mode.charAt(0).toUpperCase() + mode.slice(1)}`];
-                     if (isCompleted) { // Ensure line-through color stays gray
-                         taskDescriptionSpan.classList.add('text-gray-500');
-                     }
+                // Apply custom text color to task-description (both initial and status text)
+                const taskInitialTextSpan = taskDiv.querySelector('.task-initial-text');
+                const taskStatusTextSpan = taskDiv.querySelector('.task-status-text');
+
+                if (taskInitialTextSpan) {
+                     taskInitialTextSpan.style.color = scheme[`textColor${mode.charAt(0).toUpperCase() + mode.slice(1)}`];
+                }
+                if (taskStatusTextSpan) {
+                     taskStatusTextSpan.style.color = scheme[`textColor${mode.charAt(0).toUpperCase() + mode.slice(1)}`];
                 }
 
                 // Apply custom button color to go-to-task-btn if set
@@ -970,7 +997,6 @@
                         goToTaskBtn.style.backgroundColor = (mode === 'dark' ? '#4a5568' : '#a0aec0'); // Explicit disabled color
                     }
                 }
-
 
                 // Add event listeners
                 if (!isCompleted) { // Only add listener if not already completed
@@ -989,31 +1015,27 @@
             const scheme = customColorSchemes[customizationOptions.colorScheme || 'default'];
             const mode = currentTheme;
 
-            if (targets.length === 1) {
+            targets.forEach((url, index) => {
                 const btn = document.createElement('button');
                 btn.className = `target-open-btn btn-primary-${currentTheme}`;
-                btn.textContent = content[currentLanguage].openSingleContentText;
-                btn.addEventListener('click', () => window.open(targets[0], '_blank'));
+                
+                if (targets.length === 1) {
+                    btn.textContent = content[currentLanguage].openSingleContentText;
+                } else {
+                    btn.textContent = `${content[currentLanguage].openContentNText} ${index + 1}`;
+                }
+                
+                btn.addEventListener('click', () => {
+                    // No alert needed here as each button opens only one URL
+                    window.open(url, '_blank');
+                });
                 targetButtonsContainer.appendChild(btn);
 
                 // Apply custom gradient
                 if (scheme.btnGradientLight && scheme.btnGradientDark) {
                     btn.style.background = scheme[`btnGradient${mode.charAt(0).toUpperCase() + mode.slice(1)}`];
                 }
-            } else {
-                targets.forEach((url, index) => {
-                    const btn = document.createElement('button');
-                    btn.className = `target-open-btn btn-primary-${currentTheme}`;
-                    btn.textContent = `${content[currentLanguage].openContentNText} ${index + 1}`;
-                    btn.addEventListener('click', () => window.open(url, '_blank'));
-                    targetButtonsContainer.appendChild(btn);
-
-                    // Apply custom gradient
-                    if (scheme.btnGradientLight && scheme.btnGradientDark) {
-                        btn.style.background = scheme[`btnGradient${mode.charAt(0).toUpperCase() + mode.slice(1)}`];
-                    }
-                });
-            }
+            });
             // Initial state will be set by updateOpenButtonState
             updateOpenButtonState();
         }
@@ -1029,11 +1051,17 @@
             button.disabled = true;
             button.classList.add('opacity-70', 'cursor-not-allowed');
 
-            const taskDescriptionSpan = taskDiv.querySelector('.task-description');
+            const taskInitialTextSpan = taskDiv.querySelector('.task-initial-text');
+            const taskStatusTextSpan = taskDiv.querySelector('.task-status-text');
             const spinnerIcon = taskDiv.querySelector('.spinner-icon');
             const checkmarkCircle = taskDiv.querySelector('.checkmark-circle');
 
-            // Show spinner
+            // Hide initial text, show spinner and "Verifying..." text
+            if (taskInitialTextSpan) taskInitialTextSpan.classList.add('hidden');
+            if (taskStatusTextSpan) {
+                taskStatusTextSpan.textContent = content[currentLanguage].verifyingText;
+                taskStatusTextSpan.classList.remove('hidden');
+            }
             if (spinnerIcon) {
                 spinnerIcon.classList.remove('hidden');
                 spinnerIcon.style.opacity = '1';
@@ -1046,13 +1074,17 @@
 
             // Simulate verification
             setTimeout(() => {
-                // Hide spinner, show checkmark
+                // Hide spinner, show checkmark and "Completed" text
                 if (spinnerIcon) {
                     spinnerIcon.classList.add('hidden');
                     spinnerIcon.style.opacity = '0';
                     spinnerIcon.classList.remove('spinner-animation');
                 }
                 if (checkmarkCircle) checkmarkCircle.classList.add('show');
+                if (taskStatusTextSpan) {
+                    taskStatusTextSpan.textContent = content[currentLanguage].completedText;
+                    taskStatusTextSpan.classList.remove('hidden'); // Ensure it's visible
+                }
 
                 // Mark as completed
                 completedTasksMap[taskId] = true;
@@ -1067,11 +1099,6 @@
                     taskDiv.classList.remove(`animate-task-complete-highlight-${currentTheme}`);
                     taskDiv.removeEventListener('animationend', handler);
                 }, { once: true });
-
-                // Add line-through to the task text when animation ends
-                if (taskDescriptionSpan) {
-                    taskDescriptionSpan.classList.add('line-through', 'text-gray-500');
-                }
 
                 // Button permanently disabled after completion
                 button.disabled = true;
@@ -1166,12 +1193,17 @@
                 // Apply custom styles immediately after parsing data
                 applyCustomStyles();
 
+                // Set dynamic page title after tasksData is parsed
+                pageTitle.textContent = content[currentLanguage].pageTitleTemplate(tasksData.requiredTasks);
+
             } catch (e) {
                 console.error("Error parsing task data:", e);
                 loadingMessage.style.display = 'none';
                 errorMessage.style.display = 'block';
                 // Pass content keys instead of direct strings
                 showModal('modalWarningTitle', 'modalInvalidLink');
+                // Set default page title if data parsing fails
+                pageTitle.textContent = content[currentLanguage].pageTitleTemplate(1);
             }
         }
 
@@ -1192,6 +1224,8 @@
 
         // Initial setup
         loadingMessage.style.display = 'block'; // Show loading message initially
+        // pageTitle is set here based on initial default, then updated by parseUrlData/updateContent
+        pageTitle.textContent = content[currentLanguage].pageTitleTemplate(1); // Set a default value first
         updateContent(); // Set initial content texts
         updateTheme(); // Set initial theme and apply styles (will be re-applied after parseUrlData if custom options exist)
         parseUrlData(); // Parse data from URL and render tasks (will also call applyCustomStyles)

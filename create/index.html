@@ -332,6 +332,15 @@
                 min-height: 32px;
                 font-size: 0.9rem;
             }
+            /* Adjust task-item layout for small screens */
+            .task-item > div:first-child { /* type select and error */
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+            .task-item > div:nth-child(2) { /* action select and url input */
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
         }
     </style>
 </head>
@@ -490,18 +499,40 @@
                 generatedLinkLabel: "Link Tugas Anda:",
                 copyLinkBtnText: "Salin Link",
                 taskTypes: {
-                    tiktok: "Tiktok",
+                    tiktok: "TikTok",
                     whatsapp: "WhatsApp",
                     roblox: "Roblox",
                     youtube: "YouTube",
-                    discord: "Discord"
+                    discord: "Discord",
+                    blogger: "Blogger" // New task type
+                },
+                taskActions: { // New: Specific actions for each task type
+                    youtube: {
+                        subscribe: "Subscribe",
+                        like: "Like",
+                        watch: "Tonton"
+                    },
+                    roblox: {
+                        follow: "Ikuti",
+                        join: "Bergabung"
+                    },
+                    tiktok: {
+                        like: "Like",
+                        follow: "Follow"
+                    },
+                    // Blogger doesn't have specific actions, implicitly "visit"
                 },
                 taskPlaceholders: {
-                    tiktok: "Contoh: https://tiktok.com/@username atau https://tiktok.com/",
-                    whatsapp: "Contoh: https://wa.me/628123456789 atau https://whatsapp.com/",
-                    roblox: "Contoh: https://roblox.com/games/12345/GameName atau https://roblox.com/",
-                    youtube: "Contoh: https://youtube.com/channel/UC-ID atau https://youtube.com/watch?v=video_id",
-                    discord: "Contoh: https://discord.gg/invitecode atau https://discord.com/"
+                    tiktok_follow: "Contoh: https://tiktok.com/@username",
+                    tiktok_like: "Contoh: https://tiktok.com/@username/video/123456789",
+                    whatsapp: "Contoh: https://wa.me/628123456789 atau https://whatsapp.com/channel/abcdef",
+                    roblox_follow: "Contoh: https://roblox.com/users/12345/profile",
+                    roblox_join: "Contoh: https://roblox.com/groups/12345/GroupName",
+                    youtube_subscribe: "Contoh: https://youtube.com/channel/UC-ID",
+                    youtube_like: "Contoh: https://youtube.com/watch?v=video_id",
+                    youtube_watch: "Contoh: https://youtube.com/watch?v=video_id",
+                    discord: "Contoh: https://discord.gg/invitecode",
+                    blogger: "Contoh: https://nama-blog-anda.blogspot.com/post-tertentu" // New
                 },
                 buttonTextDefault: "Buka Konten Sekarang",
                 modalWarningTitle: "Peringatan!",
@@ -512,6 +543,7 @@
                 modalLinkCopied: "Link telah disalin!",
                 inlineErrorTargetUrl: "URL target tidak boleh kosong.", // This will now be for individual target URLs
                 inlineErrorTaskType: "Pilih jenis tugas.",
+                inlineErrorTaskAction: "Pilih aksi tugas.", // New error message
                 inlineErrorTaskUrl: "URL tugas tidak boleh kosong.",
                 modalClose: "Tutup",
                 toggleLanguageText: "EN",
@@ -545,18 +577,40 @@
                 generatedLinkLabel: "Your Task Link:",
                 copyLinkBtnText: "Copy Link",
                 taskTypes: {
-                    tiktok: "Tiktok",
+                    tiktok: "TikTok",
                     whatsapp: "WhatsApp",
                     roblox: "Roblox",
                     youtube: "YouTube",
-                    discord: "Discord"
+                    discord: "Discord",
+                    blogger: "Blogger" // New task type
+                },
+                taskActions: { // New: Specific actions for each task type
+                    youtube: {
+                        subscribe: "Subscribe",
+                        like: "Like",
+                        watch: "Watch"
+                    },
+                    roblox: {
+                        follow: "Follow",
+                        join: "Join"
+                    },
+                    tiktok: {
+                        like: "Like",
+                        follow: "Follow"
+                    },
+                    // Blogger doesn't have specific actions, implicitly "visit"
                 },
                 taskPlaceholders: {
-                    tiktok: "Example: https://tiktok.com/@username or https://tiktok.com/",
-                    whatsapp: "Example: https://wa.me/628123456789 or https://whatsapp.com/",
-                    roblox: "Example: https://roblox.com/games/12345/GameName or https://roblox.com/",
-                    youtube: "Example: https://youtube.com/channel/UC-ID or https://youtube.com/watch?v=video_id",
-                    discord: "Example: https://discord.gg/invitecode or https://discord.com/"
+                    tiktok_follow: "Example: https://tiktok.com/@username",
+                    tiktok_like: "Example: https://tiktok.com/@username/video/123456789",
+                    whatsapp: "Example: https://wa.me/1234567890 or https://whatsapp.com/channel/abcdef",
+                    roblox_follow: "Example: https://roblox.com/users/12345/profile",
+                    roblox_join: "Example: https://roblox.com/groups/12345/GroupName",
+                    youtube_subscribe: "Example: https://youtube.com/channel/UC-ID",
+                    youtube_like: "Example: https://youtube.com/watch?v=video_id",
+                    youtube_watch: "Example: https://youtube.com/watch?v=video_id",
+                    discord: "Example: https://discord.gg/invitecode",
+                    blogger: "Example: https://your-blog-name.blogspot.com/specific-post" // New
                 },
                 buttonTextDefault: "Open Content Now",
                 modalWarningTitle: "Warning!",
@@ -567,6 +621,7 @@
                 modalLinkCopied: "Link copied!",
                 inlineErrorTargetUrl: "Target URL cannot be empty.", // This will now be for individual target URLs
                 inlineErrorTaskType: "Select a task type.",
+                inlineErrorTaskAction: "Select a task action.", // New error message
                 inlineErrorTaskUrl: "Task URL cannot be empty.",
                 modalClose: "Close",
                 toggleLanguageText: "ID",
@@ -583,94 +638,6 @@
                     warmRed: "Warm Red",
                     coolGrey: "Cool Grey"
                 }
-            }
-        };
-
-        // Custom Color Schemes - cohesive palettes for task page
-        const customColorSchemes = {
-            'default': {
-                bodyBgLight: 'linear-gradient(135deg, #f0fff4 0%, #e0ffe0 100%)',
-                bodyBgDark: 'linear-gradient(135deg, #2c3e50 0%, #1a252f 100%)',
-                cardBgLight: '#fdfcf5',
-                cardBgDark: '#34495e',
-                textColorLight: '#1a202c',
-                textColorDark: '#e2e8f0',
-                btnGradientLight: 'linear-gradient(to right, #3b82f6, #14b8a6)',
-                btnGradientDark: 'linear-gradient(to right, #8b5cf6, #6366f1)',
-                cardBorderLight: '#e0e0e0',
-                cardBorderDark: '#4a607a',
-                progressBarLight: '#2563eb',
-                progressBarDark: '#6366f1'
-            },
-            'modernBlue': {
-                bodyBgLight: 'linear-gradient(135deg, #e0f7fa 0%, #b3e5fc 100%)',
-                bodyBgDark: 'linear-gradient(135deg, #0d47a1 0%, #1a237e 100%)',
-                cardBgLight: '#ffffff',
-                cardBgDark: '#263238',
-                textColorLight: '#263238',
-                textColorDark: '#e3f2fd',
-                btnGradientLight: 'linear-gradient(to right, #2196f3, #1976d2)',
-                btnGradientDark: 'linear-gradient(to right, #64b5f6, #42a5f5)',
-                cardBorderLight: '#90caf9',
-                cardBorderDark: '#455a64',
-                progressBarLight: '#2196f3',
-                progressBarDark: '#42a5f5'
-            },
-            'energeticGreen': {
-                bodyBgLight: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)',
-                bodyBgDark: 'linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%)',
-                cardBgLight: '#ffffff',
-                cardBgDark: '#212121',
-                textColorLight: '#333333',
-                textColorDark: '#a5d6a7',
-                btnGradientLight: 'linear-gradient(to right, #4caf50, #388e3c)',
-                btnGradientDark: 'linear-gradient(to right, #81c784, #66bb6a)',
-                cardBorderLight: '#a5d6a7',
-                cardBorderDark: '#4caf50',
-                progressBarLight: '#4caf50',
-                progressBarDark: '#66bb6a'
-            },
-            'vibrantPurple': {
-                bodyBgLight: 'linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%)',
-                bodyBgDark: 'linear-gradient(135deg, #4a148c 0%, #6a1b9a 100%)',
-                cardBgLight: '#ffffff',
-                cardBgDark: '#311b92',
-                textColorLight: '#4a148c',
-                textColorDark: '#e0b2e8',
-                btnGradientLight: 'linear-gradient(to right, #9c27b0, #7b1fa2)',
-                btnGradientDark: 'linear-gradient(to right, #ce93d8, #ba68c8)',
-                cardBorderLight: '#ce93d8',
-                cardBorderDark: '#7b1fa2',
-                progressBarLight: '#9c27b0',
-                progressBarDark: '#ce93d8'
-            },
-            'warmRed': {
-                bodyBgLight: 'linear-gradient(135deg, #ffe0b2 0%, #ffcc80 100%)',
-                bodyBgDark: 'linear-gradient(135deg, #bf360c 0%, #e64a19 100%)',
-                cardBgLight: '#ffffff',
-                cardBgDark: '#3e2723',
-                textColorLight: '#4e342e',
-                textColorDark: '#ffccbc',
-                btnGradientLight: 'linear-gradient(to right, #f44336, #d32f2f)',
-                btnGradientDark: 'linear-gradient(to right, #ef9a9a, #e57373)',
-                cardBorderLight: '#ffab91',
-                cardBorderDark: '#d32f2f',
-                progressBarLight: '#f44336',
-                progressBarDark: '#e57373'
-            },
-            'coolGrey': {
-                bodyBgLight: 'linear-gradient(135deg, #eceff1 0%, #cfd8dc 100%)',
-                bodyBgDark: 'linear-gradient(135deg, #263238 0%, #37474f 100%)',
-                cardBgLight: '#ffffff',
-                cardBgDark: '#455a64',
-                textColorLight: '#37474f',
-                textColorDark: '#b0bec5',
-                btnGradientLight: 'linear-gradient(to right, #607d8b, #455a64)',
-                btnGradientDark: 'linear-gradient(to right, #90a4ae, #78909c)',
-                cardBorderLight: '#90a4ae',
-                cardBorderDark: '#607d8b',
-                progressBarLight: '#607d8b',
-                progressBarDark: '#78909c'
             }
         };
 
@@ -755,12 +722,10 @@
 
             document.querySelectorAll('.task-item').forEach(taskDiv => {
                 const typeSelect = taskDiv.querySelector('.task-type-select');
+                const actionSelect = taskDiv.querySelector('.task-action-select'); // New
                 const urlInput = taskDiv.querySelector('.task-url-input');
-                const selectedType = typeSelect.value;
-                if (selectedType) {
-                    urlInput.placeholder = currentLangContent.taskPlaceholders[selectedType] || '';
-                }
-                // Update select options
+                
+                // Update task type options
                 Array.from(typeSelect.options).forEach(option => {
                     if (option.value) {
                         option.textContent = currentLangContent.taskTypes[option.value];
@@ -768,6 +733,23 @@
                         option.textContent = currentLangContent.addTaskBtnText; // Default "Add Task" option
                     }
                 });
+
+                // Re-populate action options if actionSelect exists
+                if (actionSelect) {
+                    const selectedType = typeSelect.value;
+                    if (selectedType && currentLangContent.taskActions[selectedType]) {
+                        populateActionOptions(actionSelect, selectedType);
+                        // Try to restore previously selected action
+                        if (actionSelect.dataset.selected) {
+                            actionSelect.value = actionSelect.dataset.selected;
+                        }
+                    }
+                }
+                
+                // Update URL placeholder based on current type and action
+                const selectedType = typeSelect.value;
+                const selectedAction = actionSelect ? actionSelect.value : '';
+                urlInput.placeholder = getTaskPlaceholder(selectedType, selectedAction);
             });
 
             // Inline error messages
@@ -776,9 +758,14 @@
             }
             document.querySelectorAll('.task-item').forEach(taskDiv => {
                 const typeError = taskDiv.querySelector('.task-type-error');
+                const actionError = taskDiv.querySelector('.task-action-error'); // New
                 const urlError = taskDiv.querySelector('.task-url-error');
+
                 if (typeError && !typeError.classList.contains('hidden')) {
                     typeError.textContent = currentLangContent.inlineErrorTaskType;
+                }
+                if (actionError && !actionError.classList.contains('hidden')) {
+                    actionError.textContent = currentLangContent.inlineErrorTaskAction; // New
                 }
                 if (urlError && !urlError.classList.contains('hidden')) {
                     urlError.textContent = currentLangContent.inlineErrorTaskUrl;
@@ -900,6 +887,44 @@
             }
         }
 
+        // New: Function to populate action options for a given task type
+        function populateActionOptions(actionSelectElement, taskType) {
+            actionSelectElement.innerHTML = ''; // Clear existing options
+            const currentLangContent = content[currentLanguage];
+
+            // Add default disabled option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = "";
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            defaultOption.textContent = currentLangContent.inlineErrorTaskAction; // "Select a task action."
+            actionSelectElement.appendChild(defaultOption);
+
+            const actions = currentLangContent.taskActions[taskType];
+            if (actions) {
+                for (const actionKey in actions) {
+                    const option = document.createElement('option');
+                    option.value = actionKey;
+                    option.textContent = actions[actionKey];
+                    actionSelectElement.appendChild(option);
+                }
+            }
+        }
+
+        // New: Function to get dynamic placeholder for task URL
+        function getTaskPlaceholder(taskType, taskAction) {
+            const currentLangContent = content[currentLanguage];
+            if (taskType === 'blogger') {
+                return currentLangContent.taskPlaceholders.blogger;
+            } else if (taskType && taskAction) {
+                const key = `${taskType}_${taskAction}`;
+                return currentLangContent.taskPlaceholders[key] || '';
+            } else if (taskType) {
+                // Fallback for cases where action is not yet selected, but type is
+                return currentLangContent.taskPlaceholders[`${taskType}_${Object.keys(currentLangContent.taskActions[taskType] || {})[0]}`] || '';
+            }
+            return '';
+        }
 
         // Function to add a new task input group
         function addTask() {
@@ -933,17 +958,20 @@
             taskDiv.innerHTML = `
                 <div class="flex flex-col w-full sm:w-1/4">
                     <select class="input-field task-type-select mb-1">
-                        <option value="" disabled selected>${currentLangContent.addTaskBtnText}</option>
+                        <option value="" disabled selected>${currentLangContent.inlineErrorTaskType}</option>
                         <option value="tiktok">${currentLangContent.taskTypes.tiktok}</option>
                         <option value="whatsapp">${currentLangContent.taskTypes.whatsapp}</option>
                         <option value="roblox">${currentLangContent.taskTypes.roblox}</option>
                         <option value="youtube">${currentLangContent.taskTypes.youtube}</option>
                         <option value="discord">${currentLangContent.taskTypes.discord}</option>
+                        <option value="blogger">${currentLangContent.taskTypes.blogger}</option> <!-- New Blogger option -->
                     </select>
                     <span class="error-message task-type-error hidden">${currentLangContent.inlineErrorTaskType}</span>
                 </div>
                 <div class="flex flex-col flex-grow w-full sm:w-auto">
-                    <input type="url" class="input-field task-url-input mt-2 sm:mt-0 mb-1" placeholder="${currentLangContent.taskPlaceholders.tiktok}" required>
+                    <select class="input-field task-action-select mt-2 sm:mt-0 mb-1 hidden"></select> <!-- Hidden by default -->
+                    <span class="error-message task-action-error hidden">${currentLangContent.inlineErrorTaskAction}</span>
+                    <input type="url" class="input-field task-url-input mt-2 sm:mt-0 mb-1" placeholder="" required>
                     <span class="error-message task-url-error hidden">${currentLangContent.inlineErrorTaskUrl}</span>
                 </div>
                 <button type="button" class="remove-task-btn px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors mt-2 sm:mt-0">
@@ -961,22 +989,49 @@
                 }
             });
 
+            const typeSelect = taskDiv.querySelector('.task-type-select');
+            const actionSelect = taskDiv.querySelector('.task-action-select');
+            const urlInput = taskDiv.querySelector('.task-url-input');
+            const typeError = taskDiv.querySelector('.task-type-error');
+            const actionError = taskDiv.querySelector('.task-action-error');
+            const urlError = taskDiv.querySelector('.task-url-error');
+
             taskDiv.querySelector('.remove-task-btn').addEventListener('click', () => {
                 tasksContainer.removeChild(taskDiv);
                 taskCounter--;
                 updateRequiredTasksCountMax();
             });
 
-            taskDiv.querySelector('.task-type-select').addEventListener('change', (e) => {
+            typeSelect.addEventListener('change', (e) => {
                 const selectedType = e.target.value;
-                const urlInput = taskDiv.querySelector('.task-url-input');
-                urlInput.placeholder = currentLangContent.taskPlaceholders[selectedType] || '';
-                const typeError = taskDiv.querySelector('.task-type-error');
-                if (typeError) typeError.classList.add('hidden');
+                typeError.classList.add('hidden'); // Hide type error
+
+                // Reset and hide action select by default
+                actionSelect.innerHTML = '';
+                actionSelect.classList.add('hidden');
+                actionSelect.value = ''; // Reset value
+                actionSelect.dataset.selected = ''; // Clear stored selection
+                actionError.classList.add('hidden'); // Hide action error
+
+                // Update URL placeholder immediately
+                urlInput.placeholder = getTaskPlaceholder(selectedType, ''); // Use empty action for initial placeholder
+
+                if (selectedType === 'youtube' || selectedType === 'roblox' || selectedType === 'tiktok') {
+                    populateActionOptions(actionSelect, selectedType);
+                    actionSelect.classList.remove('hidden');
+                    actionSelect.addEventListener('change', () => {
+                        actionError.classList.add('hidden'); // Hide action error on change
+                        // Update URL placeholder based on selected action
+                        urlInput.placeholder = getTaskPlaceholder(selectedType, actionSelect.value);
+                    });
+                } else {
+                    // For WhatsApp, Discord, Blogger, no action needed, implicitly "visit"
+                    // Placeholder already set above
+                }
             });
-            taskDiv.querySelector('.task-url-input').addEventListener('input', (e) => {
-                const urlError = taskDiv.querySelector('.task-url-error');
-                if (urlError) urlError.classList.add('hidden');
+
+            urlInput.addEventListener('input', (e) => {
+                urlError.classList.add('hidden');
             });
 
             updateRequiredTasksCountMax();
@@ -1001,10 +1056,10 @@
             modalMessage.textContent = message;
             customModal.classList.remove('hidden');
             if (currentTheme === 'dark') {
-                modalContent.classList.add('dark-theme');
+                modalContent.classList.add('how-it-works-card-dark');
                 modalContent.style.backgroundColor = '#2c3e50';
             } else {
-                modalContent.classList.remove('dark-theme');
+                modalContent.classList.add('how-it-works-card-light');
                 modalContent.style.backgroundColor = '#edf2f7';
             }
         }
@@ -1081,7 +1136,7 @@
         }
 
         // Function to generate the task link
-        function generateLink(isForPreview = false) {
+        function generateLink() {
             let isValid = true;
             const currentLangContent = content[currentLanguage];
 
@@ -1089,20 +1144,16 @@
             const targets = [];
             const targetUrlInputs = document.querySelectorAll('.target-url-input');
             if (targetUrlInputs.length === 0) {
-                if (!isForPreview) {
-                    targetUrlError.textContent = currentLangContent.targetUrlError;
-                    targetUrlError.classList.remove('hidden');
-                }
+                targetUrlError.textContent = currentLangContent.targetUrlError;
+                targetUrlError.classList.remove('hidden');
                 isValid = false;
             } else {
                 targetUrlInputs.forEach(input => {
                     const url = input.value.trim();
                     if (!url || !isValidUrl(url)) {
                         isValid = false;
-                        if (!isForPreview) {
-                            input.classList.add('border-red-500', 'ring-red-500'); // Highlight invalid input
-                            showModal(currentLangContent.modalWarningTitle, currentLangContent.targetUrlError);
-                        }
+                        input.classList.add('border-red-500', 'ring-red-500'); // Highlight invalid input
+                        showModal(currentLangContent.modalWarningTitle, currentLangContent.targetUrlError);
                     } else {
                         input.classList.remove('border-red-500', 'ring-red-500');
                         targets.push(url);
@@ -1110,59 +1161,61 @@
                 });
             }
 
-            // Don't show task-related errors for preview generation
-            if (!isForPreview) {
-                document.querySelectorAll('.task-item').forEach(taskDiv => {
-                    taskDiv.querySelector('.task-type-error').classList.add('hidden');
-                    taskDiv.querySelector('.task-url-error').classList.add('hidden');
-                });
-            }
+            document.querySelectorAll('.task-item').forEach(taskDiv => {
+                taskDiv.querySelector('.task-type-error').classList.add('hidden');
+                taskDiv.querySelector('.task-action-error').classList.add('hidden'); // New
+                taskDiv.querySelector('.task-url-error').classList.add('hidden');
+            });
 
             const tasks = [];
             document.querySelectorAll('.task-item').forEach(taskDiv => {
                 const typeSelect = taskDiv.querySelector('.task-type-select');
+                const actionSelect = taskDiv.querySelector('.task-action-select');
                 const urlInput = taskDiv.querySelector('.task-url-input');
                 const typeError = taskDiv.querySelector('.task-type-error');
+                const actionError = taskDiv.querySelector('.task-action-error'); // New
                 const urlError = taskDiv.querySelector('.task-url-error');
 
                 const type = typeSelect.value;
+                let action = ''; // Default empty action
+                if (type === 'blogger' || type === 'whatsapp' || type === 'discord') {
+                    action = 'visit'; // Implicit action for these types
+                } else if (actionSelect) {
+                    action = actionSelect.value;
+                }
                 const url = urlInput.value.trim();
 
                 if (!type) {
-                    if (!isForPreview) {
-                        typeError.textContent = currentLangContent.inlineErrorTaskType;
-                        typeError.classList.remove('hidden');
-                    }
+                    typeError.textContent = currentLangContent.inlineErrorTaskType;
+                    typeError.classList.remove('hidden');
+                    isValid = false;
+                }
+                // Validate action only if actionSelect is visible (meaning it's youtube, roblox, tiktok)
+                if (actionSelect && !actionSelect.classList.contains('hidden') && !action) {
+                    actionError.textContent = currentLangContent.inlineErrorTaskAction;
+                    actionError.classList.remove('hidden');
                     isValid = false;
                 }
                 if (!url) {
-                    if (!isForPreview) {
-                        urlError.textContent = currentLangContent.inlineErrorTaskUrl;
-                        urlError.classList.remove('hidden');
-                    }
+                    urlError.textContent = currentLangContent.inlineErrorTaskUrl;
+                    urlError.classList.remove('hidden');
                     isValid = false;
                 } else if (!isValidUrl(url)) { // Validate task URL format as well
                     isValid = false;
-                    if (!isForPreview) {
-                        urlError.textContent = currentLangContent.inlineErrorTaskUrl + " (format URL tidak valid)";
-                        urlError.classList.remove('hidden');
-                    }
+                    urlError.textContent = currentLangContent.inlineErrorTaskUrl + " (format URL tidak valid)";
+                    urlError.classList.remove('hidden');
                 }
-                tasks.push({ type, url });
+                tasks.push({ type, action, url }); // Store type, action, and url
             });
 
             if (tasks.length === 0) {
-                if (!isForPreview) {
-                    showModal(currentLangContent.modalWarningTitle, currentLangContent.modalNoTasks);
-                }
+                showModal(currentLangContent.modalWarningTitle, currentLangContent.modalNoTasks);
                 isValid = false;
             }
 
             const requiredTasks = parseInt(requiredTasksCountInput.value);
             if (isNaN(requiredTasks) || requiredTasks < 1 || requiredTasks > tasks.length) {
-                if (!isForPreview) {
-                    showModal(currentLangContent.modalWarningTitle, currentLangContent.modalInvalidCount);
-                }
+                showModal(currentLangContent.modalWarningTitle, currentLangContent.modalInvalidCount);
                 isValid = false;
             }
 
@@ -1176,7 +1229,7 @@
                 targets: targets, // Now an array of URLs
                 buttonText: currentLangContent.buttonTextDefault,
                 requiredTasks: requiredTasks,
-                tasks: tasks,
+                tasks: tasks, // Tasks now include action
                 custom: {
                     colorScheme: selectedColorScheme
                 }
@@ -1213,7 +1266,7 @@
         addTaskBtn.addEventListener('click', addTask);
 
         generateLinkBtn.addEventListener('click', () => {
-            const link = generateLink(false); // Generate final link, show errors
+            const link = generateLink(); // Generate final link, show errors
             if (link) {
                 generatedLinkTextarea.value = link;
                 resultSection.classList.remove('hidden'); // Show the result section
@@ -1235,6 +1288,8 @@
         colorSchemeSelect.addEventListener('change', () => {
             colorSchemeSelect.dataset.selected = colorSchemeSelect.value;
         });
+
+        requiredTasksCountInput.addEventListener('input', updateRequiredTasksCountMax);
 
         // Initial setup
         populateCustomizationOptions();

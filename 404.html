@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title id="pageTitle">SapiBersinar: Mengalihkan Link Anda</title>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-K5JQPNMVEF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-K5JQPNMVEF'); // Your GA4 Measurement ID
+  </script>
+  
+  <!-- SEO Meta Tags for SapiBersinar Short Link Redirect Page -->
+  <meta name="description" content="SapiBersinar: Layanan pengalihan link cepat dan aman. Mengalihkan Anda ke tujuan yang benar dengan mulus.">
+  <meta name="keywords" content="short link, shortlink, pengalihan link, link cepat, SapiBersinar, shortener, URL redirect">
+  <meta name="author" content="SapiBersinar">
+  <meta name="robots" content="noindex, follow"> <!-- noindex for redirect pages -->
+
+  <!-- Open Graph / Social Media Meta Tags -->
+  <meta property="og:title" content="SapiBersinar: Mengalihkan Anda">
+  <meta property="og:description" content="SapiBersinar: Layanan pengalihan link cepat dan aman. Mengalihkan Anda ke tujuan yang benar dengan mulus.">
+  <meta property="og:url" content="https://sapibersinar.github.io/short/">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://placehold.co/1200x630/0d9488/ffffff?text=Mengalihkan+Link"> <!-- Placeholder image -->
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts - Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  
+  <style>
+    /* Custom CSS for a sleek look */
+    body {
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #1f2937 0%, #0f172a 100%); /* Dark blue-gray gradient */
+      color: #e2e8f0; /* Light gray text */
+      transition: background-color 0.3s ease;
+      overflow: hidden; /* Hide overflow for animations */
+    }
+
+    .container {
+      background-color: #2d3748; /* Darker gray background */
+      border-radius: 1.5rem; /* Rounded corners */
+      padding: 2.5rem; /* Spacious padding */
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); /* Deeper shadow */
+      max-width: 90%;
+      width: 500px; /* Fixed width for better control */
+      border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border */
+      animation: fadeIn 0.8s ease-out; /* Fade-in effect */
+      transform: translateY(-20px); /* Slightly lift for animation */
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800; /* Extra bold */
+      margin-bottom: 1.5rem;
+      color: #63b3ed; /* Light blue heading */
+      animation: slideInDown 0.8s ease-out forwards;
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+
+    p {
+      font-size: 1.125rem;
+      color: #cbd5e0; /* Off-white text */
+      margin-bottom: 2rem;
+      animation: fadeIn 1s ease-out forwards;
+      opacity: 0;
+      animation-delay: 0.3s;
+    }
+
+    .loading-spinner {
+      border: 6px solid #4a5568; /* Spinner track color */
+      border-top: 6px solid #63b3ed; /* Spinner color */
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1.2s linear infinite;
+      margin: 0 auto 2rem auto;
+      opacity: 0;
+      animation: fadeIn 1s ease-out forwards;
+      animation-delay: 0.6s;
+    }
+
+    .error-message {
+      color: #fc8181; /* Light red for errors */
+      font-weight: 600;
+      margin-top: 1.5rem;
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+
+    .error-icon {
+      font-size: 3rem;
+      color: #fc8181;
+      margin-bottom: 1rem;
+      animation: shake 0.5s ease-in-out infinite alternate;
+    }
+
+    code {
+      background-color: #4a5568;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.375rem;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+      color: #a0aec0; /* Lighter code text */
+    }
+    
+    .link-button {
+      display: inline-block;
+      background-color: #63b3ed; /* Blue button */
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.75rem;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      margin-top: 1.5rem;
+    }
+
+    .link-button:hover {
+      background-color: #4299e1; /* Darker blue on hover */
+      transform: translateY(-2px);
+    }
+
+    /* Keyframe Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 640px) {
+      .container {
+        padding: 1.5rem;
+        border-radius: 1rem;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+      p {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="redirectContainer">
+    <h1 id="mainTitle">Mengalihkan Link Anda...</h1>
+    <p id="message">Harap tunggu sebentar, Anda akan segera dialihkan.</p>
+    <div class="loading-spinner" id="spinner"></div>
+    <a href="https://sapibersinar.github.io/" class="link-button hidden" id="homeButton">Kembali ke Beranda SapiBersinar</a>
+  </div>
+
+  <script>
+    async function go() {
+      const mainTitle = document.getElementById('mainTitle');
+      const message = document.getElementById('message');
+      const spinner = document.getElementById('spinner');
+      const homeButton = document.getElementById('homeButton');
+      const pageTitle = document.getElementById('pageTitle'); // Get the page title element
+
+      mainTitle.textContent = "Mengalihkan Link Anda...";
+      message.textContent = "Harap tunggu sebentar, Anda akan segera dialihkan.";
+      spinner.style.display = 'block'; // Show spinner
+      homeButton.classList.add('hidden'); // Ensure button is hidden initially
+      pageTitle.textContent = "SapiBersinar: Mengalihkan Link Anda"; // Reset page title
+
+      // Get the full path name from the URL
+      const fullPath = location.pathname;
+      // Define the prefix for short links. This assumes your short links always start with /short/
+      const shortLinkPrefix = '/short/';
+
+      let key = null;
+
+      // Check if the path starts with our designated short link prefix
+      if (fullPath.startsWith(shortLinkPrefix)) {
+        // Extract the key by removing the prefix
+        key = fullPath.substring(shortLinkPrefix.length);
+        // If there's an empty string after the prefix (e.g., /short/), then it's not a valid key
+        if (key === '') {
+            key = null; // Treat as a generic 404 for the /short/ directory itself
+        }
+      }
+
+      if (key) {
+        try {
+          const dataJsonUrl = `https://SapiBersinar.github.io/data.json`;
+          const res = await fetch(dataJsonUrl);
+
+          if (!res.ok) {
+              throw new Error(`Failed to load data.json: ${res.status} ${res.statusText}`);
+          }
+
+          const data = await res.json();
+          
+          const target = data[decodeURIComponent(key)]; // Decode URI component for key lookup
+
+          if (target) {
+            if (typeof gtag === 'function') {
+              gtag('event', 'short_link_redirect', {
+                'short_link_key': key,
+                'target_url': target
+              });
+            }
+            mainTitle.textContent = "Berhasil Dialihkan!";
+            message.innerHTML = `Anda akan dialihkan ke <a href="${target}" class="text-blue-300 hover:underline" target="_blank">${target}</a>.`;
+            pageTitle.textContent = `Mengalihkan: ${key}`; // Update page title on successful redirect
+            spinner.style.display = 'none';
+            setTimeout(() => {
+              location.href = target;
+            }, 1500);
+          } else {
+            // Key not found in data.json
+            mainTitle.innerHTML = `<i class="fas fa-exclamation-triangle error-icon"></i> 404: Link Tidak Ditemukan`;
+            message.innerHTML = `<p class="error-message">Shortlink untuk kunci <code>${key}</code> tidak ada di <code>data.json</code>.</p>`;
+            pageTitle.textContent = `404: ${key} Tidak Ditemukan`; // Update page title for 404
+            spinner.style.display = 'none';
+            homeButton.classList.remove('hidden');
+            if (typeof gtag === 'function') {
+              gtag('event', 'short_link_not_found', {
+                'short_link_key': key
+              });
+            }
+          }
+        } catch (err) {
+          // Error fetching or parsing data.json
+          mainTitle.innerHTML = `<i class="fas fa-bomb error-icon"></i> Gagal Memuat Data!`;
+          message.innerHTML = `<p class="error-message">Terjadi kesalahan saat memuat data shortlink: ${err.message}.</p>`;
+          pageTitle.textContent = `Error: Gagal Memuat Data`; // Update page title for error
+          spinner.style.display = 'none';
+          homeButton.classList.remove('hidden');
+          if (typeof gtag === 'function') {
+            gtag('event', 'short_link_error', {
+              'short_link_key': key,
+              'error_message': err.message
+            });
+          }
+        }
+      } else {
+        // Generic 404 for paths not matching short link pattern
+        mainTitle.innerHTML = `<i class="fas fa-question-circle error-icon"></i> Halaman Tidak Ditemukan`;
+        message.innerHTML = `<p class="error-message">Halaman yang Anda cari tidak ada. URL: <code>${fullPath}</code></p>`;
+        pageTitle.textContent = `Halaman Tidak Ditemukan`; // Update page title for generic 404
+        spinner.style.display = 'none';
+        homeButton.classList.remove('hidden');
+        if (typeof gtag === 'function') {
+          gtag('event', 'generic_404', {
+            'path': fullPath
+          });
+        }
+      }
+    }
+
+    window.onload = go;
+  </script>
+</body>
+</html>
+
+    

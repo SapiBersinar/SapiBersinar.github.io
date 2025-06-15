@@ -234,14 +234,98 @@
             }
         });
 
+        // Function to fetch and display code
+        async function fetchAndDisplayCode(key) {
+            try {
+                // Fetch data.json
+                const dataJsonUrl = 'https://sapibersinar.github.io/data.json';
+                const res = await fetch(dataJsonUrl);
+                if (!res.ok) {
+                    throw new Error(`Failed to load data.json: ${res.status} ${res.statusText}`);
+                }
+                const data = await res.json();
+
+                // Get the target URL from data.json based on the key
+                const targetUrl = data[decodeURIComponent(key)];
+
+                if (targetUrl) {
+                    let codeToDisplay = "";
+                    let codeType = "";
+                    let codeTitleText = key.replace(/\+/g, ' '); // Replace '+' with space for display
+
+                    // Check if the targetUrl is a direct link to a raw code file
+                    if (targetUrl.startsWith('https://raw.githubusercontent.com/')) {
+                        // Determine code type from file extension
+                        const urlParts = targetUrl.split('.');
+                        codeType = urlParts.length > 1 ? urlParts.pop().toLowerCase() : 'plaintext';
+
+                        const codeRes = await fetch(targetUrl);
+                        if (!codeRes.ok) {
+                            throw new Error(`Failed to fetch code from ${targetUrl}: ${codeRes.status} ${codeRes.statusText}`);
+                        }
+                        codeToDisplay = await codeRes.text();
+                        displayTitle.textContent = `Kode: ${codeTitleText}`; // Update browser tab title
+                    } else if (targetUrl.startsWith('data:application/json;base64,')) {
+                        // Handle base64 encoded JSON data directly from the URL (legacy)
+                        const base64Data = targetUrl.split(',')[1];
+                        const decodedJson = JSON.parse(decodeURIComponent(atob(base64Data)));
+                        codeToDisplay = decodedJson.code;
+                        codeType = decodedJson.type;
+                        if (decodedJson.title) codeTitleText = decodedJson.title;
+                        displayTitle.textContent = `Kode: ${codeTitleText}`;
+                    } else {
+                         // Handle base64 encoded data from data.json
+                        try {
+                            const decodedData = decodeURIComponent(atob(targetUrl));
+                            const parsedData = JSON.parse(decodedData);
+                            codeToDisplay = parsedData.code;
+                            codeType = parsedData.type;
+                            if (parsedData.title) codeTitleText = parsedData.title;
+                            displayTitle.textContent = `Kode: ${codeTitleText}`;
+                        } catch (e) {
+                             // If it's not a recognizable base64 or raw link, display as plaintext
+                             codeToDisplay = `Format kode tidak dikenali atau link tidak valid: ${targetUrl}`;
+                             codeType = 'plaintext';
+                             displayTitle.textContent = `Error: ${key}`;
+                        }
+                    }
+
+                    codeTitle.textContent = codeTitleText;
+                    codeTypeDisplay.textContent = `Jenis: ${codeType.toUpperCase()}`;
+                    codeContent.className = `language-${codeType.toLowerCase()}`;
+                    codeContent.textContent = codeToDisplay;
+                    hljs.highlightElement(codeContent);
+
+                } else {
+                    codeTitle.textContent = "Kode Tidak Ditemukan";
+                    codeTypeDisplay.textContent = "";
+                    codeContent.textContent = `Kunci '${key}' tidak ditemukan di data.json atau formatnya tidak valid.`;
+                    displayTitle.textContent = `Error: Kode Tidak Ditemukan`;
+                }
+
+            } catch (e) {
+                codeTitle.textContent = "Kesalahan Memuat Kode";
+                codeTypeDisplay.textContent = "";
+                codeContent.textContent = `Terjadi kesalahan saat memuat atau mengurai data: ${e.message}. Pastikan data.json dan link kode mentah valid.`;
+                console.error("Error loading code:", e);
+                displayTitle.textContent = `Error: Gagal Memuat`;
+            }
+        }
+
         // Load data from URL on page load
         window.onload = () => {
             const urlParams = new URLSearchParams(window.location.search);
             const dataParam = urlParams.get('data');
+            const path = window.location.pathname;
 
-            if (dataParam) {
+            // Check if it's a direct code path (e.g., /source-code/dorongan+panjang)
+            const sourceCodePrefix = '/source-code/';
+            if (path.startsWith(sourceCodePrefix) && path.length > sourceCodePrefix.length) {
+                const key = path.substring(sourceCodePrefix.length);
+                fetchAndDisplayCode(key);
+            } else if (dataParam) {
+                // Handle legacy data parameter (base64 encoded JSON)
                 try {
-                    // Decode Base64 back, then decode URI component, then parse JSON
                     const decodedData = decodeURIComponent(atob(dataParam));
                     const parsedData = JSON.parse(decodedData);
 
@@ -278,7 +362,7 @@
             } else {
                 codeTitle.textContent = "Tidak Ada Kode Ditemukan";
                 codeTypeDisplay.textContent = "";
-                codeContent.textContent = "URL tidak memiliki parameter 'data' yang berisi kode untuk ditampilkan.";
+                codeContent.textContent = "URL tidak memiliki parameter 'data' yang berisi kode, atau tidak ada kunci yang diberikan di path URL.";
             }
         };
 

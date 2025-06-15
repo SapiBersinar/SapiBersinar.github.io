@@ -217,17 +217,17 @@
             }, 3000); // Sembunyikan setelah 3 detik
         }
 
-        // Fungsi untuk menampilkan spinner
+        // Fungsi untuk menampilkan spinner dan mengosongkan area konten
         function showSpinner() {
             codeContent.style.display = 'none'; // Sembunyikan konten kode
             copyCodeButton.style.display = 'none'; // Sembunyikan tombol salin
             loadingSpinner.style.display = 'block'; // Tampilkan spinner
-            codeTitle.textContent = "Memuat Kode..."; // Pastikan judul loading
-            codeTypeDisplay.textContent = ""; // Kosongkan jenis
-            codeContent.textContent = ""; // Kosongkan konten
+            codeTitle.textContent = "Sedang Memuat Kode..."; // Pesan loading yang lebih spesifik
+            codeTypeDisplay.textContent = "";
+            codeContent.textContent = ""; // Kosongkan konten saat loading
         }
 
-        // Fungsi untuk menyembunyikan spinner
+        // Fungsi untuk menyembunyikan spinner dan menampilkan kembali area konten
         function hideSpinner() {
             loadingSpinner.style.display = 'none'; // Sembunyikan spinner
             codeContent.style.display = 'block'; // Tampilkan konten kode
@@ -273,7 +273,7 @@
             }
             updateThemeToggleIcon();
             // Sorot ulang kode setelah perubahan tema untuk memastikan warna diperbarui
-            if (codeContent.textContent.trim() !== '' && codeTitle.textContent !== "Memuat Kode...") { // Hanya sorot ulang jika ada konten
+            if (codeContent.textContent.trim() !== '' && codeTitle.textContent !== "Sedang Memuat Kode...") { // Hanya sorot ulang jika ada konten
                  hljs.highlightElement(codeContent);
             }
         });
@@ -281,6 +281,8 @@
         // Muat data dari URL saat halaman dimuat
         window.onload = async () => {
             showSpinner(); // Tampilkan spinner segera saat halaman dimuat
+            const startTime = Date.now(); // Catat waktu mulai
+
             const urlParams = new URLSearchParams(window.location.search);
             const dataParam = urlParams.get('data');
             const keyParam = urlParams.get('key');
@@ -316,16 +318,18 @@
 
                 } else if (keyParam) {
                     // Logika untuk mengambil dari sapibersinar.github.io/file.json
-                    codeTitle.textContent = "Memuat Kode dari URL..."; // Perbarui judul loading yang lebih spesifik
+                    codeTitle.textContent = "Sedang Memuat Kode dari URL Eksternal..."; // Pesan loading yang lebih spesifik
                     
                     const fileJsonUrl = 'https://sapibersinar.github.io/file.json'; // URL ke file JSON Anda
                     const responseFileJson = await fetch(fileJsonUrl);
                     if (!responseFileJson.ok) {
-                        throw new Error(`Gagal memuat daftar kode dari ${fileJsonUrl} (Status: ${responseFileJson.status} ${responseFileJson.statusText}). Periksa apakah file ada dan dapat diakses.`);
+                        throw new Error(`Gagal memuat daftar kode dari ${fileJsonUrl} (Status: ${responseFileJson.status} ${responseFileJson.statusText}). Pastikan file 'file.json' ada dan dapat diakses.`);
                     }
                     const fileJsonContent = await responseFileJson.json();
 
-                    const codeUrl = fileJsonContent[keyParam];
+                    // Normalisasi kunci: ganti spasi dengan '+' untuk mencari di file.json
+                    const normalizedKey = keyParam.replace(/ /g, '+');
+                    const codeUrl = fileJsonContent[normalizedKey]; // Gunakan kunci yang sudah dinormalisasi
 
                     if (codeUrl) {
                         const responseCode = await fetch(codeUrl);
@@ -334,7 +338,7 @@
                         }
                         const code = await responseCode.text();
 
-                        const title = keyParam.replace(/\+/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                        const title = normalizedKey.replace(/\+/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
                         const urlParts = codeUrl.split('.');
                         const type = urlParts.length > 1 ? urlParts.pop() : 'plaintext';
 
@@ -348,7 +352,7 @@
                     } else {
                         codeTitle.textContent = "Kode Tidak Ditemukan";
                         codeTypeDisplay.textContent = "";
-                        codeContent.textContent = `Kunci '${keyParam}' tidak ditemukan dalam daftar kode di ${fileJsonUrl}. Pastikan Anda menggunakan kunci yang benar.`;
+                        codeContent.textContent = `Kunci '${keyParam}' (atau '${normalizedKey}') tidak ditemukan dalam daftar kode di ${fileJsonUrl}. Pastikan Anda menggunakan kunci yang benar dan formatnya sesuai (misalnya 'nama+kode' di file.json).`;
                     }
 
                 } else {
@@ -363,7 +367,11 @@
                 codeContent.textContent = `Terjadi kesalahan fatal saat memuat kode: ${e.message}`;
                 console.error("Error loading code:", e);
             } finally {
-                hideSpinner(); // Sembunyikan spinner setelah semua proses selesai
+                const elapsedTime = Date.now() - startTime;
+                const remainingTime = 7000 - elapsedTime; // Hitung sisa waktu untuk minimum 7 detik
+                setTimeout(() => {
+                    hideSpinner(); // Sembunyikan spinner setelah total waktu atau 7 detik tercapai
+                }, Math.max(0, remainingTime)); // Pastikan tidak ada penundaan negatif
             }
         };
 

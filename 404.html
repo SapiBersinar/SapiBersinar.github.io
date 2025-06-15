@@ -229,12 +229,18 @@
           if (target) {
             let finalRedirectUrl = target; // Default to direct redirect
 
-            // Check if the target is a raw GitHub URL from the specific source-code-data path
-            if (target.startsWith('https://raw.githubusercontent.com/SapiBersinar/data/refs/heads/main/source-code-data/')) {
-                // If it's a raw GitHub URL for a source code file,
-                // construct the redirect to the source-code viewer page with the original key
+            // Cek jika target adalah string "Raw dari github"
+            if (target === "Raw dari github") {
+                // Jika ya, alihkan ke halaman penampil kode di domain SapiBersinar
                 finalRedirectUrl = `https://sapibersinar.github.io/source-code/${encodeURIComponent(key)}`;
             }
+            // Cek jika target adalah URL raw GitHub dari path source-code-data tertentu
+            else if (target.startsWith('https://raw.githubusercontent.com/SapiBersinar/data/refs/heads/main/source-code-data/')) {
+                // Jika itu URL raw GitHub untuk file kode sumber,
+                // buat pengalihan ke halaman penampil kode dengan kunci asli
+                finalRedirectUrl = `https://sapibersinar.github.io/source-code/${encodeURIComponent(key)}`;
+            }
+            // Untuk target lainnya (base64 atau URL biasa), finalRedirectUrl tetap 'target'
 
             if (typeof gtag === 'function') {
               gtag('event', 'short_link_redirect', {

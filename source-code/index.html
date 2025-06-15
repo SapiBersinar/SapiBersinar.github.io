@@ -237,69 +237,79 @@
         // Function to fetch and display code
         async function fetchAndDisplayCode(key) {
             try {
-                // Fetch data.json
+                // Ambil data.json
                 const dataJsonUrl = 'https://sapibersinar.github.io/data.json';
                 const res = await fetch(dataJsonUrl);
                 if (!res.ok) {
-                    throw new Error(`Failed to load data.json: ${res.status} ${res.statusText}`);
+                    throw new Error(`Gagal memuat data.json: ${res.status} ${res.statusText}`);
                 }
                 const data = await res.json();
 
-                // Get the target URL from data.json based on the key
-                const targetUrl = data[decodeURIComponent(key)];
+                // Dapatkan nilai target dari data.json berdasarkan kunci
+                const targetValueFromDataJson = data[decodeURIComponent(key)];
+                let codeToDisplay = "";
+                let codeType = "plaintext"; // Tipe default
+                let codeTitleText = key.replace(/\+/g, ' '); // Ganti '+' dengan spasi untuk tampilan judul
 
-                if (targetUrl) {
-                    let codeToDisplay = "";
-                    let codeType = "";
-                    let codeTitleText = key.replace(/\+/g, ' '); // Replace '+' with space for display
+                if (targetValueFromDataJson) {
+                    // Skenario 1: Nilai target adalah literal "Raw dari github"
+                    if (targetValueFromDataJson === "Raw dari github") {
+                        const rawGithubUrl = "https://raw.githubusercontent.com/SapiBersinar/data/refs/heads/main/source-code-data/dorongan-panjang-ke-atas.lua";
+                        codeType = "lua"; // Atur secara eksplisit ke lua untuk kasus ini
+                        codeTitleText = "Dorongan Panjang ke Atas"; // Judul lebih spesifik untuk kasus ini
 
-                    // Check if the targetUrl is a direct link to a raw code file
-                    if (targetUrl.startsWith('https://raw.githubusercontent.com/')) {
-                        // Determine code type from file extension
-                        const urlParts = targetUrl.split('.');
-                        codeType = urlParts.length > 1 ? urlParts.pop().toLowerCase() : 'plaintext';
-
-                        const codeRes = await fetch(targetUrl);
+                        const codeRes = await fetch(rawGithubUrl);
                         if (!codeRes.ok) {
-                            throw new Error(`Failed to fetch code from ${targetUrl}: ${codeRes.status} ${codeRes.statusText}`);
+                            throw new Error(`Gagal mengambil kode dari ${rawGithubUrl}: ${codeRes.status} ${codeRes.statusText}`);
                         }
                         codeToDisplay = await codeRes.text();
-                        displayTitle.textContent = `Kode: ${codeTitleText}`; // Update browser tab title
-                    } else if (targetUrl.startsWith('data:application/json;base64,')) {
-                        // Handle base64 encoded JSON data directly from the URL (legacy)
-                        const base64Data = targetUrl.split(',')[1];
+                    }
+                    // Skenario 2: Nilai target adalah URL raw GitHub langsung (misalnya, dari entri lain di masa mendatang)
+                    else if (targetValueFromDataJson.startsWith('https://raw.githubusercontent.com/')) {
+                        const urlParts = targetValueFromDataJson.split('.');
+                        codeType = urlParts.length > 1 ? urlParts.pop().toLowerCase() : 'plaintext';
+
+                        const codeRes = await fetch(targetValueFromDataJson);
+                        if (!codeRes.ok) {
+                            throw new Error(`Gagal mengambil kode dari ${targetValueFromDataJson}: ${codeRes.status} ${codeRes.statusText}`);
+                        }
+                        codeToDisplay = await codeRes.text();
+                    }
+                    // Skenario 3: Nilai target adalah string base64 yang dienkode langsung (misalnya, dari URL tugas lama)
+                    else if (targetValueFromDataJson.startsWith('data:application/json;base64,')) {
+                        const base64Data = targetValueFromDataJson.split(',')[1];
                         const decodedJson = JSON.parse(decodeURIComponent(atob(base64Data)));
                         codeToDisplay = decodedJson.code;
-                        codeType = decodedJson.type;
+                        codeType = decodedJson.type || 'plaintext';
                         if (decodedJson.title) codeTitleText = decodedJson.title;
-                        displayTitle.textContent = `Kode: ${codeTitleText}`;
-                    } else {
-                         // Handle base64 encoded data from data.json
+                    }
+                    // Skenario 4: Nilai target adalah base64 yang dienkode tetapi tidak diawali dengan 'data:...' (seperti "base64" di data.json)
+                    else {
                         try {
-                            const decodedData = decodeURIComponent(atob(targetUrl));
+                            const decodedData = decodeURIComponent(atob(targetValueFromDataJson));
                             const parsedData = JSON.parse(decodedData);
                             codeToDisplay = parsedData.code;
-                            codeType = parsedData.type;
+                            codeType = parsedData.type || 'plaintext';
                             if (parsedData.title) codeTitleText = parsedData.title;
-                            displayTitle.textContent = `Kode: ${codeTitleText}`;
                         } catch (e) {
-                             // If it's not a recognizable base64 or raw link, display as plaintext
-                             codeToDisplay = `Format kode tidak dikenali atau link tidak valid: ${targetUrl}`;
+                             // Fallback untuk format yang tidak dikenali
+                             codeToDisplay = `Format kode tidak dikenali atau link tidak valid: ${targetValueFromDataJson}. Error: ${e.message}`;
                              codeType = 'plaintext';
-                             displayTitle.textContent = `Error: ${key}`;
                         }
                     }
 
+                    // Perbarui UI setelah menentukan konten dan tipe
                     codeTitle.textContent = codeTitleText;
                     codeTypeDisplay.textContent = `Jenis: ${codeType.toUpperCase()}`;
                     codeContent.className = `language-${codeType.toLowerCase()}`;
                     codeContent.textContent = codeToDisplay;
                     hljs.highlightElement(codeContent);
+                    displayTitle.textContent = `Kode: ${codeTitleText}`;
 
                 } else {
                     codeTitle.textContent = "Kode Tidak Ditemukan";
                     codeTypeDisplay.textContent = "";
-                    codeContent.textContent = `Kunci '${key}' tidak ditemukan di data.json atau formatnya tidak valid.`;
+                    codeContent.textContent = `Kunci '${key}' tidak ditemukan di data.json.`;
                     displayTitle.textContent = `Error: Kode Tidak Ditemukan`;
                 }
 
@@ -312,26 +322,26 @@
             }
         }
 
-        // Load data from URL on page load
+        // Muat data dari URL saat halaman dimuat
         window.onload = () => {
             const urlParams = new URLSearchParams(window.location.search);
             const dataParam = urlParams.get('data');
             const path = window.location.pathname;
 
-            // Check if it's a direct code path (e.g., /source-code/dorongan+panjang)
+            // Cek apakah itu path kode langsung (misalnya, /source-code/dorongan+panjang)
             const sourceCodePrefix = '/source-code/';
             if (path.startsWith(sourceCodePrefix) && path.length > sourceCodePrefix.length) {
                 const key = path.substring(sourceCodePrefix.length);
                 fetchAndDisplayCode(key);
             } else if (dataParam) {
-                // Handle legacy data parameter (base64 encoded JSON)
+                // Tangani parameter data lama (JSON yang dienkode base64)
                 try {
                     const decodedData = decodeURIComponent(atob(dataParam));
                     const parsedData = JSON.parse(decodedData);
 
                     if (parsedData.title) {
                         codeTitle.textContent = parsedData.title;
-                        displayTitle.textContent = `Kode: ${parsedData.title}`; // Update browser tab title
+                        displayTitle.textContent = `Kode: ${parsedData.title}`; // Perbarui judul tab browser
                     } else {
                         codeTitle.textContent = "Kode Tanpa Judul";
                         displayTitle.textContent = "Kode Tanpa Judul";
@@ -339,16 +349,16 @@
 
                     if (parsedData.type) {
                         codeTypeDisplay.textContent = `Jenis: ${parsedData.type.toUpperCase()}`;
-                        // Set class for highlight.js, ensure it's lowercase
+                        // Set kelas untuk highlight.js, pastikan huruf kecil
                         codeContent.className = `language-${parsedData.type.toLowerCase()}`;
                     } else {
                         codeTypeDisplay.textContent = "Jenis: Tidak Diketahui";
-                        codeContent.className = 'language-plaintext'; // Default to plaintext
+                        codeContent.className = 'language-plaintext'; // Default ke plaintext
                     }
 
                     if (parsedData.code) {
                         codeContent.textContent = parsedData.code;
-                        hljs.highlightElement(codeContent); // Highlight the code
+                        hljs.highlightElement(codeContent); // Highlight kode
                     } else {
                         codeContent.textContent = "Tidak ada kode untuk ditampilkan.";
                     }
@@ -366,7 +376,7 @@
             }
         };
 
-        // Copy code to clipboard
+        // Salin kode ke clipboard
         copyCodeButton.addEventListener('click', () => {
             const codeToCopy = codeContent.textContent;
             const textArea = document.createElement("textarea");
@@ -376,19 +386,19 @@
             try {
                 const successful = document.execCommand('copy');
                 if (successful) {
-                    // Update button text temporarily
+                    // Perbarui teks tombol sementara
                     const originalButtonText = copyCodeButton.textContent;
                     copyCodeButton.textContent = 'Disalin!';
                     copyMessage.classList.remove('hidden');
-                    hideMessage(copyMessage); // Hide confirmation message after duration
+                    hideMessage(copyMessage); // Sembunyikan pesan konfirmasi setelah durasi
                     setTimeout(() => {
-                        copyCodeButton.textContent = originalButtonText; // Revert button text
+                        copyCodeButton.textContent = originalButtonText; // Kembalikan teks tombol
                     }, 3000);
                 } else {
-                    console.error("Failed to copy code.");
+                    console.error("Gagal menyalin kode.");
                 }
             } catch (err) {
-                console.error("Failed to copy code: ", err);
+                console.error("Gagal menyalin kode: ", err);
             }
             document.body.removeChild(textArea);
         });

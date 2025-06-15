@@ -227,18 +227,27 @@
           const target = data[decodeURIComponent(key)]; // Decode URI component for key lookup
 
           if (target) {
+            let finalRedirectUrl = target; // Default to direct redirect
+
+            // Check if the target is a raw GitHub URL from the specific source-code-data path
+            if (target.startsWith('https://raw.githubusercontent.com/SapiBersinar/data/refs/heads/main/source-code-data/')) {
+                // If it's a raw GitHub URL for a source code file,
+                // construct the redirect to the source-code viewer page with the original key
+                finalRedirectUrl = `https://sapibersinar.github.io/source-code/${encodeURIComponent(key)}`;
+            }
+
             if (typeof gtag === 'function') {
               gtag('event', 'short_link_redirect', {
                 'short_link_key': key,
-                'target_url': target
+                'target_url': finalRedirectUrl // Log the final redirect URL
               });
             }
             mainTitle.textContent = "Berhasil Dialihkan!";
-            message.innerHTML = `Anda akan dialihkan ke <a href="${target}" class="text-blue-300 hover:underline" target="_blank">${target}</a>.`;
+            message.innerHTML = `Anda akan dialihkan ke <a href="${finalRedirectUrl}" class="text-blue-300 hover:underline" target="_blank">${finalRedirectUrl}</a>.`;
             pageTitle.textContent = `Mengalihkan: ${key}`; // Update page title on successful redirect
             spinner.style.display = 'none';
             setTimeout(() => {
-              location.href = target;
+              location.href = finalRedirectUrl; // Use the modified URL
             }, 1500);
           } else {
             // Key not found in data.json
@@ -287,4 +296,3 @@
 </body>
 </html>
 
-    

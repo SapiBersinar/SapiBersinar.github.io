@@ -35,6 +35,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Highlight.js CSS for light theme (default) -->
     <link id="highlightTheme" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <!-- Highlight.js Line Numbers CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.css">
 
     <style>
         body {
@@ -120,6 +122,27 @@
         .dark #copyMessage {
             color: #68d391;
         }
+
+        /* Spinner Styling */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #2563eb; /* Blue spinner */
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none; /* Hidden by default */
+        }
+        .dark .spinner {
+            border-color: rgba(255, 255, 255, 0.2);
+            border-left-color: #60a5fa; /* Lighter blue for dark mode */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4 sm:p-6 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-gray-800 dark:to-gray-900 transition-colors duration-300">
@@ -137,8 +160,10 @@
         <!-- Code display area -->
         <div class="relative mb-6">
             <pre class="overflow-auto rounded-lg shadow-inner border border-gray-200 dark:border-gray-700 transition-colors duration-300">
-                <code id="codeContent" class="language-plaintext"></code>
+                <code id="codeContent" class="language-plaintext hljs-ln"></code> <!-- Added hljs-ln class -->
             </pre>
+            <!-- Spinner will appear here -->
+            <div id="loadingSpinner" class="spinner absolute inset-0 m-auto"></div>
             <button id="copyCodeButton" class="absolute top-4 right-4 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 p-2 rounded-md text-sm font-semibold opacity-75 hover:opacity-100 transition-opacity duration-200">
                 Salin Kode
             </button>
@@ -159,6 +184,8 @@
 
     <!-- Highlight.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- Highlight.js Line Numbers plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js"></script>
     <!-- Highlight.js language definitions (loading common ones) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/lua.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/javascript.min.js"></script>
@@ -182,12 +209,27 @@
         const displayTitle = document.getElementById('displayTitle');
         const highlightThemeLink = document.getElementById('highlightTheme');
         const themeToggle = document.getElementById('themeToggle');
+        const loadingSpinner = document.getElementById('loadingSpinner');
 
         // Fungsi untuk menyembunyikan pesan setelah durasi
         function hideMessage(element) {
             setTimeout(() => {
                 element.classList.add('hidden');
             }, 3000); // Sembunyikan setelah 3 detik
+        }
+
+        // Fungsi untuk menampilkan spinner
+        function showSpinner() {
+            codeContent.style.display = 'none'; // Sembunyikan konten kode
+            copyCodeButton.style.display = 'none'; // Sembunyikan tombol salin
+            loadingSpinner.style.display = 'block'; // Tampilkan spinner
+        }
+
+        // Fungsi untuk menyembunyikan spinner
+        function hideSpinner() {
+            loadingSpinner.style.display = 'none'; // Sembunyikan spinner
+            codeContent.style.display = 'block'; // Tampilkan konten kode
+            copyCodeButton.style.display = 'block'; // Tampilkan tombol salin
         }
 
         // Atur preferensi tema saat halaman dimuat
@@ -231,6 +273,7 @@
             // Sorot ulang kode setelah perubahan tema untuk memastikan warna diperbarui
             if (codeContent.textContent.trim() !== '' && codeTitle.textContent !== "Memuat Kode...") { // Hanya sorot ulang jika ada konten
                  hljs.highlightElement(codeContent);
+                 hljs.initLineNumbersOnLoad(); // Re-initialize line numbers
             }
         });
 
@@ -238,11 +281,12 @@
         window.onload = async () => {
             const urlParams = new URLSearchParams(window.location.search);
             const dataParam = urlParams.get('data');
-            const keyParam = urlParams.get('key'); // Parameter baru untuk mengambil dari file.txt
+            const keyParam = urlParams.get('key'); // Parameter baru untuk mengambil dari file.json
 
             if (dataParam) {
                 // Logika existing untuk data base64
                 try {
+                    hideSpinner(); // Pastikan spinner tersembunyi jika ini adalah jalur Base64
                     const decodedData = decodeURIComponent(atob(dataParam));
                     const parsedData = JSON.parse(decodedData);
 
@@ -256,48 +300,51 @@
 
                     if (parsedData.type) {
                         codeTypeDisplay.textContent = `Jenis: ${parsedData.type.toUpperCase()}`;
-                        codeContent.className = `language-${parsedData.type.toLowerCase()}`;
+                        codeContent.className = `language-${parsedData.type.toLowerCase()} hljs-ln`;
                     } else {
                         codeTypeDisplay.textContent = "Jenis: Tidak Diketahui";
-                        codeContent.className = 'language-plaintext';
+                        codeContent.className = 'language-plaintext hljs-ln';
                     }
 
                     if (parsedData.code) {
                         codeContent.textContent = parsedData.code;
                         hljs.highlightElement(codeContent);
+                        hljs.initLineNumbersOnLoad(); // Inisialisasi nomor baris
                     } else {
                         codeContent.textContent = "Tidak ada kode untuk ditampilkan.";
                     }
 
                 } catch (e) {
+                    hideSpinner();
                     codeTitle.textContent = "Kesalahan Memuat Kode";
                     codeTypeDisplay.textContent = "";
-                    codeContent.textContent = "Terjadi kesalahan saat mencoba memuat atau mengurai data kode dari URL. Pastikan URL valid.";
+                    codeContent.textContent = "Terjadi kesalahan saat mencoba memuat atau mengurai data kode dari URL. Pastikan URL valid dan data Base64nya benar.";
                     console.error("Error parsing code from URL:", e);
                 }
             } else if (keyParam) {
-                // Logika baru untuk mengambil dari sapibersinar.github.io/file.txt
+                // Logika baru untuk mengambil dari sapibersinar.github.io/file.json
+                showSpinner(); // Tampilkan spinner saat memulai pengambilan data
                 try {
                     codeTitle.textContent = "Memuat Kode dari URL...";
                     codeTypeDisplay.textContent = "";
-                    codeContent.textContent = "Memuat...";
-
-                    // Ambil file.txt
-                    const fileTxtUrl = 'https://sapibersinar.github.io/file.txt';
-                    const responseFileTxt = await fetch(fileTxtUrl);
-                    if (!responseFileTxt.ok) {
-                        throw new Error(`Gagal memuat ${fileTxtUrl}: ${responseFileTxt.statusText}`);
+                    codeContent.textContent = ""; // Kosongkan konten saat loading
+                    
+                    // Ambil file.json (DIPERBAIKI DARI file.txt)
+                    const fileJsonUrl = 'https://sapibersinar.github.io/file.json';
+                    const responseFileJson = await fetch(fileJsonUrl);
+                    if (!responseFileJson.ok) {
+                        throw new Error(`Gagal memuat daftar kode dari ${fileJsonUrl}. Periksa apakah file ada dan dapat diakses.`);
                     }
-                    const fileTxtContent = await responseFileTxt.json(); // Asumsikan file.txt berisi JSON
+                    const fileJsonContent = await responseFileJson.json(); // Asumsikan file.json berisi JSON
 
-                    // Temukan URL kode dari file.txt menggunakan keyParam
-                    const codeUrl = fileTxtContent[keyParam];
+                    // Temukan URL kode dari file.json menggunakan keyParam
+                    const codeUrl = fileJsonContent[keyParam];
 
                     if (codeUrl) {
                         // Ambil kode sumber
                         const responseCode = await fetch(codeUrl);
                         if (!responseCode.ok) {
-                            throw new Error(`Gagal memuat kode dari ${codeUrl}: ${responseCode.statusText}`);
+                            throw new Error(`Gagal memuat kode dari ${codeUrl}. Periksa apakah URL kode ini valid dan dapat diakses.`);
                         }
                         const code = await responseCode.text();
 
@@ -311,27 +358,31 @@
                         codeTitle.textContent = title;
                         displayTitle.textContent = `Kode: ${title}`;
                         codeTypeDisplay.textContent = `Jenis: ${type.toUpperCase()}`;
-                        codeContent.className = `language-${type.toLowerCase()}`;
+                        codeContent.className = `language-${type.toLowerCase()} hljs-ln`; // Tambahkan kelas untuk nomor baris
                         codeContent.textContent = code;
                         hljs.highlightElement(codeContent);
+                        hljs.initLineNumbersOnLoad(); // Inisialisasi nomor baris
 
                     } else {
                         codeTitle.textContent = "Kode Tidak Ditemukan";
                         codeTypeDisplay.textContent = "";
-                        codeContent.textContent = `Kunci '${keyParam}' tidak ditemukan dalam ${fileTxtUrl}.`;
+                        codeContent.textContent = `Kunci '${keyParam}' tidak ditemukan dalam daftar kode di ${fileJsonUrl}. Pastikan Anda menggunakan kunci yang benar.`;
                     }
 
                 } catch (e) {
-                    codeTitle.textContent = "Kesalahan Memuat Kode dari URL Eksternal";
+                    codeTitle.textContent = "Kesalahan Memuat Kode";
                     codeTypeDisplay.textContent = "";
-                    codeContent.textContent = `Terjadi kesalahan saat mencoba memuat kode dari file.txt: ${e.message}`;
-                    console.error("Error loading code from file.txt:", e);
+                    codeContent.textContent = `Terjadi kesalahan fatal saat memuat kode: ${e.message}`;
+                    console.error("Error loading code from file.json or external URL:", e);
+                } finally {
+                    hideSpinner(); // Sembunyikan spinner setelah selesai (baik sukses maupun gagal)
                 }
             }
             else {
+                hideSpinner(); // Sembunyikan spinner jika tidak ada parameter yang valid
                 codeTitle.textContent = "Tidak Ada Kode Ditemukan";
                 codeTypeDisplay.textContent = "";
-                codeContent.textContent = "URL tidak memiliki parameter 'data' yang berisi kode untuk ditampilkan atau parameter 'key' untuk mengambil kode dari file.txt.";
+                codeContent.textContent = "URL tidak memiliki parameter 'data' yang berisi kode untuk ditampilkan atau parameter 'key' untuk mengambil kode dari file.json.";
             }
         };
 
@@ -364,4 +415,5 @@
     </script>
 </body>
 </html>
+
 
